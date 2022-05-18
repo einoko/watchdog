@@ -23,14 +23,14 @@ describe("CaptureWebsiteUtil tests", () => {
 
   test("Return an error with an invalid URL", async () => {
     const res = await _fetch("POST", "/api/preview", {
-      url: "0123456789abcdef",
+      url: "https://68zanrkwbmCsCjFu.net",
     });
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(500);
 
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Could not fetch a screenshot from the given URL.");
   });
 
   test("Return an error if there is no URL in the body", async () => {

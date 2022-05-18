@@ -14,8 +14,8 @@ router.post("/preview", body("url").isURL(), async (req, res) => {
 
   if (preview === null) {
     return res
-      .status(404)
-      .json({ errors: [{ msg: "Could not fetch a screenshot." }] });
+      .status(500)
+      .json({ errors: [{ msg: "Could not fetch a screenshot from the given URL." }] });
   } else {
     return res.status(200).json({
       imageData: preview,
