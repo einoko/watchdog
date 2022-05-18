@@ -23,7 +23,7 @@ describe("CaptureWebsiteUtil tests", () => {
 
   test("Return an error with an invalid URL", async () => {
     const res = await _fetch("POST", "/api/preview", {
-      url: "https://68zanrkwbmCsCjFu.net",
+      url: "https://4XY5UazbVPdYM85oCyKujXrchU9ER3AF.net",
     });
     expect(res.status).toBe(500);
 

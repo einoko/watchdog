@@ -10,7 +10,8 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "jest": {
-    "testEnvironment": "jest-environment-node"
+    "testEnvironment": "jest-environment-node",
+    "testTimeout": 10000
   },
   "nodemonConfig": {
     "ignore": [
@@ -30,7 +31,10 @@
     "mongoose": "^6.3.3",
     "node-fetch": "^3.2.4",
     "nodemon": "^2.0.16",
+    "pixelmatch": "^5.3.0",
+    "pngjs": "^6.0.0",
     "prepend-http": "^4.0.0",
+    "sharp": "^0.30.4",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {

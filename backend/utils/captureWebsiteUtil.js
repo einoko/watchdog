@@ -2,6 +2,7 @@ import captureWebsite from "capture-website";
 import prependHttp from "prepend-http";
 import { v4 as uuidv4 } from "uuid";
 import "dotenv/config";
+import { convertIDtoFilePath } from "./filePathUtil.js";
 
 const defaultOptions = {
   width: 1280,
@@ -32,8 +33,8 @@ export const captureWebsitePreview = async (url) => {
  * @returns {Promise<string|null>} File path to the saved image.
  */
 export const captureWebsiteToFile = async (url) => {
-  const path = process.env.FILES_PATH || "files/";
-  const filePath = `${path}${uuidv4()}.png`;
+  const fileID = uuidv4();
+  const filePath = convertIDtoFilePath(fileID);
 
   try {
     await captureWebsite.file(prependHttp(url), filePath, defaultOptions);
