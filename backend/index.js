@@ -1,12 +1,20 @@
-import express from "express";
+import express, { json } from "express";
+import "dotenv/config";
+import cors from "cors";
+import { connectToDB, closeDB } from "./db.js";
+import { previewRouter } from "./routes/preview.js";
 
-const app = express();
 const port = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
-});
+const app = express();
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+app.use(cors());
+app.use(json());
+
+app.use("/api", previewRouter);
+
+connectToDB(process.env.MONGODB_URI).then(r => {
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+})
