@@ -13,8 +13,8 @@ app.use(json());
 
 app.use("/api", previewRouter);
 
-connectToDB(process.env.MONGODB_URI).then(r => {
+connectToDB(process.env.MONGODB_URI).then((r) => {
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
-})
+});

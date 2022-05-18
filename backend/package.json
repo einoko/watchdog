@@ -29,6 +29,7 @@
     "mongoose": "^6.3.3",
     "nodemon": "^2.0.16",
     "prepend-http": "^4.0.0",
-    "prettier": "^2.6.2"
+    "prettier": "^2.6.2",
+    "uuidv4": "^6.2.13"
   }
 }

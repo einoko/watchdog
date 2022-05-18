@@ -1,4 +1,4 @@
-import captureWebsitePreview from '../utils/captureWebsiteUtil.js';
+import { captureWebsitePreview } from "../utils/captureWebsiteUtil.js";
 
 const getPreview = async (url) => {
   return await captureWebsitePreview(url);
