@@ -51,7 +51,9 @@ const checkLastState = async (job) => {
 
   if (difference > 0) {
     const savedNewScreenshot = await saveImage(newScreenshotBuffer);
-    const savedDiffImage = await saveImage(await createDiffImage(lastStateImageBuffer, newScreenshotBuffer));
+    const savedDiffImage = await saveImage(
+      await createDiffImage(lastStateImageBuffer, newScreenshotBuffer)
+    );
 
     job.states.push({
       image: savedNewScreenshot._id,
@@ -65,6 +67,10 @@ const checkLastState = async (job) => {
   }
 };
 
+/**
+ * Executes one monitoring cycle.
+ * @param {*} jobID ID of the monitoring job to execute.
+ */
 const executeMonitoringJob = async (jobID) => {
   console.info(`Executing monitoring job ${jobID}`);
 

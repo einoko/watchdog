@@ -30,26 +30,3 @@ export const deleteImage = async (imageID) => {
   deleteFileFromPath(image.path);
   await image.remove();
 }
-
-/**
- * Reads image from disk and returns it as a buffer.
- * @param {*} imageID ID of the image to read.
- * @returns Buffer of the image.
- */
-export const readImage = async (imageID) => {
-  const image = await Image.findById(imageID);
-  if (!image) {
-    console.error(`Could not find image with ID ${imageID}`);
-    return null;
-  }
-
-  const imagePath = image.path;
-
-  if (!fs.existsSync(imagePath)) {
-    console.error(`Image ${imageID} not found`);
-    return null;
-  } else {
-    const imageBuffer = fs.readFileSync(imagePath);
-    return imageBuffer;
-  }
-};
