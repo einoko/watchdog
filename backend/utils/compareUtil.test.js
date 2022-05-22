@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as compareUtil from "./compareUtil.js";
 
 describe("Calculate difference between two images", () => {

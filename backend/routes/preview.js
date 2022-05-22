@@ -1,6 +1,8 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import getPreview from "../controllers/previewController.js";
+import { Preview } from "../models/preview.js";
+
 const router = express.Router();
 
 router.post("/preview", body("url").isURL(), async (req, res) => {
@@ -10,16 +12,23 @@ router.post("/preview", body("url").isURL(), async (req, res) => {
   }
 
   const { url } = req.body;
+
+  Preview.create({ url });
+
   const preview = await getPreview(url);
 
-  if (preview === null) {
-    return res
-      .status(500)
-      .json({ errors: [{ msg: "Could not fetch a screenshot from the given URL." }] });
-  } else {
-    return res.status(200).json({
-      imageData: preview,
-    }).send();
+  switch (preview) {
+    case null:
+      return res.status(500).json({
+        errors: [{ msg: "Could not fetch a screenshot from the given URL." }],
+      });
+    default:
+      return res
+        .status(200)
+        .json({
+          imageData: preview,
+        })
+        .send();
   }
 });
 

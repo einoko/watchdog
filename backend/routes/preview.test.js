@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fetch from "node-fetch";
 
 const baseUrl = "http://localhost:3000";
@@ -30,7 +31,9 @@ describe("CaptureWebsiteUtil tests", () => {
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Could not fetch a screenshot from the given URL.");
+    expect(data.errors[0]["msg"]).toBe(
+      "Could not fetch a screenshot from the given URL."
+    );
   });
 
   test("Return an error if there is no URL in the body", async () => {

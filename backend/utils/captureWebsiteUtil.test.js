@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as captureWebsiteUtil from "./captureWebsiteUtil.js";
 
 describe("Capture website to file", () => {
