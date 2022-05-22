@@ -78,7 +78,7 @@ export const createDiffImage = async (path1, path2) => {
 
     await sharp(path2)
       .composite([{ input: PNG.sync.write(diff), blend: "screen" }])
-      .toFile(diffFilePath)
+      .toFile(diffFilePath);
 
     return diffFilePath;
   } catch (error) {

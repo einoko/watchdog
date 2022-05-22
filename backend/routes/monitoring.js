@@ -1,6 +1,7 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import { MonitoringJob, acceptedIntervals } from "../models/monitoringJob.js";
+import createMonitoringJob from "../controllers/monitoringController.js";
 
 const router = express.Router();
 
@@ -17,10 +18,18 @@ router.post(
 
     const { name, url, interval } = req.body;
 
-    MonitoringJob.create({ name, url, interval });
+    MonitoringJob.create({ name, url, interval }, (err, job) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "Could not create the monitoring job." }],
+        });
+      } else {
+        createMonitoringJob(job);
+      }
+    });
 
     return res.status(200).json({
-      message: "Successfully created a new monitoring job.",
+      msg: "Successfully created a new monitoring job.",
     });
   }
 );

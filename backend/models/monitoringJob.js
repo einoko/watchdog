@@ -30,6 +30,10 @@ const monitoringJobSchema = new mongoose.Schema(
       required: true,
       enum: acceptedIntervals,
     },
+    states: {
+      type: [Object],
+      default: [],
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: true },
