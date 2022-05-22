@@ -11,7 +11,7 @@
   },
   "jest": {
     "testEnvironment": "jest-environment-node",
-    "testTimeout": 5000
+    "testTimeout": 30000
   },
   "nodemonConfig": {
     "ignore": [

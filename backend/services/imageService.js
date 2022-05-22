@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from "uuid";
 import { convertIDtoFilePath } from "../utils/filePathUtil.js";
 import { deleteFileFromPath, saveBufferToFile } from "./fileService.js";
 import { Image } from "../models/image.js";
-import fs from "fs";
 
 /**
  * Saves image buffer to disk and database.

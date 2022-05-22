@@ -42,7 +42,7 @@ export const calculateDifference = async (oldBuffer, newBuffer) => {
  * @param {*} newBuffer Buffer of the new image.
  * @returns Buffer of the diff image.
  */
-export const createDiffImage = async (oldBuffer, newBuffer) => {
+export const createDiffImage = (oldBuffer, newBuffer) => {
   try {
     const oldPNG = PNG.sync.read(oldBuffer);
     const newPNG = PNG.sync.read(newBuffer);
@@ -56,11 +56,9 @@ export const createDiffImage = async (oldBuffer, newBuffer) => {
       diffMask: true,
     });
 
-    const diffImageBuffer = await sharp(newBuffer)
+    return sharp(newBuffer)
       .composite([{ input: PNG.sync.write(diff), blend: "screen" }])
       .toBuffer();
-
-    return diffImageBuffer;
   } catch (error) {
     console.error(error);
     return null;

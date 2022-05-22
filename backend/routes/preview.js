@@ -6,7 +6,7 @@ import { Preview } from "../models/preview.js";
 const router = express.Router();
 
 /**
- * @api {post} /preview Fetch a preview of a website
+ * @api {post} /preview Fetch a preview of a website and return it in Base64 data.
  */
 router.post("/preview", body("url").isURL(), async (req, res) => {
   const errors = validationResult(req);
