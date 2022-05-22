@@ -3,7 +3,7 @@ import { calculateDifference, createDiffImage } from "../utils/compareUtil.js";
 import { deleteAgendaJob } from "./agendaService.js";
 import { Image } from "../models/image.js";
 import { captureWebsiteToBuffer } from "./captureService.js";
-import { readImage, saveImage } from "./imageService.js";
+import { saveImage } from "./imageService.js";
 import { readFileFromPath } from "./fileService.js";
 
 const initializeFirstState = async (job) => {
@@ -42,26 +42,26 @@ const checkLastState = async (job) => {
   if (newScreenshotBuffer === null) {
     console.error(`Could not capture screenshot for ${job._id} ${job.url}`);
     return;
-  } else {
-    const difference = await calculateDifference(
-      lastStateImageBuffer,
-      newScreenshotBuffer
-    );
+  }
 
-    if (difference > 0) {
-      const savedNewScreenshot = await saveImage(newScreenshotBuffer);
-      const savedDiffImage = await saveImage(await createDiffImage(lastStateImageBuffer, newScreenshotBuffer));
+  const difference = await calculateDifference(
+    lastStateImageBuffer,
+    newScreenshotBuffer
+  );
 
-      job.states.push({
-        image: savedNewScreenshot._id,
-        diff: savedDiffImage._id,
-        createdAt: new Date(),
-      });
+  if (difference > 0) {
+    const savedNewScreenshot = await saveImage(newScreenshotBuffer);
+    const savedDiffImage = await saveImage(await createDiffImage(lastStateImageBuffer, newScreenshotBuffer));
 
-      await job.save();
+    job.states.push({
+      image: savedNewScreenshot._id,
+      diff: savedDiffImage._id,
+      createdAt: new Date(),
+    });
 
-      console.log(`Send mail here.`);
-    }
+    await job.save();
+
+    console.log(`Send mail here.`);
   }
 };
 

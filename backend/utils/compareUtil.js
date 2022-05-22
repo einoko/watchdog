@@ -1,11 +1,16 @@
 import pixelmatch from "pixelmatch";
 import sharp from "sharp";
 import { PNG } from "pngjs";
-import { saveImage } from "../services/imageService.js";
 
 // Matching threshold of pixelmatch
 const threshold = 0.1;
 
+/**
+ * Calculates the pixel difference between two images.
+ * @param {*} oldBuffer Buffer of the old image.
+ * @param {*} newBuffer Buffer of the new image.
+ * @returns Promise{number} Difference (0.0-1.0) between the two images.
+ */
 export const calculateDifference = async (oldBuffer, newBuffer) => {
   try {
     const oldPNG = PNG.sync.read(oldBuffer);
@@ -31,6 +36,12 @@ export const calculateDifference = async (oldBuffer, newBuffer) => {
   }
 };
 
+/**
+ * Create a diff image from two images.
+ * @param {*} oldBuffer Buffer of the old image.
+ * @param {*} newBuffer Buffer of the new image.
+ * @returns Buffer of the diff image.
+ */
 export const createDiffImage = async (oldBuffer, newBuffer) => {
   try {
     const oldPNG = PNG.sync.read(oldBuffer);
@@ -40,7 +51,7 @@ export const createDiffImage = async (oldBuffer, newBuffer) => {
     const diff = new PNG({ width, height });
 
     pixelmatch(oldPNG.data, newPNG.data, diff.data, width, height, {
-      threshold: threshold,
+      threshold,
       diffColor: [250, 100, 125],
       diffMask: true,
     });

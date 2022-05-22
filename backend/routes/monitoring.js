@@ -7,6 +7,7 @@ import {
   changeStatus,
 } from "../controllers/monitoringController.js";
 import { deleteMonitoringJob } from "../services/monitoringService.js";
+import { deleteImage } from "../services/imageService.js";
 
 const router = express.Router();
 
@@ -130,6 +131,16 @@ router.delete("/job", body("id").isString(), async (req, res) => {
   }
 
   deleteMonitoringJob(job._id);
+
+  job.states.forEach((state) => {
+    if (state.image) {
+      deleteImage(state.image);
+    }
+    if (state.diff) {
+      deleteImage(state.diff);
+    }
+  });
+
   job.remove();
 
   res.status(200).json({ msg: "Successfully deleted the monitoring job." });

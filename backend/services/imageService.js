@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { convertIDtoFilePath } from "../utils/filePathUtil.js";
-import { saveBufferToFile } from "./fileService.js";
+import { deleteFileFromPath, saveBufferToFile } from "./fileService.js";
 import { Image } from "../models/image.js";
 import fs from "fs";
 
@@ -20,6 +20,16 @@ export const saveImage = async (imageBuffer) => {
 
   return image;
 };
+
+/**
+ * Deletes image from disk and database.
+ * @param {*} imageID ID of the image to delete.
+ */
+export const deleteImage = async (imageID) => {
+  const image = await Image.findById(imageID);
+  deleteFileFromPath(image.path);
+  await image.remove();
+}
 
 /**
  * Reads image from disk and returns it as a buffer.
