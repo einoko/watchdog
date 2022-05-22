@@ -6,6 +6,10 @@ const previewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    success: {
+      type: Boolean,
+      required: true,
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },

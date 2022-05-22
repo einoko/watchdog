@@ -12,10 +12,13 @@ router.post("/preview", body("url").isURL(), async (req, res) => {
   }
 
   const { url } = req.body;
-
-  Preview.create({ url });
-
   const preview = await getPreview(url);
+
+  if (preview === null) {
+    Preview.create({ url, success: false });
+  } else {
+    Preview.create({ url, success: true });
+  }
 
   switch (preview) {
     case null:
