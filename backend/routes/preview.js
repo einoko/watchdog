@@ -14,11 +14,7 @@ router.post("/preview", body("url").isURL(), async (req, res) => {
   const { url } = req.body;
   const preview = await getPreview(url);
 
-  if (preview === null) {
-    Preview.create({ url, success: false });
-  } else {
-    Preview.create({ url, success: true });
-  }
+  Preview.create({ url, success: preview !== null });
 
   switch (preview) {
     case null:
