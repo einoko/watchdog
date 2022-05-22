@@ -21,6 +21,10 @@ const monitoringJobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
     url: {
       type: String,
       required: true,

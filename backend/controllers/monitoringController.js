@@ -1,7 +1,16 @@
-import { scheduleMonitoringJob } from "../utils/agendaUtil.js";
+import { scheduleMonitoringJob } from "../services/agendaService.js";
+import { deleteMonitoringJob } from "../services/monitoringService.js";
 
 const createMonitoringJob = (jobObject) => {
   scheduleMonitoringJob(jobObject);
 };
 
-export default createMonitoringJob;
+const changeStatus = (jobObject) => {
+  if (jobObject.active) {
+    createMonitoringJob(jobObject);
+  } else {
+    deleteMonitoringJob(jobObject);
+  }
+};
+
+export { createMonitoringJob, changeStatus };

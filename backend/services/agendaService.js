@@ -10,6 +10,14 @@ agenda.define("monitor website for changes", async (job) => {
   console.log(`Monitoring job ${jobID}`);
 });
 
+export const deleteAgendaJob = async (id) => {
+  try {
+    await agenda.cancel({ data: { jobID: id } });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const scheduleMonitoringJob = (jobObject) => {
   const job = agenda.create("monitor website for changes", {
     jobID: jobObject._id,

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const previewSchema = new mongoose.Schema(
   {
+    _id: String,
     url: {
       type: String,
       required: true,
