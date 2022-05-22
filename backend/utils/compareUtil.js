@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
 import { PNG } from "pngjs";
 import { convertIDtoFilePath } from "./filePathUtil.js";
+import { Image } from "../models/image.js";
 
 // Matching threshold of pixelmatch
 const threshold = 0.1;
@@ -25,9 +26,9 @@ const getPNGObject = (path) => {
  * Calculate the difference between two images.
  * @param path1 Path to the first image to compare.
  * @param path2 Path to the second image to compare.
- * @returns {number|null} Difference (in percentage) between two images (0.0 - 1.0)
+ * @returns Promise<number> Difference between two images.
  */
-export const calculateDifference = (path1, path2) => {
+export const calculateDifference = async (path1, path2) => {
   try {
     const img1 = getPNGObject(path1);
     const img2 = getPNGObject(path2);
@@ -48,7 +49,6 @@ export const calculateDifference = (path1, path2) => {
 
     return mismatch / (width * height);
   } catch (error) {
-    console.log(error);
     return null;
   }
 };
@@ -80,7 +80,18 @@ export const createDiffImage = async (path1, path2) => {
       .composite([{ input: PNG.sync.write(diff), blend: "screen" }])
       .toFile(diffFilePath);
 
-    return diffFilePath;
+    Image.create(
+      {
+        path: diffFilePath,
+      },
+      (err, image) => {
+        if (err) {
+          console.error(err);
+          return null;
+        }
+        return image._id;
+      }
+    );
   } catch (error) {
     console.error(error);
     return null;

@@ -1,10 +1,13 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import getPreview from "../controllers/previewController.js";
+import { captureWebsiteToBuffer } from "../services/captureService.js";
 import { Preview } from "../models/preview.js";
 
 const router = express.Router();
 
+/**
+ * @api {post} /preview Fetch a preview of a website
+ */
 router.post("/preview", body("url").isURL(), async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -12,7 +15,7 @@ router.post("/preview", body("url").isURL(), async (req, res) => {
   }
 
   const { url } = req.body;
-  const preview = await getPreview(url);
+  const preview = await captureWebsiteToBuffer(url);
 
   Preview.create({ url, success: preview !== null });
 
@@ -25,7 +28,7 @@ router.post("/preview", body("url").isURL(), async (req, res) => {
       return res
         .status(200)
         .json({
-          imageData: preview,
+          imageData: Buffer.from(preview).toString("base64"),
         })
         .send();
   }
