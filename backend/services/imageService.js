@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { convertIDtoFilePath } from "../utils/filePathUtil.js";
 import { saveBufferToFile } from "./fileService.js";
 import { Image } from "../models/image.js";
+import fs from "fs";
 
 /**
  * Saves image buffer to disk and database.
@@ -18,4 +19,27 @@ export const saveImage = async (imageBuffer) => {
   await image.save();
 
   return image;
+};
+
+/**
+ * Reads image from disk and returns it as a buffer.
+ * @param {*} imageID ID of the image to read.
+ * @returns Buffer of the image.
+ */
+export const readImage = async (imageID) => {
+  const image = await Image.findById(imageID);
+  if (!image) {
+    console.error(`Could not find image with ID ${imageID}`);
+    return null;
+  }
+
+  const imagePath = image.path;
+
+  if (!fs.existsSync(imagePath)) {
+    console.error(`Image ${imageID} not found`);
+    return null;
+  } else {
+    const imageBuffer = fs.readFileSync(imagePath);
+    return imageBuffer;
+  }
 };

@@ -1,49 +1,27 @@
-import fs from "fs";
 import pixelmatch from "pixelmatch";
 import sharp from "sharp";
-import { v4 as uuidv4 } from "uuid";
 import { PNG } from "pngjs";
-import { convertIDtoFilePath } from "./filePathUtil.js";
-import { Image } from "../models/image.js";
+import { saveImage } from "../services/imageService.js";
 
 // Matching threshold of pixelmatch
 const threshold = 0.1;
 
-/**
- * Return a PNGObject of an image.
- * @param path Path to the image.
- * @returns {*} PNGObject of an image.
- */
-const getPNGObject = (path) => {
-  if (fs.existsSync(path)) {
-    return PNG.sync.read(fs.readFileSync(path));
-  } else {
-    throw new Error("Image does not exist");
-  }
-};
-
-/**
- * Calculate the difference between two images.
- * @param path1 Path to the first image to compare.
- * @param path2 Path to the second image to compare.
- * @returns Promise<number> Difference between two images.
- */
-export const calculateDifference = async (path1, path2) => {
+export const calculateDifference = async (oldBuffer, newBuffer) => {
   try {
-    const img1 = getPNGObject(path1);
-    const img2 = getPNGObject(path2);
+    const oldPNG = PNG.sync.read(oldBuffer);
+    const newPNG = PNG.sync.read(newBuffer);
 
-    const { width, height } = img1;
+    const { width, height } = oldPNG;
     const diff = new PNG({ width, height });
 
     const mismatch = pixelmatch(
-      img1.data,
-      img2.data,
+      oldPNG.data,
+      newPNG.data,
       diff.data,
       width,
       height,
       {
-        threshold: threshold,
+        threshold,
       }
     );
 
@@ -53,45 +31,25 @@ export const calculateDifference = async (path1, path2) => {
   }
 };
 
-/**
- * Produce a diff image of two images and save it to disk. (ID1: old, ID2: new)
- * @param path1 Path to the first image to compare.
- * @param path2 Path to the second image to compare.
- * @returns {Promise<string|null>} Filepath of the diff image.
- */
-export const createDiffImage = async (path1, path2) => {
+export const createDiffImage = async (oldBuffer, newBuffer) => {
   try {
-    const img1 = getPNGObject(path1);
-    const img2 = getPNGObject(path2);
+    const oldPNG = PNG.sync.read(oldBuffer);
+    const newPNG = PNG.sync.read(newBuffer);
 
-    const { width, height } = img1;
+    const { width, height } = oldPNG;
     const diff = new PNG({ width, height });
 
-    pixelmatch(img1.data, img2.data, diff.data, width, height, {
+    pixelmatch(oldPNG.data, newPNG.data, diff.data, width, height, {
       threshold: threshold,
       diffColor: [250, 100, 125],
       diffMask: true,
     });
 
-    const diffImageID = uuidv4();
-    const diffFilePath = convertIDtoFilePath(diffImageID);
-
-    await sharp(path2)
+    const diffImageBuffer = await sharp(newBuffer)
       .composite([{ input: PNG.sync.write(diff), blend: "screen" }])
-      .toFile(diffFilePath);
+      .toBuffer();
 
-    Image.create(
-      {
-        path: diffFilePath,
-      },
-      (err, image) => {
-        if (err) {
-          console.error(err);
-          return null;
-        }
-        return image._id;
-      }
-    );
+    return diffImageBuffer;
   } catch (error) {
     console.error(error);
     return null;
