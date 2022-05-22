@@ -4,8 +4,12 @@ const executeMonitoringJob = async (jobID) => {
   // TODO: Implement
 };
 
-const deleteMonitoringJob = async (jobObject) => {
-  await deleteAgendaJob(jobObject._id);
+/**
+ * Delete a monitoring job from Agenda by job ID.
+ * @param {*} jobID ID of the monitoring job to delete.
+ */
+const deleteMonitoringJob = async (jobID) => {
+  await deleteAgendaJob(jobID);
 };
 
 export { executeMonitoringJob, deleteMonitoringJob };

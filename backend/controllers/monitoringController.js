@@ -9,7 +9,7 @@ const changeStatus = (jobObject) => {
   if (jobObject.active) {
     createMonitoringJob(jobObject);
   } else {
-    deleteMonitoringJob(jobObject);
+    deleteMonitoringJob(jobObject._id);
   }
 };
 

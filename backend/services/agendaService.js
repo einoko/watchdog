@@ -11,11 +11,7 @@ agenda.define("monitor website for changes", async (job) => {
 });
 
 export const deleteAgendaJob = async (id) => {
-  try {
-    await agenda.cancel({ data: { jobID: id } });
-  } catch (error) {
-    console.error(error);
-  }
+  await agenda.cancel({ data: { jobID: id } });
 };
 
 export const scheduleMonitoringJob = (jobObject) => {
