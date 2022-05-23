@@ -18,7 +18,7 @@ router.post(
   "/job",
   body("name").isString(),
   body("url").isURL(),
-  body("interval").isIn(acceptedIntervals),
+  body("interval").isIn(acceptedIntervals).withMessage("Please enter a valid interval."),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -44,7 +44,7 @@ router.post(
       } else {
         createMonitoringJob(job);
 
-        return res.status(200).json({
+        return res.status(201).json({
           msg: "Successfully created a new monitoring job.",
         });
       }
