@@ -1,5 +1,5 @@
 import express from "express";
-import { body, header, validationResult } from "express-validator";
+import { body, header, param, validationResult } from "express-validator";
 import { MonitoringJob, acceptedIntervals } from "../models/monitoringJob.js";
 import {
   createMonitoringJob,
@@ -18,7 +18,9 @@ router.post(
   "/job",
   body("name").isString(),
   body("url").isURL(),
-  body("interval").isIn(acceptedIntervals).withMessage("Please enter a valid interval."),
+  body("interval")
+    .isIn(acceptedIntervals)
+    .withMessage("Please enter a valid interval."),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -103,8 +105,8 @@ router.put(
  * @api {patch} /monitoring/job/status Pause or resume a monitoring job
  */
 router.patch(
-  "/job/status",
-  body("_id").isMongoId(),
+  "/job/:_id/status",
+  param("_id").isMongoId(),
   body("active").isBoolean(),
   header("Authorization").isJWT(),
   async (req, res) => {
@@ -121,7 +123,8 @@ router.patch(
 
     const userId = userToken.decoded.user.id;
 
-    const { _id, active } = req.body;
+    const _id = req.params._id;
+    const active = req.body.active;
 
     MonitoringJob.findById({ _id, userId }, (err, job) => {
       if (err) {
@@ -142,8 +145,8 @@ router.patch(
  * @api {delete} /api/job Delete a monitoring job
  */
 router.delete(
-  "/job",
-  body("_id").isString(),
+  "/job/:_id",
+  param("_id").isMongoId(),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -159,7 +162,7 @@ router.delete(
 
     const userId = userToken.decoded.user.id;
 
-    const { _id } = req.body;
+    const { _id } = req.params;
     const job = await MonitoringJob.findById(_id);
 
     if (!job) {
@@ -190,6 +193,44 @@ router.delete(
     job.remove();
 
     res.status(200).json({ msg: "Successfully deleted the monitoring job." });
+  }
+);
+
+router.get(
+  "/job/:_id",
+  param("_id").isMongoId(),
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userToken = verifyJWT(req.headers.authorization);
+
+    if (userToken.errors.length > 0) {
+      return res.status(401).json({ errors: userToken.errors });
+    }
+
+    const userId = userToken.decoded.user.id;
+
+    const { _id } = req.params;
+
+    const job = await MonitoringJob.findById(_id);
+
+    if (!job) {
+      return res.status(500).json({
+        errors: [{ msg: "Could not find the monitoring job." }],
+      });
+    }
+
+    if (job.userId.toString() !== userId) {
+      return res.status(401).json({
+        errors: [{ msg: "You are not authorized to view this job." }],
+      });
+    }
+
+    res.status(200).json({ job });
   }
 );
 

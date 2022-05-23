@@ -15,7 +15,7 @@ const _fetch = async (method, path, body, token) => {
 describe("Account creation tests", () => {
   test("Create a new account", async () => {
     const res = await _fetch("POST", "/api/account/signup", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "password",
     });
     expect(res.status).toBe(201);
@@ -26,22 +26,9 @@ describe("Account creation tests", () => {
     expect(data.msg).toBe("Account created successfully.");
   });
 
-  test("Account is not created if the email is invalid", async () => {
-    const res = await _fetch("POST", "/api/account/signup", {
-      email: "aaaaaaaaa",
-      password: "password",
-    });
-    expect(res.status).toBe(400);
-
-    const data = await res.json();
-
-    expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Please enter a valid email address.");
-  });
-
   test("Account is not created if password is not at least 6 characters", async () => {
     const res = await _fetch("POST", "/api/account/signup", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "pass",
     });
     expect(res.status).toBe(400);
@@ -56,7 +43,7 @@ describe("Account creation tests", () => {
 
   test("Account is not created if the user already exists", async () => {
     const res = await _fetch("POST", "/api/account/signup", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "password",
     });
 
@@ -66,7 +53,7 @@ describe("Account creation tests", () => {
 
     expect(data.errors).toBeDefined();
     expect(data.errors[0]["msg"]).toBe(
-      "An account with this email already exists."
+      "An account with this name already exists."
     );
   });
 });
@@ -74,7 +61,7 @@ describe("Account creation tests", () => {
 describe("Login tests", () => {
   test("After a succesful login user gets a token", async () => {
     const res = await _fetch("POST", "/api/account/login", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "password",
     });
     expect(res.status).toBe(200);
@@ -84,9 +71,9 @@ describe("Login tests", () => {
     expect(data.token).toBeDefined();
   });
 
-  test("Login fails if the email is invalid", async () => {
+  test("Login fails if the username is invalid", async () => {
     const res = await _fetch("POST", "/api/account/login", {
-      email: "aaaaaaaaa",
+      username: "aaaaaaaaa",
       password: "password",
     });
     expect(res.status).toBe(400);
@@ -94,12 +81,12 @@ describe("Login tests", () => {
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Please enter a valid email address.");
+    expect(data.errors[0]["msg"]).toBe("No account with this username exists.");
   });
 
   test("Login fails if the password is invalid", async () => {
     const res = await _fetch("POST", "/api/account/login", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "",
     });
 
@@ -115,7 +102,7 @@ describe("Login tests", () => {
 describe("Password change test", () => {
   test("Change password", async () => {
     const res = await _fetch("POST", "/api/account/login", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "password",
     });
 
@@ -127,7 +114,7 @@ describe("Password change test", () => {
       "PUT",
       "/api/account",
       {
-        email: "rusty@shackleford.com",
+        username: "RustyShackleford",
         password: "password",
         newPassword: "newpassword",
       },
@@ -144,7 +131,7 @@ describe("Password change test", () => {
 
   test("Login with a changed password", async () => {
     const res = await _fetch("POST", "/api/account/login", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "newpassword",
     });
 
@@ -159,7 +146,7 @@ describe("Password change test", () => {
 describe("Account deletion tests", () => {
   test("Delete account", async () => {
     const res = await _fetch("POST", "/api/account/login", {
-      email: "rusty@shackleford.com",
+      username: "RustyShackleford",
       password: "newpassword",
     });
 

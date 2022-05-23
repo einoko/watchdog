@@ -1,5 +1,8 @@
 // @ts-nocheck
 import fetch from "node-fetch";
+import { MonitoringJob } from "../models/monitoringJob";
+import { connectToDB } from "../db";
+import "dotenv/config";
 
 const baseUrl = "http://localhost:3000";
 
@@ -15,8 +18,10 @@ const _fetch = async (method, path, body, token) => {
 let token = "";
 
 beforeAll(async () => {
+  await connectToDB(process.env.MONGODB_URI);
+
   const res = await _fetch("POST", "/api/account/login", {
-    email: "test@test.com",
+    username: "Test",
     password: "testtesttest",
   });
   expect(res.status).toBe(200);
@@ -26,7 +31,7 @@ beforeAll(async () => {
   token = data.token;
 });
 
-describe("Sheduling job creation tests", () => {
+describe("Job creation tests", () => {
   test("Create a new job", async () => {
     const res = await _fetch(
       "POST",
@@ -45,6 +50,16 @@ describe("Sheduling job creation tests", () => {
 
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully created a new monitoring job.");
+
+    const job = await MonitoringJob.findOne({
+      where: {
+        name: "Test job",
+        url: "https://example.com",
+      },
+    });
+
+    expect(job).toBeDefined();
+    expect(job.name).toBe("Test job");
   });
 
   test("Job is not created if no URL is provided", async () => {

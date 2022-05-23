@@ -7,6 +7,7 @@ import { verifyJWT } from "../utils/JWTUtil.js";
 import { MonitoringJob } from "../models/monitoringJob.js";
 import { deleteMonitoringJob } from "../services/monitoringService.js";
 import { deleteImage } from "../services/imageService.js";
+import "dotenv/config";
 
 const router = express.Router();
 
@@ -15,20 +16,19 @@ const router = express.Router();
  */
 router.post(
   "/account/signup",
-  body("email").isEmail().withMessage("Please enter a valid email address."),
+  body("username").isString(),
   body("password")
     .isLength({ min: 6 })
     .withMessage("Please enter a password with at least 6 characters."),
-
   (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    User.findOne({ email }, (err, user) => {
+    User.findOne({ username }, (err, user) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "An error occurred while signing up." }],
@@ -37,18 +37,20 @@ router.post(
 
       if (user) {
         return res.status(400).json({
-          errors: [{ msg: "An account with this email already exists." }],
+          errors: [{ msg: "An account with this name already exists." }],
         });
       }
 
       argon2.hash(password).then((hash) => {
         const newUser = new User({
-          email,
+          username,
           password: hash,
+          isAdmin: process.env.ADMIN_USERNAME === username,
         });
 
         newUser.save((err) => {
           if (err) {
+            console.log(err);
             return res.status(500).json({
               errors: [{ msg: "An error occurred while signing up." }],
             });
@@ -66,7 +68,7 @@ router.post(
  */
 router.post(
   "/account/login",
-  body("email").isEmail().withMessage("Please enter a valid email address."),
+  body("username").isString(),
   body("password").isString(),
   (req, res) => {
     const errors = validationResult(req);
@@ -74,9 +76,9 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    User.findOne({ email }, (err, user) => {
+    User.findOne({ username }, (err, user) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "An error occurred while signing in." }],
@@ -85,7 +87,7 @@ router.post(
 
       if (!user) {
         return res.status(400).json({
-          errors: [{ msg: "No account with this email exists." }],
+          errors: [{ msg: "No account with this username exists." }],
         });
       }
 
@@ -117,7 +119,7 @@ router.post(
               token,
               user: {
                 id: user.id,
-                email: user.email,
+                username: user.username,
               },
             });
           }
@@ -132,7 +134,7 @@ router.post(
  */
 router.put(
   "/account",
-  body("email").isEmail(),
+  body("username").isString(),
   body("password").isString(),
   body("newPassword")
     .isLength({ min: 6 })
@@ -152,7 +154,7 @@ router.put(
 
     const userId = userToken.decoded.user.id;
 
-    const { email, password, newPassword } = req.body;
+    const { username, password, newPassword } = req.body;
 
     User.findOne({ _id: userId }, (err, user) => {
       if (err) {
@@ -163,7 +165,7 @@ router.put(
 
       if (!user) {
         return res.status(400).json({
-          errors: [{ msg: "No account with this email exists." }],
+          errors: [{ msg: "No account with this username exists." }],
         });
       }
 
@@ -176,7 +178,7 @@ router.put(
 
         argon2.hash(newPassword).then((hash) => {
           user.password = hash;
-          user.email = email;
+          user.username = username;
 
           user.save((err) => {
             if (err) {
