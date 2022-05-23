@@ -1,5 +1,5 @@
 // @ts-nocheck
-import * as compareUtil from "./compareUtil.js";
+import * as compareUtil from "../utils/compareUtil.js";
 import { captureWebsiteToBuffer } from "../services/captureService.js";
 
 describe("Calculate difference between two images", () => {

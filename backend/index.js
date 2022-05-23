@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectToDB, closeDB } from "./db.js";
 import { previewRouter } from "./routes/preview.js";
 import { jobRouter } from "./routes/monitoring.js";
+import { accountRouter } from "./routes/account.js";
 
 const port = process.env.PORT || 3000;
 
@@ -14,6 +15,7 @@ app.use(json());
 
 app.use("/api", previewRouter);
 app.use("/api", jobRouter);
+app.use("/api", accountRouter)
 
 connectToDB(process.env.MONGODB_URI).then((r) => {
   app.listen(port, () => {
