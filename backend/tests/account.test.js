@@ -12,6 +12,13 @@ const _fetch = async (method, path, body, token) => {
   return await fetch(baseUrl + path, { method, body, headers });
 };
 
+beforeEach(async () => {
+  await new Promise((r) => setTimeout(r, 2000));
+});
+
+let userId = "";
+let token = "";
+
 describe("Account creation tests", () => {
   test("Create a new account", async () => {
     const res = await _fetch("POST", "/api/account/signup", {
@@ -68,6 +75,9 @@ describe("Login tests", () => {
 
     const data = await res.json();
 
+    userId = data.user.id;
+    token = data.token;
+
     expect(data.token).toBeDefined();
   });
 
@@ -101,16 +111,7 @@ describe("Login tests", () => {
 
 describe("Password change test", () => {
   test("Change password", async () => {
-    const res = await _fetch("POST", "/api/account/login", {
-      username: "RustyShackleford",
-      password: "password",
-    });
-
-    const data = await res.json();
-
-    const token = data.token;
-
-    const res2 = await _fetch(
+    const res = await _fetch(
       "PUT",
       "/api/account",
       {
@@ -121,12 +122,12 @@ describe("Password change test", () => {
       token
     );
 
-    expect(res2.status).toBe(200);
+    expect(res.status).toBe(200);
 
-    const data2 = await res2.json();
+    const data = await res.json();
 
-    expect(data2.msg).toBeDefined();
-    expect(data2.msg).toBe("Password changed successfully.");
+    expect(data.msg).toBeDefined();
+    expect(data.msg).toBe("Password changed successfully.");
   });
 
   test("Login with a changed password", async () => {
@@ -145,22 +146,20 @@ describe("Password change test", () => {
 
 describe("Account deletion tests", () => {
   test("Delete account", async () => {
-    const res = await _fetch("POST", "/api/account/login", {
-      username: "RustyShackleford",
-      password: "newpassword",
-    });
+    const res = await _fetch(
+      "DELETE",
+      `/api/account/${userId}`,
+      {
+        username: "RustyShackleford",
+      },
+      token
+    );
+
+    expect(res.status).toBe(200);
 
     const data = await res.json();
 
-    const token = data.token;
-
-    const res2 = await _fetch("DELETE", "/api/account", {}, token);
-
-    expect(res2.status).toBe(200);
-
-    const data2 = await res2.json();
-
-    expect(data2.msg).toBeDefined();
-    expect(data2.msg).toBe("Account deleted successfully.");
+    expect(data.msg).toBeDefined();
+    expect(data.msg).toBe("Account deleted successfully.");
   });
 });

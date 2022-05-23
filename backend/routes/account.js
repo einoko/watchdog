@@ -1,5 +1,5 @@
 import express from "express";
-import { body, header, validationResult } from "express-validator";
+import { body, header, param, validationResult } from "express-validator";
 import { User } from "../models/user.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
@@ -200,70 +200,81 @@ router.put(
 /**
  * @api {delete} /api/account Delete user account
  */
-router.delete("/account", header("Authorization").isJWT(), (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+router.delete(
+  "/account/:_id",
+  param("_id").isMongoId(),
+  header("Authorization").isJWT(),
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  const userToken = verifyJWT(req.headers.authorization);
+    const userToken = verifyJWT(req.headers.authorization);
 
-  if (userToken.errors.length > 0) {
-    return res.status(401).json({ errors: userToken.errors });
-  }
+    if (userToken.errors.length > 0) {
+      return res.status(401).json({ errors: userToken.errors });
+    }
 
-  const userId = userToken.decoded.user.id;
+    const userId = userToken.decoded.user.id;
 
-  User.findOne({ _id: userId }, (err, user) => {
-    if (err) {
-      return res.status(500).json({
-        errors: [{ msg: "User not found in the database." }],
+    if (userId !== req.params._id) {
+      return res.status(401).json({
+        errors: [{ msg: "You are not authorized to delete this account." }],
       });
     }
-  });
 
-  // Delete all monitoring jobs and files associated with the user
-  MonitoringJob.find({ user: userId }, (err, jobs) => {
-    if (err) {
-      return res.status(500).json({
-        errors: [{ msg: "An error occurred while deleting account." }],
-      });
-    }
-    if (jobs.length > 0) {
-      for (const job of jobs) {
-        deleteMonitoringJob(job._id);
-
-        job.states.forEach((state) => {
-          if (state.image) {
-            deleteImage(state.image);
-          }
-          if (state.diff) {
-            deleteImage(state.diff);
-          }
+    User.findOne({ _id: userId }, (err, user) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "User not found in the database." }],
         });
-
-        job.remove();
       }
-    }
-  });
+    });
 
-  User.findOne({ _id: userId }, (err, user) => {
-    if (err) {
-      return res.status(500).json({
-        errors: [{ msg: "User not found in the database." }],
-      });
-    }
-
-    user.remove((err) => {
+    // Delete all monitoring jobs and files associated with the user
+    MonitoringJob.find({ user: userId }, (err, jobs) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "An error occurred while deleting account." }],
         });
       }
+      if (jobs.length > 0) {
+        for (const job of jobs) {
+          deleteMonitoringJob(job._id);
 
-      return res.status(200).json({ msg: "Account deleted successfully." });
+          job.states.forEach((state) => {
+            if (state.image) {
+              deleteImage(state.image);
+            }
+            if (state.diff) {
+              deleteImage(state.diff);
+            }
+          });
+
+          job.remove();
+        }
+      }
     });
-  });
-});
+
+    User.findOne({ _id: userId }, (err, user) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "User not found in the database." }],
+        });
+      }
+
+      user.remove((err) => {
+        if (err) {
+          return res.status(500).json({
+            errors: [{ msg: "An error occurred while deleting account." }],
+          });
+        }
+
+        return res.status(200).json({ msg: "Account deleted successfully." });
+      });
+    });
+  }
+);
 
 export { router as accountRouter };
