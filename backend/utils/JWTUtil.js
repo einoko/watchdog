@@ -1,13 +1,20 @@
 import jwt from "jsonwebtoken";
 
+/**
+ * Verifies a JSON Web Token
+ * @param {*} JSON Web Token
+ * @returns {object} Object of the decoded JWT or an error object
+ */
 export const verifyJWT = (token) => {
-  const errors = [];
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { decoded, errors };
+    return {
+      decoded,
+      errors: [],
+    };
   } catch (err) {
-    errors.push({ msg: "Invalid token." });
-    return { errors };
+    return {
+      errors: [{ msg: "Invalid token." }],
+    };
   }
 };

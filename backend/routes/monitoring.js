@@ -58,8 +58,8 @@ router.post(
  * @api {update} /api/job Change the settings of a monitoring job
  */
 router.put(
-  "/job",
-  body("_id").isMongoId(),
+  "/job/:_id",
+  param("_id").isMongoId(),
   body("name").isString(),
   body("interval").isIn(acceptedIntervals),
   header("Authorization").isJWT(),
@@ -77,7 +77,8 @@ router.put(
 
     const userId = userToken.decoded.user.id;
 
-    const { _id, name, interval } = req.body;
+    const _id = req.params._id;
+    const { name, interval } = req.body;
 
     MonitoringJob.findOneAndUpdate(
       { _id, userId },
@@ -196,6 +197,9 @@ router.delete(
   }
 );
 
+/**
+ * @api {get} /api/job Get a monitoring job
+ */
 router.get(
   "/job/:_id",
   param("_id").isMongoId(),
@@ -233,5 +237,28 @@ router.get(
     res.status(200).json({ job });
   }
 );
+
+/**
+ * @api {get} /api/jobs Get all monitoring jobs for user
+ */
+router.get("/jobs", header("Authorization").isJWT(), async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const userToken = verifyJWT(req.headers.authorization);
+
+  if (userToken.errors.length > 0) {
+    return res.status(401).json({ errors: userToken.errors });
+  }
+
+  const userId = userToken.decoded.user.id;
+
+  const jobs = await MonitoringJob.find({ userId });
+
+  res.status(200).json({ jobs });
+});
 
 export { router as jobRouter };
