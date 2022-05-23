@@ -66,7 +66,7 @@ router.post(
  */
 router.post(
   "/account/login",
-  body("email").isEmail(),
+  body("email").isEmail().withMessage("Please enter a valid email address."),
   body("password").isString(),
   (req, res) => {
     const errors = validationResult(req);
@@ -114,7 +114,7 @@ router.post(
             }
 
             return res.status(200).json({
-              Authorization: token,
+              token,
               user: {
                 id: user.id,
                 email: user.email,
@@ -181,13 +181,13 @@ router.put(
           user.save((err) => {
             if (err) {
               return res.status(500).json({
-                errors: [{ msg: "An error occurred while signing in." }],
+                errors: [{ msg: "An error occurred while saving password." }],
               });
             }
 
             return res
               .status(200)
-              .json({ msg: "Account updated successfully." });
+              .json({ msg: "Password changed successfully." });
           });
         });
       });
