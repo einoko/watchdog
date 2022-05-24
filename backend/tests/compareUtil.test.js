@@ -25,7 +25,7 @@ describe("Create a diff image", () => {
     const image1 = await captureWebsiteToBuffer("https://example.com");
     const image2 = await captureWebsiteToBuffer("https://google.com");
 
-    const diffImage =  compareUtil.createDiffImage(image1, image2);
+    const diffImage = compareUtil.createDiffImage(image1, image2);
     expect(diffImage).toBeDefined();
   });
 

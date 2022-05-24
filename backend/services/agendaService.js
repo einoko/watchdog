@@ -1,13 +1,13 @@
 import { Agenda } from "agenda";
 import "dotenv/config";
-import { executeMonitoringJob } from "./monitoringService.js";
+import { executeVisualMonitoringJob } from "./visualMonitoringService.js";
 
 const agenda = new Agenda({
   db: { address: process.env.MONGODB_URI, collection: "agendaJobs" },
 });
 
 agenda.define("monitor website for changes", async (job) => {
-  executeMonitoringJob(job.attrs.data.jobID);
+  executeVisualMonitoringJob(job.attrs.data.jobID);
 });
 
 export const deleteAgendaJob = async (id) => {

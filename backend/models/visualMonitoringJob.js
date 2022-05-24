@@ -48,6 +48,6 @@ const monitoringJobSchema = new mongoose.Schema(
   }
 );
 
-const MonitoringJob = mongoose.model("MonitoringJob", monitoringJobSchema);
+const VisualMonitoringJob = mongoose.model("VisualMonitoringJob", monitoringJobSchema);
 
-export { MonitoringJob, acceptedIntervals };
+export { VisualMonitoringJob, acceptedIntervals };

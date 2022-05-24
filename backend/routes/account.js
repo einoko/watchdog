@@ -4,8 +4,8 @@ import { User } from "../models/user.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { verifyJWT } from "../utils/JWTUtil.js";
-import { MonitoringJob } from "../models/monitoringJob.js";
-import { deleteMonitoringJob } from "../services/monitoringService.js";
+import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
+import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import "dotenv/config";
 
@@ -233,7 +233,7 @@ router.delete(
     });
 
     // Delete all monitoring jobs and files associated with the user
-    MonitoringJob.find({ user: userId }, (err, jobs) => {
+    VisualMonitoringJob.find({ user: userId }, (err, jobs) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "An error occurred while deleting account." }],
@@ -241,7 +241,7 @@ router.delete(
       }
       if (jobs.length > 0) {
         for (const job of jobs) {
-          deleteMonitoringJob(job._id);
+          deleteVisualMonitoringJob(job._id);
 
           job.states.forEach((state) => {
             if (state.image) {

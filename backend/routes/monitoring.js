@@ -1,11 +1,11 @@
 import express from "express";
 import { body, header, param, validationResult } from "express-validator";
-import { MonitoringJob, acceptedIntervals } from "../models/monitoringJob.js";
+import { VisualMonitoringJob, acceptedIntervals } from "../models/visualMonitoringJob.js";
 import {
   createMonitoringJob,
   changeStatus,
 } from "../controllers/monitoringController.js";
-import { deleteMonitoringJob } from "../services/monitoringService.js";
+import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import { verifyJWT } from "../utils/JWTUtil.js";
 
@@ -38,7 +38,7 @@ router.post(
 
     const { name, url, interval } = req.body;
 
-    MonitoringJob.create({ userId, name, url, interval }, (err, job) => {
+    VisualMonitoringJob.create({ userId, name, url, interval }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not create the monitoring job." }],
@@ -80,7 +80,7 @@ router.put(
     const _id = req.params._id;
     const { name, interval } = req.body;
 
-    MonitoringJob.findOneAndUpdate(
+    VisualMonitoringJob.findOneAndUpdate(
       { _id, userId },
       { name, interval },
       { new: true },
@@ -90,7 +90,7 @@ router.put(
             errors: [{ msg: "Could not update the monitoring job." }],
           });
         } else {
-          deleteMonitoringJob(job._id);
+          deleteVisualMonitoringJob(job._id);
           createMonitoringJob(job);
 
           return res.status(200).json({
@@ -127,7 +127,7 @@ router.patch(
     const _id = req.params._id;
     const active = req.body.active;
 
-    MonitoringJob.findById({ _id, userId }, (err, job) => {
+    VisualMonitoringJob.findById({ _id, userId }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not find the monitoring job." }],
@@ -164,7 +164,7 @@ router.delete(
     const userId = userToken.decoded.user.id;
 
     const { _id } = req.params;
-    const job = await MonitoringJob.findById(_id);
+    const job = await VisualMonitoringJob.findById(_id);
 
     if (!job) {
       return res.status(500).json({
@@ -180,7 +180,7 @@ router.delete(
       });
     }
 
-    deleteMonitoringJob(job._id);
+    deleteVisualMonitoringJob(job._id);
 
     job.states.forEach((state) => {
       if (state.image) {
@@ -220,7 +220,7 @@ router.get(
 
     const { _id } = req.params;
 
-    const job = await MonitoringJob.findById(_id);
+    const job = await VisualMonitoringJob.findById(_id);
 
     if (!job) {
       return res.status(500).json({
@@ -256,7 +256,7 @@ router.get("/jobs", header("Authorization").isJWT(), async (req, res) => {
 
   const userId = userToken.decoded.user.id;
 
-  const jobs = await MonitoringJob.find({ userId });
+  const jobs = await VisualMonitoringJob.find({ userId });
 
   res.status(200).json({ jobs });
 });

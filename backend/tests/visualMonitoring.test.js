@@ -1,6 +1,6 @@
 // @ts-nocheck
 import fetch from "node-fetch";
-import { MonitoringJob } from "../models/monitoringJob";
+import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
 import { connectToDB, closeDB } from "../db";
 import "dotenv/config";
 
@@ -63,7 +63,7 @@ describe("Job creation tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully created a new monitoring job.");
 
-    const job = await MonitoringJob.findOne({
+    const job = await VisualMonitoringJob.findOne({
       where: {
         name: "Test job",
         url: "https://example.com",
@@ -182,7 +182,7 @@ describe("Job updating tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully updated the monitoring job.");
 
-    const job = await MonitoringJob.findOne({
+    const job = await VisualMonitoringJob.findOne({
       where: {
         id: jobID,
       },
@@ -264,7 +264,7 @@ describe("Job deletion tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully deleted the monitoring job.");
 
-    const job = await MonitoringJob.findOne({
+    const job = await VisualMonitoringJob.findOne({
       where: {
         id: jobID,
       },

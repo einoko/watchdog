@@ -1,4 +1,4 @@
-import { MonitoringJob } from "../models/monitoringJob.js";
+import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
 import { calculateDifference, createDiffImage } from "../utils/compareUtil.js";
 import { deleteAgendaJob } from "./agendaService.js";
 import { Image } from "../models/image.js";
@@ -11,7 +11,6 @@ const initializeFirstState = async (job) => {
 
   if (screenshot === null) {
     console.error(`Could not capture screenshot for ${job._id} ${job.url}`);
-    return;
   } else {
     const savedImage = await saveImage(screenshot);
 
@@ -71,10 +70,10 @@ const checkLastState = async (job) => {
  * Executes one monitoring cycle.
  * @param {*} jobID ID of the monitoring job to execute.
  */
-const executeMonitoringJob = async (jobID) => {
+const executeVisualMonitoringJob = async (jobID) => {
   console.info(`Executing monitoring job ${jobID}`);
 
-  const job = await MonitoringJob.findById(jobID);
+  const job = await VisualMonitoringJob.findById(jobID);
 
   if (!job) {
     console.error(`Monitoring job ${jobID} not found`);
@@ -82,9 +81,9 @@ const executeMonitoringJob = async (jobID) => {
   }
 
   if (job.states.length === 0) {
-    initializeFirstState(job);
+    await initializeFirstState(job);
   } else {
-    checkLastState(job);
+    await checkLastState(job);
   }
 };
 
@@ -92,8 +91,8 @@ const executeMonitoringJob = async (jobID) => {
  * Delete a monitoring job from Agenda by job ID.
  * @param {*} jobID ID of the monitoring job to delete.
  */
-const deleteMonitoringJob = async (jobID) => {
+const deleteVisualMonitoringJob = async (jobID) => {
   await deleteAgendaJob(jobID);
 };
 
-export { executeMonitoringJob, deleteMonitoringJob };
+export { executeVisualMonitoringJob, deleteVisualMonitoringJob };
