@@ -2,6 +2,7 @@ import express from "express";
 import { body, header, validationResult } from "express-validator";
 import { captureWebsiteToBuffer } from "../services/captureService.js";
 import { Preview } from "../models/preview.js";
+import { User } from "../models/user.js";
 import { verifyJWT } from "../utils/JWTUtil.js";
 
 const router = express.Router();
@@ -26,6 +27,12 @@ router.post(
     }
 
     const userId = userToken.decoded.user.id;
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res.status(400).json({
+        errors: [{ msg: "No account with this username exists." }],
+      });
+    }
 
     const { url } = req.body;
     const preview = await captureWebsiteToBuffer(url);

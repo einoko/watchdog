@@ -43,7 +43,6 @@ afterAll(async () => {
   await closeDB();
 });
 
-
 describe("Text job creation tests", () => {
   test("Create a new job", async () => {
     const res = await _fetch(
@@ -54,7 +53,7 @@ describe("Text job creation tests", () => {
         url: "https://example.com",
         interval: "week",
         type: "added",
-        words: ["example"]
+        words: ["example"],
       },
       token
     );
@@ -85,7 +84,7 @@ describe("Text job creation tests", () => {
         name: "Test job",
         interval: "week",
         type: "added",
-        words: ["example"]
+        words: ["example"],
       },
       token
     );
@@ -107,7 +106,7 @@ describe("Text job creation tests", () => {
         interval: "googol years",
         url: "https://example.com",
         type: "added",
-        words: ["example"]
+        words: ["example"],
       },
       token
     );
@@ -160,15 +159,14 @@ describe("Job reading tests", () => {
   test("Get all jobs with bad token", async () => {
     const res = await _fetch("GET", "/api/jobs/text", null, "bad token");
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
 
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Invalid token.");
   });
 });
-
 
 describe("Job updating tests", () => {
   test("Update a job", async () => {
@@ -180,7 +178,7 @@ describe("Job updating tests", () => {
         url: "https://example.com",
         interval: "month",
         type: "added",
-        words: ["another"]
+        words: ["another"],
       },
       token
     );
@@ -212,7 +210,7 @@ describe("Job updating tests", () => {
         url: "https://example.com",
         interval: "googol years",
         type: "added",
-        words: ["example"]
+        words: ["example"],
       },
       token
     );
@@ -234,7 +232,7 @@ describe("Job updating tests", () => {
         url: "https://example.com",
         interval: "month",
         type: "added",
-        words: ["new"]
+        words: ["new"],
       },
       token
     );
@@ -256,17 +254,17 @@ describe("Job updating tests", () => {
         url: "https://example.com",
         interval: "week",
         type: "added",
-        words: ["example"]
+        words: ["example"],
       },
       "bad token"
     );
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
 
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Invalid token.");
   });
 });
 
@@ -302,13 +300,18 @@ describe("Job deletion tests", () => {
   });
 
   test("Delete a job with bad token", async () => {
-    const res = await _fetch("DELETE", `/api/job/text/${jobID}`, {}, "bad token");
+    const res = await _fetch(
+      "DELETE",
+      `/api/job/text/${jobID}`,
+      {},
+      "bad token"
+    );
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
 
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Invalid token.");
   });
 });

@@ -10,4 +10,4 @@ export const readFileFromPath = (filePath) => {
 
 export const deleteFileFromPath = (filePath) => {
   fs.unlinkSync(filePath);
-}
+};

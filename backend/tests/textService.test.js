@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {jest} from '@jest/globals'
+import { jest } from "@jest/globals";
 import { getWebsiteText } from "../services/textService.js";
 
 describe("Get Website Text tests", () => {

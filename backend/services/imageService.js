@@ -28,4 +28,4 @@ export const deleteImage = async (imageID) => {
   const image = await Image.findById(imageID);
   deleteFileFromPath(image.path);
   await image.remove();
-}
+};

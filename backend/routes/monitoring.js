@@ -4,6 +4,7 @@ import {
   VisualMonitoringJob,
   acceptedIntervals,
 } from "../models/visualMonitoringJob.js";
+import { User } from "../models/user.js";
 import { TextMonitoringJob } from "../models/textMonitoringJob.js";
 import {
   createVisualMonitoringJob,
@@ -36,13 +37,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { name, url, interval } = req.body;
 
@@ -77,13 +72,7 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const _id = req.params._id;
     const { name, interval } = req.body;
@@ -124,13 +113,7 @@ router.patch(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const _id = req.params._id;
     const active = req.body.active;
@@ -163,13 +146,7 @@ router.delete(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { _id } = req.params;
     const job = await VisualMonitoringJob.findById(_id);
@@ -218,13 +195,7 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { _id } = req.params;
 
@@ -254,18 +225,11 @@ router.get(
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const jobs = await VisualMonitoringJob.find({ userId });
 
@@ -290,18 +254,11 @@ router.post(
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { name, url, interval, type, words } = req.body;
 
@@ -346,18 +303,11 @@ router.put(
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { _id } = req.params;
     const { name, url, interval, type, words } = req.body;
@@ -410,18 +360,11 @@ router.patch(
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { _id } = req.params;
     const { active } = req.body;
@@ -457,18 +400,11 @@ router.delete(
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { _id } = req.params;
 
@@ -497,18 +433,11 @@ router.get(
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { _id } = req.params;
 
@@ -529,18 +458,11 @@ router.get(
  */
 router.get("/jobs/text", header("Authorization").isJWT(), async (req, res) => {
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const userToken = verifyJWT(req.headers.authorization);
-
-  if (userToken.errors.length > 0) {
-    return res.status(401).json({ errors: userToken.errors });
-  }
-
-  const userId = userToken.decoded.user.id;
+  const userId = req.userId;
 
   console.log(userId);
 

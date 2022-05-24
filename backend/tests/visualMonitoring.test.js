@@ -153,12 +153,12 @@ describe("Visual job reading tests", () => {
   test("Get all jobs with bad token", async () => {
     const res = await _fetch("GET", "/api/jobs/visual", null, "bad token");
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
 
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Invalid token.");
   });
 });
 
@@ -244,12 +244,12 @@ describe("Visual job updating tests", () => {
       "bad token"
     );
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
 
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Invalid token.");
   });
 });
 
@@ -285,13 +285,18 @@ describe("Visual job deletion tests", () => {
   });
 
   test("Delete a job with bad token", async () => {
-    const res = await _fetch("DELETE", `/api/job/visual/${jobID}`, {}, "bad token");
+    const res = await _fetch(
+      "DELETE",
+      `/api/job/visual/${jobID}`,
+      {},
+      "bad token"
+    );
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
 
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Invalid token.");
   });
 });
