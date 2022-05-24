@@ -1,6 +1,6 @@
 // @ts-nocheck
 import fetch from "node-fetch";
-import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
+import { TextMonitoringJob } from "../models/textMonitoringJob.js";
 import { connectToDB, closeDB } from "../db";
 import "dotenv/config";
 
@@ -43,15 +43,18 @@ afterAll(async () => {
   await closeDB();
 });
 
-describe("Visual job creation tests", () => {
+
+describe("Text job creation tests", () => {
   test("Create a new job", async () => {
     const res = await _fetch(
       "POST",
-      "/api/job/visual",
+      "/api/job/text",
       {
         name: "Test job",
         url: "https://example.com",
         interval: "week",
+        type: "added",
+        words: ["example"]
       },
       token
     );
@@ -63,7 +66,7 @@ describe("Visual job creation tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully created a new monitoring job.");
 
-    const job = await VisualMonitoringJob.findOne({
+    const job = await TextMonitoringJob.findOne({
       where: {
         name: "Test job",
         url: "https://example.com",
@@ -77,10 +80,12 @@ describe("Visual job creation tests", () => {
   test("Job is not created if no URL is provided", async () => {
     const res = await _fetch(
       "POST",
-      "/api/job/visual",
+      "/api/job/text",
       {
         name: "Test job",
         interval: "week",
+        type: "added",
+        words: ["example"]
       },
       token
     );
@@ -96,11 +101,13 @@ describe("Visual job creation tests", () => {
   test("Job is not created if bad interval is provided", async () => {
     const res = await _fetch(
       "POST",
-      "/api/job/visual",
+      "/api/job/text",
       {
         name: "Test job",
         interval: "googol years",
         url: "https://example.com",
+        type: "added",
+        words: ["example"]
       },
       token
     );
@@ -114,9 +121,9 @@ describe("Visual job creation tests", () => {
   });
 });
 
-describe("Visual job reading tests", () => {
+describe("Job reading tests", () => {
   test("Get all jobs", async () => {
-    const res = await _fetch("GET", "/api/jobs/visual", null, token);
+    const res = await _fetch("GET", "/api/jobs/text", null, token);
 
     expect(res.status).toBe(200);
 
@@ -129,7 +136,7 @@ describe("Visual job reading tests", () => {
   });
 
   test("Get a job by ID", async () => {
-    const res = await _fetch("GET", `/api/job/visual/${jobID}`, null, token);
+    const res = await _fetch("GET", `/api/job/text/${jobID}`, null, token);
 
     expect(res.status).toBe(200);
 
@@ -140,7 +147,7 @@ describe("Visual job reading tests", () => {
   });
 
   test("Get a job by ID that does not exist", async () => {
-    const res = await _fetch("GET", `/api/job/visual/123456789`, null, token);
+    const res = await _fetch("GET", `/api/job/text/123456789`, null, token);
 
     expect(res.status).toBe(400);
 
@@ -151,7 +158,7 @@ describe("Visual job reading tests", () => {
   });
 
   test("Get all jobs with bad token", async () => {
-    const res = await _fetch("GET", "/api/jobs/visual", null, "bad token");
+    const res = await _fetch("GET", "/api/jobs/text", null, "bad token");
 
     expect(res.status).toBe(400);
 
@@ -162,15 +169,18 @@ describe("Visual job reading tests", () => {
   });
 });
 
-describe("Visual job updating tests", () => {
+
+describe("Job updating tests", () => {
   test("Update a job", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/visual/${jobID}`,
+      `/api/job/text/${jobID}`,
       {
         name: "Test job",
         url: "https://example.com",
         interval: "month",
+        type: "added",
+        words: ["another"]
       },
       token
     );
@@ -182,7 +192,7 @@ describe("Visual job updating tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully updated the monitoring job.");
 
-    const job = await VisualMonitoringJob.findOne({
+    const job = await TextMonitoringJob.findOne({
       where: {
         id: jobID,
       },
@@ -190,16 +200,19 @@ describe("Visual job updating tests", () => {
 
     expect(job).toBeDefined();
     expect(job.interval).toBe("month");
+    expect(job.words[0]).toBe("another");
   });
 
   test("Update a job with bad interval", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/visual/${jobID}`,
+      `/api/job/text/${jobID}`,
       {
         name: "Test job",
         url: "https://example.com",
         interval: "googol years",
+        type: "added",
+        words: ["example"]
       },
       token
     );
@@ -209,17 +222,19 @@ describe("Visual job updating tests", () => {
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("Invalid value");
+    expect(data.errors[0]["msg"]).toBe("Please enter a valid interval.");
   });
 
   test("Update a job that does not exist", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/visual/123456789`,
+      `/api/job/text/123456789`,
       {
         name: "Test job",
         url: "https://example.com",
         interval: "month",
+        type: "added",
+        words: ["new"]
       },
       token
     );
@@ -235,11 +250,13 @@ describe("Visual job updating tests", () => {
   test("Update a job with bad token", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/visual/${jobID}`,
+      `/api/job/text/${jobID}`,
       {
         name: "Test job",
         url: "https://example.com",
         interval: "week",
+        type: "added",
+        words: ["example"]
       },
       "bad token"
     );
@@ -253,9 +270,9 @@ describe("Visual job updating tests", () => {
   });
 });
 
-describe("Visual job deletion tests", () => {
+describe("Job deletion tests", () => {
   test("Delete a job", async () => {
-    const res = await _fetch("DELETE", `/api/job/visual/${jobID}`, {}, token);
+    const res = await _fetch("DELETE", `/api/job/text/${jobID}`, {}, token);
 
     expect(res.status).toBe(200);
 
@@ -264,7 +281,7 @@ describe("Visual job deletion tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully deleted the monitoring job.");
 
-    const job = await VisualMonitoringJob.findOne({
+    const job = await TextMonitoringJob.findOne({
       where: {
         id: jobID,
       },
@@ -274,7 +291,7 @@ describe("Visual job deletion tests", () => {
   });
 
   test("Delete a job that does not exist", async () => {
-    const res = await _fetch("DELETE", `/api/job/visual/123456789`, {}, token);
+    const res = await _fetch("DELETE", `/api/job/text/123456789`, {}, token);
 
     expect(res.status).toBe(400);
 
@@ -285,7 +302,7 @@ describe("Visual job deletion tests", () => {
   });
 
   test("Delete a job with bad token", async () => {
-    const res = await _fetch("DELETE", `/api/job/visual/${jobID}`, {}, "bad token");
+    const res = await _fetch("DELETE", `/api/job/text/${jobID}`, {}, "bad token");
 
     expect(res.status).toBe(400);
 

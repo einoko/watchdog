@@ -1,4 +1,8 @@
-import { scheduleTextMonitoringJob, scheduleVisualMonitoringJob } from "../services/agendaService.js";
+import {
+  scheduleTextMonitoringJob,
+  scheduleVisualMonitoringJob,
+} from "../services/agendaService.js";
+import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 
 const createVisualMonitoringJob = (jobObject) => {
@@ -11,9 +15,17 @@ const createTextMonitoringJob = (jobObject) => {
 
 const changeStatus = (jobObject) => {
   if (jobObject.active) {
-    createVisualMonitoringJob(jobObject);
+    if (jobObject.words) {
+      createTextMonitoringJob(jobObject);
+    } else {
+      createVisualMonitoringJob(jobObject);
+    }
   } else {
-    deleteVisualMonitoringJob(jobObject._id);
+    if (jobObject.words) {
+      deleteTextMonitoringJob(jobObject);
+    } else {
+      deleteVisualMonitoringJob(jobObject);
+    }
   }
 };
 

@@ -89,10 +89,10 @@ const executeVisualMonitoringJob = async (jobID) => {
 
 /**
  * Delete a monitoring job from Agenda by job ID.
- * @param {*} jobID ID of the monitoring job to delete.
+ * @param {*} jobObject Object containing the job ID.
  */
-const deleteVisualMonitoringJob = async (jobID) => {
-  await deleteAgendaJob(jobID);
+const deleteVisualMonitoringJob = async (jobObject) => {
+  await deleteAgendaJob(jobObject._id);
 };
 
 export { executeVisualMonitoringJob, deleteVisualMonitoringJob };
