@@ -1,16 +1,20 @@
-import { scheduleMonitoringJob } from "../services/agendaService.js";
+import { scheduleTextMonitoringJob, scheduleVisualMonitoringJob } from "../services/agendaService.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 
-const createMonitoringJob = (jobObject) => {
-  scheduleMonitoringJob(jobObject);
+const createVisualMonitoringJob = (jobObject) => {
+  scheduleVisualMonitoringJob(jobObject);
+};
+
+const createTextMonitoringJob = (jobObject) => {
+  scheduleTextMonitoringJob(jobObject);
 };
 
 const changeStatus = (jobObject) => {
   if (jobObject.active) {
-    createMonitoringJob(jobObject);
+    createVisualMonitoringJob(jobObject);
   } else {
     deleteVisualMonitoringJob(jobObject._id);
   }
 };
 
-export { createMonitoringJob, changeStatus };
+export { createVisualMonitoringJob, createTextMonitoringJob, changeStatus };

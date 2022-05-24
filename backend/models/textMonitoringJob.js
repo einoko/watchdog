@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// TODO: Remove 1 minute
 const acceptedIntervals = [
   "1 minute",
   "5 minutes",
@@ -15,7 +16,7 @@ const acceptedIntervals = [
   "year",
 ];
 
-const visualMonitoringJobSchema = new mongoose.Schema(
+const textMonitoringJobSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -38,9 +39,24 @@ const visualMonitoringJobSchema = new mongoose.Schema(
       required: true,
       enum: acceptedIntervals,
     },
-    states: {
-      type: [Object],
-      default: [],
+    matches: [
+      {
+        matches: {
+          type: [String],
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    type: {
+      type: String,
+      enum: ["added", "removed"],
+    },
+    words: {
+      type: [String],
+      required: true,
     },
   },
   {
@@ -48,9 +64,9 @@ const visualMonitoringJobSchema = new mongoose.Schema(
   }
 );
 
-const VisualMonitoringJob = mongoose.model(
-  "VisualMonitoringJob",
-  visualMonitoringJobSchema
+const TextMonitoringJob = mongoose.model(
+  "TextMonitoringJob",
+  textMonitoringJobSchema
 );
 
-export { VisualMonitoringJob, acceptedIntervals };
+export { TextMonitoringJob, acceptedIntervals };

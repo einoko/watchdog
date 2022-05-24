@@ -47,7 +47,7 @@ describe("Job creation tests", () => {
   test("Create a new job", async () => {
     const res = await _fetch(
       "POST",
-      "/api/job",
+      "/api/job/visual",
       {
         name: "Test job",
         url: "https://example.com",
@@ -77,7 +77,7 @@ describe("Job creation tests", () => {
   test("Job is not created if no URL is provided", async () => {
     const res = await _fetch(
       "POST",
-      "/api/job",
+      "/api/job/visual",
       {
         name: "Test job",
         interval: "week",
@@ -96,7 +96,7 @@ describe("Job creation tests", () => {
   test("Job is not created if bad interval is provided", async () => {
     const res = await _fetch(
       "POST",
-      "/api/job",
+      "/api/job/visual",
       {
         name: "Test job",
         interval: "googol years",
@@ -116,7 +116,7 @@ describe("Job creation tests", () => {
 
 describe("Job reading tests", () => {
   test("Get all jobs", async () => {
-    const res = await _fetch("GET", "/api/jobs", null, token);
+    const res = await _fetch("GET", "/api/jobs/visual", null, token);
 
     expect(res.status).toBe(200);
 
@@ -129,7 +129,7 @@ describe("Job reading tests", () => {
   });
 
   test("Get a job by ID", async () => {
-    const res = await _fetch("GET", `/api/job/${jobID}`, null, token);
+    const res = await _fetch("GET", `/api/job/visual/${jobID}`, null, token);
 
     expect(res.status).toBe(200);
 
@@ -140,7 +140,7 @@ describe("Job reading tests", () => {
   });
 
   test("Get a job by ID that does not exist", async () => {
-    const res = await _fetch("GET", `/api/job/123456789`, null, token);
+    const res = await _fetch("GET", `/api/job/visual/123456789`, null, token);
 
     expect(res.status).toBe(400);
 
@@ -151,7 +151,7 @@ describe("Job reading tests", () => {
   });
 
   test("Get all jobs with bad token", async () => {
-    const res = await _fetch("GET", "/api/jobs", null, "bad token");
+    const res = await _fetch("GET", "/api/jobs/visual", null, "bad token");
 
     expect(res.status).toBe(400);
 
@@ -166,7 +166,7 @@ describe("Job updating tests", () => {
   test("Update a job", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/${jobID}`,
+      `/api/job/visual/${jobID}`,
       {
         name: "Test job",
         url: "https://example.com",
@@ -195,7 +195,7 @@ describe("Job updating tests", () => {
   test("Update a job with bad interval", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/${jobID}`,
+      `/api/job/visual/${jobID}`,
       {
         name: "Test job",
         url: "https://example.com",
@@ -215,7 +215,7 @@ describe("Job updating tests", () => {
   test("Update a job that does not exist", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/123456789`,
+      `/api/job/visual/123456789`,
       {
         name: "Test job",
         url: "https://example.com",
@@ -235,7 +235,7 @@ describe("Job updating tests", () => {
   test("Update a job with bad token", async () => {
     const res = await _fetch(
       "PUT",
-      `/api/job/${jobID}`,
+      `/api/job/visual/${jobID}`,
       {
         name: "Test job",
         url: "https://example.com",
@@ -255,7 +255,7 @@ describe("Job updating tests", () => {
 
 describe("Job deletion tests", () => {
   test("Delete a job", async () => {
-    const res = await _fetch("DELETE", `/api/job/${jobID}`, {}, token);
+    const res = await _fetch("DELETE", `/api/job/visual/${jobID}`, {}, token);
 
     expect(res.status).toBe(200);
 
@@ -274,7 +274,7 @@ describe("Job deletion tests", () => {
   });
 
   test("Delete a job that does not exist", async () => {
-    const res = await _fetch("DELETE", `/api/job/123456789`, {}, token);
+    const res = await _fetch("DELETE", `/api/job/visual/123456789`, {}, token);
 
     expect(res.status).toBe(400);
 
@@ -285,7 +285,7 @@ describe("Job deletion tests", () => {
   });
 
   test("Delete a job with bad token", async () => {
-    const res = await _fetch("DELETE", `/api/job/${jobID}`, {}, "bad token");
+    const res = await _fetch("DELETE", `/api/job/visual/${jobID}`, {}, "bad token");
 
     expect(res.status).toBe(400);
 

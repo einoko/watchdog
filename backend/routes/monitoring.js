@@ -1,9 +1,14 @@
 import express from "express";
 import { body, header, param, validationResult } from "express-validator";
-import { VisualMonitoringJob, acceptedIntervals } from "../models/visualMonitoringJob.js";
 import {
-  createMonitoringJob,
+  VisualMonitoringJob,
+  acceptedIntervals,
+} from "../models/visualMonitoringJob.js";
+import { TextMonitoringJob } from "../models/textMonitoringJob.js";
+import {
+  createVisualMonitoringJob,
   changeStatus,
+  createTextMonitoringJob,
 } from "../controllers/monitoringController.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
@@ -15,7 +20,7 @@ const router = express.Router();
  * @api {post} /api/job Create a new monitoring job
  */
 router.post(
-  "/job",
+  "/job/visual",
   body("name").isString(),
   body("url").isURL(),
   body("interval")
@@ -44,7 +49,7 @@ router.post(
           errors: [{ msg: "Could not create the monitoring job." }],
         });
       } else {
-        createMonitoringJob(job);
+        createVisualMonitoringJob(job);
 
         return res.status(201).json({
           msg: "Successfully created a new monitoring job.",
@@ -58,7 +63,7 @@ router.post(
  * @api {update} /api/job Change the settings of a monitoring job
  */
 router.put(
-  "/job/:_id",
+  "/job/visual/:_id",
   param("_id").isMongoId(),
   body("name").isString(),
   body("interval").isIn(acceptedIntervals),
@@ -106,7 +111,7 @@ router.put(
  * @api {patch} /monitoring/job/status Pause or resume a monitoring job
  */
 router.patch(
-  "/job/:_id/status",
+  "/job/visual/:_id/status",
   param("_id").isMongoId(),
   body("active").isBoolean(),
   header("Authorization").isJWT(),
@@ -146,7 +151,7 @@ router.patch(
  * @api {delete} /api/job Delete a monitoring job
  */
 router.delete(
-  "/job/:_id",
+  "/job/visual/:_id",
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
   async (req, res) => {
@@ -201,7 +206,7 @@ router.delete(
  * @api {get} /api/job Get a monitoring job
  */
 router.get(
-  "/job/:_id",
+  "/job/visual/:_id",
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
   async (req, res) => {
@@ -241,24 +246,80 @@ router.get(
 /**
  * @api {get} /api/jobs Get all monitoring jobs for user
  */
-router.get("/jobs", header("Authorization").isJWT(), async (req, res) => {
-  const errors = validationResult(req);
+router.get(
+  "/jobs/visual",
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userToken = verifyJWT(req.headers.authorization);
+
+    if (userToken.errors.length > 0) {
+      return res.status(401).json({ errors: userToken.errors });
+    }
+
+    const userId = userToken.decoded.user.id;
+
+    const jobs = await VisualMonitoringJob.find({ userId });
+
+    res.status(200).json({ jobs });
   }
+);
 
-  const userToken = verifyJWT(req.headers.authorization);
+router.post(
+  "/job/text",
+  body("name").isString(),
+  body("url").isURL(),
+  body("interval")
+    .isIn(acceptedIntervals)
+    .withMessage("Please enter a valid interval."),
+  body("type").isIn(["added", "removed"]),
+  body("words").isArray(),
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
 
-  if (userToken.errors.length > 0) {
-    return res.status(401).json({ errors: userToken.errors });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userToken = verifyJWT(req.headers.authorization);
+
+    if (userToken.errors.length > 0) {
+      return res.status(401).json({ errors: userToken.errors });
+    }
+
+    const userId = userToken.decoded.user.id;
+
+    const { name, url, interval, type, words } = req.body;
+
+    TextMonitoringJob.create(
+      {
+        name,
+        url,
+        interval,
+        type,
+        words,
+        userId,
+      },
+      (err, job) => {
+        if (err) {
+          return res.status(500).json({
+            errors: [{ msg: "Could not create the monitoring job." }],
+          });
+        }
+        createTextMonitoringJob(job);
+
+        res
+          .status(200)
+          .json({ msg: "Successfully created the monitoring job." });
+      }
+    );
   }
-
-  const userId = userToken.decoded.user.id;
-
-  const jobs = await VisualMonitoringJob.find({ userId });
-
-  res.status(200).json({ jobs });
-});
+);
 
 export { router as jobRouter };
