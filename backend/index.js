@@ -8,6 +8,7 @@ import { accountRouter } from "./routes/account.js";
 import { adminRouter } from "./routes/admin.js";
 import { imageRouter } from "./routes/image.js";
 import { authChecker } from "./middlewares/auth.js";
+import { emailCancelRouter } from "./routes/emailCancel.js";
 
 const port = process.env.PORT || 3000;
 
@@ -16,6 +17,7 @@ const app = express();
 app.use(cors());
 app.use(json());
 
+app.use("/api", emailCancelRouter);
 app.use("/api", imageRouter);
 app.use("/api", adminRouter);
 app.use("/api", accountRouter);

@@ -2,6 +2,8 @@ import nodemailer from "nodemailer";
 import "dotenv/config";
 import { getVisualAlertMail } from "../tests/mailTemplateUtil.js";
 import { compressImage, getFullLink } from "./imageService.js";
+import fs from "fs";
+import { createDeletionToken } from "../utils/JWTUtil.js";
 
 let options;
 
@@ -30,6 +32,7 @@ const from =
 const transporter = nodemailer.createTransport(options);
 
 export const sendVisualAlertMail = async (
+  jobId,
   email,
   jobName,
   jobUrl,
@@ -57,11 +60,28 @@ export const sendVisualAlertMail = async (
     ),
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
+  console.log("Mail sent...");
+
+  const mailResult = getVisualAlertMail(
+    jobName,
+    jobUrl,
+    Buffer.from(compressedBefore).toString("base64"),
+    Buffer.from(compressedAfter).toString("base64"),
+    Buffer.from(compressedDiff).toString("base64"),
+    getFullLink(beforeId),
+    getFullLink(afterId),
+    getFullLink(diffId),
+    createDeletionToken(jobId, "visual")
+  )
+
+  // save mail to file
+  fs.writeFileSync(`./mail.html`, mailResult);
+
+  /*transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
     } else {
       console.log("Email sent: " + info.response);
     }
-  });
+  });*/
 };

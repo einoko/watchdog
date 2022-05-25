@@ -4,7 +4,6 @@ import {
   VisualMonitoringJob,
   acceptedIntervals,
 } from "../models/visualMonitoringJob.js";
-import { User } from "../models/user.js";
 import { TextMonitoringJob } from "../models/textMonitoringJob.js";
 import {
   createVisualMonitoringJob,
@@ -13,7 +12,6 @@ import {
 } from "../controllers/monitoringController.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
-import { verifyJWT } from "../utils/JWTUtil.js";
 import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
 
 const router = express.Router();

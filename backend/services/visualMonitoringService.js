@@ -67,7 +67,7 @@ const checkLastState = async (job) => {
     const user = await User.findById(job.userId);
     const email = user.email;
 
-    sendVisualAlertMail(email, job.name, job.url, lastState.image, savedNewScreenshot._id, savedDiffImage._id)
+    sendVisualAlertMail(job._id, email, job.name, job.url, lastState.image, savedNewScreenshot._id, savedDiffImage._id)
   }
 };
 

@@ -18,3 +18,16 @@ export const verifyJWT = (token) => {
     };
   }
 };
+
+/**
+ * Creates a deletion token for a monitoring job.
+ * @param {*} id ID of the monitoring job
+ * @param {*} type Type of the monitoring job ["visual", "text"]
+ * @returns {string} JSON Web Token
+ */
+export const createDeletionToken = (id, type) => {
+  const token = jwt.sign({ id, type }, process.env.JWT_SECRET, {
+    expiresIn: "1y",
+  });
+  return Buffer.from(token).toString("base64");
+};
