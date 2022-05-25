@@ -1,8 +1,10 @@
 import { TextMonitoringJob } from "../models/textMonitoringJob.js";
+import { User } from "../models/user.js";
 import { deleteAgendaJob } from "./agendaService.js";
+import { sendTextAlertMail } from "./mailService.js";
 import { getWebsiteText } from "./textService.js";
 
-const checkText = async (url, type, words) => {
+const checkText = async (url, type, words, jobID, jobName, jobUrl, userId) => {
   let text = await getWebsiteText(url);
   text = text.toLowerCase().replace(/\s+/g, " ").trim();
 
@@ -16,20 +18,24 @@ const checkText = async (url, type, words) => {
   for (const word of words) {
     if (type === "added") {
       if (text.includes(word.toLowerCase())) {
-        matches.push(`Word "${word}" was found in text.`);
+        matches.push(word);
       }
     } else {
       if (!text.includes(word.toLowerCase())) {
-        matches.push(`Word "${word}" was not found in text.`);
+        matches.push(word);
       }
     }
   }
 
   if (matches.length > 0) {
-    console.log("Send mail here");
+    const user = await User.findById(userId);
+    if (user) {
+      sendTextAlertMail(jobID, user.email, jobName, jobUrl, matches, type);
+    } else {
+      console.error(`Could not find user ${userId}`);
+    }
     return matches;
   } else {
-    console.log("No matches this time...");
     return null;
   }
 };
@@ -48,7 +54,15 @@ const executeTextMonitoringJob = async (jobID) => {
     return;
   }
 
-  const matches = await checkText(job.url, job.type, job.words);
+  const matches = await checkText(
+    job.url,
+    job.type,
+    job.words,
+    jobID,
+    job.name,
+    job.url,
+    job.userId
+  );
 
   if (matches) {
     job.matches.push({

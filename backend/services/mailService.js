@@ -1,9 +1,16 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
-import { getVisualAlertMail } from "../tests/mailTemplateUtil.js";
+import {
+  getTextAlertMail,
+  getVisualAlertMail,
+} from "../tests/mailTemplateUtil.js";
 import { compressImage, getFullLink } from "./imageService.js";
 import fs from "fs";
 import { createDeletionToken } from "../utils/JWTUtil.js";
+
+const createDeletionLink = (token) => {
+  return `${process.env.APP_URL}/api/emailCancel/${token}`;
+};
 
 let options;
 
@@ -71,11 +78,54 @@ export const sendVisualAlertMail = async (
     getFullLink(beforeId),
     getFullLink(afterId),
     getFullLink(diffId),
-    createDeletionToken(jobId, "visual")
-  )
+    createDeletionLink(createDeletionToken(jobId, "visual"))
+  );
 
   // save mail to file
-  fs.writeFileSync(`./mail.html`, mailResult);
+  fs.writeFileSync(`./visual_mail.html`, mailResult);
+
+  /*transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });*/
+};
+
+export const sendTextAlertMail = async (
+  jobId,
+  email,
+  jobName,
+  jobUrl,
+  matches,
+  type
+) => {
+  const mailOptions = {
+    from,
+    to: email,
+    subject: "Watchdog monitor detected a change!",
+    html: getTextAlertMail(
+      jobName,
+      jobUrl,
+      matches,
+      type,
+      createDeletionLink(createDeletionToken(jobId, "text"))
+    ),
+  };
+
+  const mailResult = getTextAlertMail(
+    jobName,
+    jobUrl,
+    matches,
+    type,
+    createDeletionToken(jobId, "text")
+  );
+
+  // save mail to file
+  fs.writeFileSync(`./text_mail.html`, mailResult);
+
+  console.log("Mail sent...");
 
   /*transporter.sendMail(mailOptions, (error, info) => {
     if (error) {

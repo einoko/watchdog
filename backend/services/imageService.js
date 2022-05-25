@@ -39,7 +39,7 @@ export const compressImage = async (imageID) => {
   const image = await Image.findById(imageID);
   const imageBuffer = readFileFromPath(image.path);
   const compressedImageBuffer = await sharp(imageBuffer)
-    .resize({ width: 680 })
+    .resize({ width: 1280 })
     .toFormat("jpeg", { mozjpeg: true })
     .toBuffer();
   return compressedImageBuffer;
