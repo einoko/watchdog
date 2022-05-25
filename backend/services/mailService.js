@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
 import { getVisualAlertMail } from "../tests/mailTemplateUtil.js";
-import { compressImage } from "./imageService.js";
+import { compressImage, getFullLink } from "./imageService.js";
 
 let options;
 
@@ -29,7 +29,14 @@ const from =
   process.env.MAIL_FROM || "Watchdog Monitor <watchdog.monitor@yahoo.com>";
 const transporter = nodemailer.createTransport(options);
 
-export const sendVisualAlertMail = async (email, jobName, jobUrl, beforeId, afterId, diffId) => {
+export const sendVisualAlertMail = async (
+  email,
+  jobName,
+  jobUrl,
+  beforeId,
+  afterId,
+  diffId
+) => {
   const compressedBefore = await compressImage(beforeId);
   const compressedAfter = await compressImage(afterId);
   const compressedDiff = await compressImage(diffId);
@@ -38,7 +45,16 @@ export const sendVisualAlertMail = async (email, jobName, jobUrl, beforeId, afte
     from,
     to: email,
     subject: "Watchdog monitor detected a change!",
-    html: getVisualAlertMail(jobName, jobUrl, Buffer.from(compressedBefore).toString('base64'), Buffer.from(compressedAfter).toString('base64'), Buffer.from(compressedDiff).toString('base64')),
+    html: getVisualAlertMail(
+      jobName,
+      jobUrl,
+      Buffer.from(compressedBefore).toString("base64"),
+      Buffer.from(compressedAfter).toString("base64"),
+      Buffer.from(compressedDiff).toString("base64"),
+      getFullLink(beforeId),
+      getFullLink(afterId),
+      getFullLink(diffId)
+    ),
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

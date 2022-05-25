@@ -39,7 +39,13 @@ export const compressImage = async (imageID) => {
   const image = await Image.findById(imageID);
   const imageBuffer = readFileFromPath(image.path);
   const compressedImageBuffer = await sharp(imageBuffer)
+    .resize({ width: 680 })
     .toFormat("jpeg", { mozjpeg: true })
     .toBuffer();
   return compressedImageBuffer;
 };
+
+
+export const getFullLink = (imageID) => {
+  return `${process.env.APP_URL}/api/image/${imageID}`;
+}
