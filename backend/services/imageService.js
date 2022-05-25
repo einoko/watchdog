@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { convertIDtoFilePath } from "../utils/filePathUtil.js";
-import { deleteFileFromPath, saveBufferToFile } from "./fileService.js";
+import {
+  deleteFileFromPath,
+  readFileFromPath,
+  saveBufferToFile,
+} from "./fileService.js";
 import { Image } from "../models/image.js";
+import sharp from "sharp";
 
 /**
  * Saves image buffer to disk and database.
@@ -28,4 +33,13 @@ export const deleteImage = async (imageID) => {
   const image = await Image.findById(imageID);
   deleteFileFromPath(image.path);
   await image.remove();
+};
+
+export const compressImage = async (imageID) => {
+  const image = await Image.findById(imageID);
+  const imageBuffer = readFileFromPath(image.path);
+  const compressedImageBuffer = await sharp(imageBuffer)
+    .toFormat("jpeg", { mozjpeg: true })
+    .toBuffer();
+  return compressedImageBuffer;
 };

@@ -31,13 +31,13 @@ export const getVisualAlertMail = (
 			<p>A change was detected on <a href="${jobUrl}">${jobUrl}</a>.</p>
 
 			<h2>Before</h2>
-			<img src="${beforeUrl}">
+			<img src="data:image/png;base64,${beforeUrl}">
 
 			<h2>Now</h2>
-			<img src="${afterUrl}">
+			<img src="data:image/png;base64,${afterUrl}">
 
 			<h2>Overlay</h2>
-			<img src="${diffUrl}">
+			<img src="data:image/png;base64,${diffUrl}">
 
 			<hr style="height:1px;border:none;color:black;background-color:black;" />
 			<p>Watchdog will continue to monitor for any new changes on this job. If you want to stop these alerts, sign into your account, and <b>pause</b> or <b>delete</b> the job.</p>
