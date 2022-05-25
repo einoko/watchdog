@@ -6,6 +6,7 @@ import { previewRouter } from "./routes/preview.js";
 import { jobRouter } from "./routes/monitoring.js";
 import { accountRouter } from "./routes/account.js";
 import { adminRouter } from "./routes/admin.js";
+import { imageRouter } from "./routes/image.js";
 import { authChecker } from "./middlewares/auth.js";
 
 const port = process.env.PORT || 3000;
@@ -15,6 +16,7 @@ const app = express();
 app.use(cors());
 app.use(json());
 
+app.use("/api", imageRouter);
 app.use("/api", adminRouter);
 app.use("/api", accountRouter);
 app.use("/api", previewRouter, authChecker);
