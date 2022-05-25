@@ -8,6 +8,8 @@ import { compressImage, getFullLink } from "./imageService.js";
 import fs from "fs";
 import { createDeletionToken } from "../utils/JWTUtil.js";
 
+// TODO: Refactor
+
 const createDeletionLink = (token) => {
   return `${process.env.APP_URL}/api/emailCancel/${token}`;
 };
