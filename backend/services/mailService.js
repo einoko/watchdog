@@ -33,7 +33,7 @@ export const sendVisualAlertMail = (email, jobName, jobUrl, beforeId, afterId, d
     from,
     to: email,
     subject: "Watchdog monitor detected a change!",
-    html: getVisualAlertMail(jobName, jobUrl, `localhost:3000/api/image/${beforeId}`, `localhost:3000/api/image/${afterId}`, `localhost:3000/api/image/${diffId}`),
+    html: getVisualAlertMail(jobName, jobUrl, `${process.env.BASE_URL}/api/image/${beforeId}`, `${process.env.BASE_URL}/api/image/${afterId}`, `${process.env.BASE_URL}/api/image/${diffId}`),
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
