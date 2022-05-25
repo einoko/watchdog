@@ -2,9 +2,11 @@ import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
 import { calculateDifference, createDiffImage } from "../utils/compareUtil.js";
 import { deleteAgendaJob } from "./agendaService.js";
 import { Image } from "../models/image.js";
+import { User } from "../models/user.js";
 import { captureWebsiteToBuffer } from "./captureService.js";
 import { saveImage } from "./imageService.js";
 import { readFileFromPath } from "./fileService.js";
+import { sendVisualAlertMail } from "./mailService.js";
 
 const initializeFirstState = async (job) => {
   const screenshot = await captureWebsiteToBuffer(job.url);
@@ -62,7 +64,10 @@ const checkLastState = async (job) => {
 
     await job.save();
 
-    console.log(`Send mail here.`);
+    const user = await User.findById(job.userId);
+    const email = user.email;
+
+    sendVisualAlertMail(email, job.name, job.url, lastState.image, savedNewScreenshot._id, savedDiffImage._id)
   }
 };
 

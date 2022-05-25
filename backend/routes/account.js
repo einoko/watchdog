@@ -17,6 +17,7 @@ const router = express.Router();
 router.post(
   "/account/signup",
   body("username").isString(),
+  body("email").isEmail(),
   body("password")
     .isLength({ min: 6 })
     .withMessage("Please enter a password with at least 6 characters."),
@@ -26,7 +27,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
     User.findOne({ username }, (err, user) => {
       if (err) {
@@ -44,6 +45,7 @@ router.post(
       argon2.hash(password).then((hash) => {
         const newUser = new User({
           username,
+          email,
           password: hash,
           isAdmin: process.env.ADMIN_USERNAME === username,
         });
@@ -101,6 +103,7 @@ router.post(
         const payload = {
           user: {
             id: user.id,
+            isAdmin: user.isAdmin,
           },
         };
 
