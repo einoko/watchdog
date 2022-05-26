@@ -7,7 +7,7 @@ import reportWebVitals from "./reportWebVitals";
 import { isLoggedIn } from "./utils/loginUtil";
 import { ProtectedRoute } from "./routes/protectedRoute";
 import { LoggedInRoute } from "./routes/loggedInRoute";
-import { LoginView } from "./components/account/login";
+import LoginView from "./components/account/login";
 import { RegisterView } from "./components/account/register";
 import { JobsView } from "./components/jobs/jobs";
 import { JobView } from "./components/jobs/job";
