@@ -32,6 +32,7 @@
     "express-validator": "^6.14.0",
     "jest": "^28.1.0",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.6.0",
     "mongoose": "^6.3.3",
     "node-fetch": "^3.2.4",
     "nodemailer": "^6.7.5",
@@ -41,6 +42,7 @@
     "pngjs": "^6.0.0",
     "prepend-http": "^4.0.0",
     "puppeteer": "^14.1.1",
+    "rand-token": "^1.0.1",
     "sharp": "^0.30.4",
     "uuidv4": "^6.2.13"
   },

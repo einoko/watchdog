@@ -14,7 +14,7 @@ const router = express.Router();
  */
 router.get(
   "/emailCancel/:token",
-  param("token").isBase64(),
+  param("token").isString(),
   async (req, res) => {
     const errors = validationResult(req);
 
@@ -22,24 +22,25 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const token = Buffer.from(req.params.token, "base64").toString("ascii");
-    let decoded = verifyJWT(token);
+    const token = req.params.token;
 
-    if (decoded.errors.length > 0) {
-      return res.status(401).json({ errors: decoded.errors });
-    }
+    let job = await VisualMonitoringJob.findOne({ cancelToken: token });
 
-    decoded = decoded.decoded;
-
-    if (decoded.type === "visual") {
-      const job = await VisualMonitoringJob.findById({ _id: decoded.id });
+    if (!job) {
+      job = await TextMonitoringJob.findOne({ cancelToken: token });
 
       if (!job) {
-        return res.status(500).json({
-          errors: [{ msg: "Could not find the monitoring job." }],
+        return res.status(400).json({
+          errors: [{ msg: "Could not find a job with that token." }],
         });
       }
 
+      deleteTextMonitoringJob(job._id);
+      job.remove();
+      res
+        .status(200)
+        .json({ msg: "Successfully canceled the monitoring job." });
+    } else {
       deleteVisualMonitoringJob(job._id);
 
       job.states.forEach((state) => {
@@ -53,25 +54,9 @@ router.get(
 
       job.remove();
 
-      res.status(200).json({ msg: "Successfully deleted the monitoring job." });
-    } else if (decoded.type === "text") {
-      TextMonitoringJob.findById({ _id: decoded.id }, (err, job) => {
-        if (err) {
-          return res.status(500).json({
-            errors: [{ msg: "Could not find the monitoring job." }],
-          });
-        } else {
-          deleteTextMonitoringJob(job._id);
-          job.remove();
-          res
-            .status(200)
-            .json({ msg: "Successfully deleted the monitoring job." });
-        }
-      });
-    } else {
-      return res.status(401).json({
-        errors: [{ msg: "Job was not deleted." }],
-      });
+      res
+        .status(200)
+        .json({ msg: "Successfully canceled the monitoring job." });
     }
   }
 );

@@ -4,40 +4,38 @@ import { deleteAgendaJob } from "./agendaService.js";
 import { sendTextAlertMail } from "./mailService.js";
 import { getWebsiteText } from "./textService.js";
 
-const checkText = async (url, type, words, jobID, jobName, jobUrl, userId) => {
-  let text = await getWebsiteText(url);
-  text = text.toLowerCase().replace(/\s+/g, " ").trim();
+const checkText = async (job) => {
+  const fullText = await getWebsiteText(job.url);
 
-  if (text === null) {
+  if (fullText === null) {
     console.error("Could not retrieve text from website. Send warning email.");
     return;
   }
 
+  const trimmedText = fullText.toLowerCase().replace(/\s+/g, " ").trim();
+
   const matches = [];
 
-  for (const word of words) {
-    if (type === "added") {
-      if (text.includes(word.toLowerCase())) {
+  for (const word of job.words) {
+    if (job.type === "added") {
+      if (trimmedText.includes(word.toLowerCase())) {
         matches.push(word);
       }
-    } else {
-      if (!text.includes(word.toLowerCase())) {
-        matches.push(word);
-      }
+    } else if (!trimmedText.includes(word.toLowerCase())) {
+      matches.push(word);
     }
   }
 
   if (matches.length > 0) {
-    const user = await User.findById(userId);
+    const user = await User.findById(job.userId);
     if (user) {
-      sendTextAlertMail(jobID, user.email, jobName, jobUrl, matches, type);
+      sendTextAlertMail(job, user, matches);
     } else {
-      console.error(`Could not find user ${userId}`);
+      console.error(`Could not find user ${job.userId}`);
     }
-    return matches;
-  } else {
-    return null;
   }
+
+  return { matches, fullText };
 };
 
 /**
@@ -54,20 +52,13 @@ const executeTextMonitoringJob = async (jobID) => {
     return;
   }
 
-  const matches = await checkText(
-    job.url,
-    job.type,
-    job.words,
-    jobID,
-    job.name,
-    job.url,
-    job.userId
-  );
+  const { matches, fullText } = await checkText(job);
 
-  if (matches) {
+  if (matches.length > 0) {
     job.matches.push({
-      matches: matches,
+      matches,
       createdAt: new Date(),
+      fullText,
     });
 
     await job.save();

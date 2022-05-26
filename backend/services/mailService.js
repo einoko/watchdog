@@ -3,10 +3,9 @@ import "dotenv/config";
 import {
   getTextAlertMail,
   getVisualAlertMail,
-} from "../tests/mailTemplateUtil.js";
+} from "../utils/mailTemplateUtil.js";
 import { compressImage, getFullLink } from "./imageService.js";
 import fs from "fs";
-import { createDeletionToken } from "../utils/JWTUtil.js";
 
 // TODO: Refactor
 
@@ -41,47 +40,38 @@ const from =
 const transporter = nodemailer.createTransport(options);
 
 export const sendVisualAlertMail = async (
-  jobId,
-  email,
-  jobName,
-  jobUrl,
-  beforeId,
-  afterId,
-  diffId
+  userObject,
+  jobObject,
+  lastStateImage,
+  savedNewScreenshot,
+  savedDiffImage
 ) => {
-  const compressedBefore = await compressImage(beforeId);
-  const compressedAfter = await compressImage(afterId);
-  const compressedDiff = await compressImage(diffId);
+  const compressedBefore = await compressImage(lastStateImage._id);
+  const compressedAfter = await compressImage(savedNewScreenshot._id);
+  const compressedDiff = await compressImage(savedDiffImage._id);
+
+  const templateObject = {
+    jobName: jobObject.name,
+    jobUrl: jobObject.url,
+    beforeImage: Buffer.from(compressedBefore).toString("base64"),
+    afterImage: Buffer.from(compressedAfter).toString("base64"),
+    diffImage: Buffer.from(compressedDiff).toString("base64"),
+    beforeLink: getFullLink(lastStateImage._id),
+    afterLink: getFullLink(savedNewScreenshot._id),
+    diffLink: getFullLink(savedDiffImage._id),
+    cancelLink: createDeletionLink(jobObject.cancelToken),
+  };
 
   const mailOptions = {
     from,
-    to: email,
+    to: userObject.email,
     subject: "Watchdog monitor detected a change!",
-    html: getVisualAlertMail(
-      jobName,
-      jobUrl,
-      Buffer.from(compressedBefore).toString("base64"),
-      Buffer.from(compressedAfter).toString("base64"),
-      Buffer.from(compressedDiff).toString("base64"),
-      getFullLink(beforeId),
-      getFullLink(afterId),
-      getFullLink(diffId)
-    ),
+    html: getVisualAlertMail(templateObject),
   };
 
   console.log("Mail sent...");
 
-  const mailResult = getVisualAlertMail(
-    jobName,
-    jobUrl,
-    Buffer.from(compressedBefore).toString("base64"),
-    Buffer.from(compressedAfter).toString("base64"),
-    Buffer.from(compressedDiff).toString("base64"),
-    getFullLink(beforeId),
-    getFullLink(afterId),
-    getFullLink(diffId),
-    createDeletionLink(createDeletionToken(jobId, "visual"))
-  );
+  const mailResult = getVisualAlertMail(templateObject);
 
   // save mail to file
   fs.writeFileSync(`./visual_mail.html`, mailResult);
@@ -95,34 +85,22 @@ export const sendVisualAlertMail = async (
   });*/
 };
 
-export const sendTextAlertMail = async (
-  jobId,
-  email,
-  jobName,
-  jobUrl,
-  matches,
-  type
-) => {
-  const mailOptions = {
-    from,
-    to: email,
-    subject: "Watchdog monitor detected a change!",
-    html: getTextAlertMail(
-      jobName,
-      jobUrl,
-      matches,
-      type,
-      createDeletionLink(createDeletionToken(jobId, "text"))
-    ),
+export const sendTextAlertMail = async (job, user, matches) => {
+  const templateObject = {
+    jobName: job.name,
+    jobUrl: job.url,
+    matches: matches,
+    cancelLink: createDeletionLink(job.cancelToken),
   };
 
-  const mailResult = getTextAlertMail(
-    jobName,
-    jobUrl,
-    matches,
-    type,
-    createDeletionToken(jobId, "text")
-  );
+  const mailOptions = {
+    from,
+    to: user.email,
+    subject: "Watchdog monitor detected a change!",
+    html: getTextAlertMail(templateObject),
+  };
+
+  const mailResult = getTextAlertMail(templateObject);
 
   // save mail to file
   fs.writeFileSync(`./text_mail.html`, mailResult);

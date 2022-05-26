@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import randToken from "rand-token";
 
 // TODO: Remove 1 minute
 const acceptedIntervals = [
@@ -39,6 +40,11 @@ const textMonitoringJobSchema = new mongoose.Schema(
       required: true,
       enum: acceptedIntervals,
     },
+    cancelToken: {
+      type: String,
+      required: true,
+      default: () => randToken.generate(32),
+    },
     matches: [
       {
         matches: {
@@ -48,6 +54,9 @@ const textMonitoringJobSchema = new mongoose.Schema(
           type: Date,
           default: Date.now,
         },
+        fullText: {
+          type: String,
+        }
       },
     ],
     type: {

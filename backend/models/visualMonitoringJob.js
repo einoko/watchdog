@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import randToken from "rand-token";
 
 const acceptedIntervals = [
   "1 minute",
@@ -37,6 +38,11 @@ const visualMonitoringJobSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: acceptedIntervals,
+    },
+    cancelToken: {
+      type: String,
+      required: true,
+      default: () => randToken.generate(32),
     },
     states: {
       type: [Object],

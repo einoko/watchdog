@@ -9,6 +9,7 @@ import { adminRouter } from "./routes/admin.js";
 import { imageRouter } from "./routes/image.js";
 import { authChecker } from "./middlewares/auth.js";
 import { emailCancelRouter } from "./routes/emailCancel.js";
+import { restartStuckJobs } from "./services/agendaRestarter.js";
 
 const port = process.env.PORT || 3000;
 
@@ -25,6 +26,8 @@ app.use("/api", previewRouter, authChecker);
 app.use("/api", jobRouter, authChecker);
 
 connectToDB(process.env.MONGODB_URI).then((r) => {
+  restartStuckJobs();
+
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });

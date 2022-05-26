@@ -30,14 +30,14 @@ const initializeFirstState = async (job) => {
 const checkLastState = async (job) => {
   const lastState = job.states[job.states.length - 1];
 
-  const lastStateImageID = await Image.findById(lastState.image);
+  const lastStateImage = await Image.findById(lastState.image);
 
-  if (!lastStateImageID) {
+  if (!lastStateImage) {
     console.error(`Could not find the last image of job ${job._id}`);
     return;
   }
 
-  const lastStateImageBuffer = await readFileFromPath(lastStateImageID.path);
+  const lastStateImageBuffer = await readFileFromPath(lastStateImage.path);
   const newScreenshotBuffer = await captureWebsiteToBuffer(job.url);
 
   if (newScreenshotBuffer === null) {
@@ -65,9 +65,8 @@ const checkLastState = async (job) => {
     await job.save();
 
     const user = await User.findById(job.userId);
-    const email = user.email;
 
-    sendVisualAlertMail(job._id, email, job.name, job.url, lastState.image, savedNewScreenshot._id, savedDiffImage._id)
+    sendVisualAlertMail(user, job, lastStateImage, savedNewScreenshot, savedDiffImage);
   }
 };
 
