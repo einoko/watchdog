@@ -1,6 +1,6 @@
 /**
  * Sometimes, if a scheduling job is midway, and the server is restarted, a job
- * can get stuck indefinitely. This service will attempt to restart ant stuck jobs.
+ * can get stuck indefinitely. This service will attempt to restart any stuck jobs.
  */
 
 import { MongoClient } from "mongodb";
