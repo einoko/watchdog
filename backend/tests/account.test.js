@@ -1,7 +1,7 @@
 // @ts-nocheck
 import fetch from "node-fetch";
 
-const baseUrl = "http://localhost:3000";
+const baseUrl = "http://localhost:3001";
 
 const _fetch = async (method, path, body, token) => {
   body = typeof body === "string" ? body : JSON.stringify(body);
@@ -23,6 +23,7 @@ describe("Account creation tests", () => {
   test("Create a new account", async () => {
     const res = await _fetch("POST", "/api/account/signup", {
       username: "RustyShackleford",
+      email: "rusty@shackleford.com",
       password: "password",
     });
     expect(res.status).toBe(201);
@@ -36,6 +37,7 @@ describe("Account creation tests", () => {
   test("Account is not created if password is not at least 6 characters", async () => {
     const res = await _fetch("POST", "/api/account/signup", {
       username: "RustyShackleford",
+      email: "rusty@shackleford.com",
       password: "pass",
     });
     expect(res.status).toBe(400);
@@ -51,6 +53,7 @@ describe("Account creation tests", () => {
   test("Account is not created if the user already exists", async () => {
     const res = await _fetch("POST", "/api/account/signup", {
       username: "RustyShackleford",
+      email: "rusty@shackleford.com",
       password: "password",
     });
 
@@ -91,7 +94,7 @@ describe("Login tests", () => {
     const data = await res.json();
 
     expect(data.errors).toBeDefined();
-    expect(data.errors[0]["msg"]).toBe("No account with this username exists.");
+    expect(data.errors[0]["msg"]).toBe("Invalid credentials.");
   });
 
   test("Login fails if the password is invalid", async () => {

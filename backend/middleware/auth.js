@@ -1,7 +1,7 @@
 import { User } from "../models/user.js";
 import { verifyJWT } from "../utils/JWTUtil.js";
 
-export const authChecker = async function (req, res, next) {
+export const auth = async function (req, res, next) {
   const userToken = verifyJWT(req.headers.authorization);
 
   if (userToken.errors.length > 0) {
@@ -16,7 +16,9 @@ export const authChecker = async function (req, res, next) {
     });
   }
 
+  console.log(userId);
+
   req.userId = userId;
 
-  next();
+  return next();
 };

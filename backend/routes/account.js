@@ -7,6 +7,7 @@ import { verifyJWT } from "../utils/JWTUtil.js";
 import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
+import { auth } from "../middleware/auth.js";
 import "dotenv/config";
 
 const router = express.Router();
@@ -137,6 +138,7 @@ router.post(
  */
 router.put(
   "/account",
+  auth,
   body("username").isString(),
   body("password").isString(),
   body("newPassword")
@@ -205,6 +207,7 @@ router.put(
  */
 router.delete(
   "/account/:_id",
+  auth,
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
   (req, res) => {

@@ -7,7 +7,6 @@ import { jobRouter } from "./routes/monitoring.js";
 import { accountRouter } from "./routes/account.js";
 import { adminRouter } from "./routes/admin.js";
 import { imageRouter } from "./routes/image.js";
-import { authChecker } from "./middlewares/auth.js";
 import { emailCancelRouter } from "./routes/emailCancel.js";
 import { restartStuckJobs } from "./services/agendaRestarter.js";
 
@@ -22,8 +21,8 @@ app.use("/api", emailCancelRouter);
 app.use("/api", imageRouter);
 app.use("/api", adminRouter);
 app.use("/api", accountRouter);
-app.use("/api", previewRouter, authChecker);
-app.use("/api", jobRouter, authChecker);
+app.use("/api", previewRouter);
+app.use("/api", jobRouter);
 
 connectToDB(process.env.MONGODB_URI).then((r) => {
   restartStuckJobs();

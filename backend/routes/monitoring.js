@@ -13,6 +13,7 @@ import {
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ const router = express.Router();
  */
 router.post(
   "/job/visual",
+  auth,
   body("name").isString(),
   body("url").isURL(),
   body("interval")
@@ -60,6 +62,7 @@ router.post(
  */
 router.put(
   "/job/visual/:_id",
+  auth,
   param("_id").isMongoId(),
   body("name").isString(),
   body("interval").isIn(acceptedIntervals),
@@ -102,6 +105,7 @@ router.put(
  */
 router.patch(
   "/job/visual/:_id/status",
+  auth,
   param("_id").isMongoId(),
   body("active").isBoolean(),
   header("Authorization").isJWT(),
@@ -136,6 +140,7 @@ router.patch(
  */
 router.delete(
   "/job/visual/:_id",
+  auth,
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
   async (req, res) => {
@@ -185,6 +190,7 @@ router.delete(
  */
 router.get(
   "/job/visual/:_id",
+  auth,
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
   async (req, res) => {
@@ -220,6 +226,7 @@ router.get(
  */
 router.get(
   "/jobs/visual",
+  auth,
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -242,6 +249,7 @@ router.get(
  */
 router.post(
   "/job/text",
+  auth,
   body("name").isString(),
   body("url").isURL(),
   body("interval")
@@ -290,6 +298,7 @@ router.post(
  */
 router.put(
   "/job/text/:_id",
+  auth,
   param("_id").isMongoId(),
   body("name").isString(),
   body("url").isURL(),
@@ -353,6 +362,7 @@ router.put(
  */
 router.patch(
   "/job/text/:_id/status",
+  auth,
   param("_id").isMongoId(),
   body("active").isBoolean(),
   header("Authorization").isJWT(),
@@ -394,6 +404,7 @@ router.patch(
  */
 router.delete(
   "/job/text/:_id",
+  auth,
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
   async (req, res) => {
@@ -427,6 +438,7 @@ router.delete(
  */
 router.get(
   "/job/text/:_id",
+  auth,
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
   async (req, res) => {
@@ -454,25 +466,30 @@ router.get(
 /**
  * @api {get} /api/jobs/text Get all visual monitoring jobs for user
  */
-router.get("/jobs/text", header("Authorization").isJWT(), async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const userId = req.userId;
-
-  console.log(userId);
-
-  TextMonitoringJob.find({ userId }, (err, jobs) => {
-    if (err) {
-      return res.status(500).json({
-        errors: [{ msg: "Could not find the monitoring jobs." }],
-      });
-    } else {
-      res.status(200).json({ jobs });
+router.get(
+  "/jobs/text",
+  auth,
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-  });
-});
+
+    const userId = req.userId;
+
+    console.log(userId);
+
+    TextMonitoringJob.find({ userId }, (err, jobs) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "Could not find the monitoring jobs." }],
+        });
+      } else {
+        res.status(200).json({ jobs });
+      }
+    });
+  }
+);
 
 export { router as jobRouter };

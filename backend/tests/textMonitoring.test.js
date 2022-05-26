@@ -4,7 +4,7 @@ import { TextMonitoringJob } from "../models/textMonitoringJob.js";
 import { connectToDB, closeDB } from "../db";
 import "dotenv/config";
 
-const baseUrl = "http://localhost:3000";
+const baseUrl = "http://localhost:3001";
 
 const _fetch = async (method, path, body, token) => {
   body = typeof body === "string" ? body : JSON.stringify(body);
