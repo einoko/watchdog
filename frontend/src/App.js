@@ -290,10 +290,10 @@ export default function App({ location }) {
                           <div>
                             <input
                               type="text"
-                              name="name"
+                              name="keywords"
                               id="name"
                               required
-                              {...register("name")}
+                              {...register("keywords")}
                               className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                               placeholder="in stock, available"
                             />
