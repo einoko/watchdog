@@ -8,7 +8,7 @@ import { isLoggedIn } from "./utils/loginUtil";
 import { ProtectedRoute } from "./routes/protectedRoute";
 import { LoggedInRoute } from "./routes/loggedInRoute";
 import LoginView from "./components/account/login";
-import { RegisterView } from "./components/account/register";
+import RegisterView from "./components/account/register";
 import { JobsView } from "./components/jobs/jobs";
 import { JobView } from "./components/jobs/job";
 import { SettingsView } from "./components/settings";

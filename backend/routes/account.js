@@ -17,7 +17,7 @@ const router = express.Router();
 router.post(
   "/account/signup",
   body("username").isString(),
-  body("email").isEmail(),
+  body("email").isEmail().withMessage("Please enter a valid email address."),
   body("password")
     .isLength({ min: 6 })
     .withMessage("Please enter a password with at least 6 characters."),
@@ -89,7 +89,7 @@ router.post(
 
       if (!user) {
         return res.status(400).json({
-          errors: [{ msg: "No account with this username exists." }],
+          errors: [{ msg: "Invalid credentials." }],
         });
       }
 

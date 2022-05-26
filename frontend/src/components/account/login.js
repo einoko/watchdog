@@ -4,7 +4,7 @@ import { setJWT } from "../../utils/loginUtil";
 
 export default function LoginView() {
   const { register, handleSubmit } = useForm();
-  const [errors, setErrors] = React.useState({});
+  const [errors, setErrors] = React.useState([]);
 
   const onSubmit = async (data) => {
     const response = await fetch("/api/account/login", {
