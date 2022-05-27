@@ -35,9 +35,6 @@ export function restartStuckJobs() {
         $set: {
           nextRunAt: new Date(),
         },
-      },
-      {
-        multi: true,
       }
     );
 
