@@ -26,7 +26,13 @@ export const captureWebsiteToBuffer = async (url, additionalOptions) => {
     const buffer = await captureWebsite.buffer(prependHttp(url), options);
     return buffer;
   } catch (error) {
-    console.error(error);
+    if (
+      error.message.includes("Error: failed to find element matching selector")
+    ) {
+      // In case of a CSS bad selector, we try again without the CSS selector.
+      delete options.scrollToElement;
+      return captureWebsiteToBuffer(url, options);
+    }
     return null;
   }
 };
