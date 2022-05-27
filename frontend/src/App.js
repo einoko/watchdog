@@ -16,30 +16,57 @@ export default function App({ location }) {
   const [error, setError] = useState("");
   const [crop, setCrop] = useState();
   const [imageData, setImageData] = useState(null);
+  const [textData, setTextData] = useState(null);
   const [url, setUrl] = useState("");
-  const [comparisonType, setComparisonType] = useState("");
+  const [comparisonType, setComparisonType] = useState("visual");
+  const [textCSS, setTextCSS] = useState("");
 
   const handleScreenshot = async () => {
-    setFetchingImage(true);
-    setImageFetched(false);
-    const response = await fetch("/api/preview", {
-      method: "POST",
-      headers: {
-        Authorization: getJWT(),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        url,
-      }),
-    });
-    const json = await response.json();
-    setFetchingImage(false);
-    setImageFetched(true);
-    if (json.error) {
-      setError(json.error);
-    }
-    if (json.imageData) {
-      setImageData(json.imageData);
+    if (comparisonType === "visual") {
+      setFetchingImage(true);
+      setImageFetched(false);
+      const response = await fetch("/api/preview/image", {
+        method: "POST",
+        headers: {
+          Authorization: getJWT(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url,
+        }),
+      });
+      const json = await response.json();
+      setFetchingImage(false);
+      setImageFetched(true);
+      if (json.error) {
+        setError(json.error);
+      }
+      if (json.imageData) {
+        setImageData(json.imageData);
+      }
+    } else {
+      setFetchingImage(true);
+      setImageFetched(false);
+      const response = await fetch("/api/preview/text", {
+        method: "POST",
+        headers: {
+          Authorization: getJWT(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url,
+          textCSS,
+        }),
+      });
+      const json = await response.json();
+      setFetchingImage(false);
+      setImageFetched(true);
+      if (json.error) {
+        setError(json.error);
+      }
+      if (json.imageData) {
+        setImageData(json.text);
+      }
     }
   };
 
@@ -84,13 +111,25 @@ export default function App({ location }) {
                             </div>
                           )}
                         </div>
+                      ) : // only show crop is compariton type is visual
+                      comparisonType === "visual" ? (
+                        <div>
+                          <ReactCrop
+                            crop={crop}
+                            onChange={(c, p) => setCrop(p)}
+                          >
+                            <img
+                              src={`data:image/png;base64,${imageData}`}
+                              alt="Screenshot of a website"
+                            />
+                          </ReactCrop>
+                        </div>
                       ) : (
-                        <ReactCrop crop={crop} onChange={(c, p) => setCrop(p)}>
-                          <img
-                            src={`data:image/png;base64,${imageData}`}
-                            alt="Screenshot of a website"
-                          />
-                        </ReactCrop>
+                        <div>
+                          <div className="text-gray-600 text-center prose">
+                            {textData}
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -277,71 +316,124 @@ export default function App({ location }) {
                   )}
 
                   {comparisonType === "text" && (
-                    <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
-                      <label
-                        htmlFor="frequency"
-                        className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
-                      >
-                        Keywords
-                      </label>
-
-                      <div className="sm:col-span-2">
-                        <div className="sm:col-span-2">
-                          <div>
+                    <div>
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
+                        <label
+                          htmlFor="username"
+                          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                        >
+                          Select element
+                        </label>
+                        <div className="mt-1 sm:mt-0 sm:col-span-2">
+                          <div className="sm:max-w-md w-full flex flex-col sm:flex-row rounded-md shadow-sm">
                             <input
                               type="text"
-                              name="keywords"
-                              id="name"
+                              name="url"
+                              id="url"
                               required
-                              {...register("keywords")}
-                              className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                              placeholder="in stock, available"
+                              {...register("textCSS")}
+                              onChange={(e) => {
+                                setTextCSS(e.target.value);
+                              }}
+                              autoComplete="url"
+                              className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                              placeholder="#product-12305 > div > div.col-12.col-lg-10 > div > div.col-12.col-lg-7.summary.entry-summary"
                             />
+                          </div>
+                          <p className="mt-2 text-sm max-w-md text-gray-500">
+                            Will only get the text of an element that matches
+                            the given CSS selector. Also accepts CSS paths.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
+                        <label
+                          htmlFor="frequency"
+                          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                        >
+                          Keywords
+                        </label>
 
-                            <fieldset className="mt-3">
-                              <legend className="sr-only">Keywords</legend>
-                              <div className="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
-                                <div key="visual" className="flex items-center">
-                                  <input
-                                    {...register("wordChange")}
-                                    id="words_added"
-                                    name="wordChange"
-                                    type="radio"
-                                    value="added"
-                                    defaultChecked={true}
-                                    className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-                                  />
-                                  <label
-                                    htmlFor="visual"
-                                    className="ml-3 block text-sm font-medium text-gray-700"
-                                  >
-                                    Found
-                                  </label>
-                                </div>
-                                <div key="text" className="flex items-center">
-                                  <input
-                                    {...register("wordChange")}
-                                    id="words_removed"
-                                    name="wordChange"
-                                    type="radio"
-                                    value="removed"
-                                    className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-                                  />
-                                  <label
-                                    htmlFor="text"
-                                    className="ml-3 block text-sm font-medium text-gray-700"
-                                  >
-                                    Not found
-                                  </label>
-                                </div>
-                              </div>
-                            </fieldset>
+                        <div className="sm:col-span-2">
+                          <div className="sm:col-span-2">
+                            <div>
+                              <input
+                                type="text"
+                                name="keywords"
+                                id="name"
+                                required
+                                {...register("keywords")}
+                                className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                                placeholder="in stock, available"
+                              />
 
-                            <p className="mt-2 text-sm max-w-md text-gray-500">
-                              Separate keywords with commas. A notification will
-                              be sent when any of these keywords is either found
-                              (Added) or not found (Removed) in the page.
-                            </p>
+                              <fieldset className="mt-3">
+                                <legend className="sr-only">Keywords</legend>
+                                <div className="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                                  <div
+                                    key="visual"
+                                    className="flex items-center"
+                                  >
+                                    <input
+                                      {...register("wordChange")}
+                                      id="words_added"
+                                      name="wordChange"
+                                      type="radio"
+                                      value="added"
+                                      defaultChecked={true}
+                                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                                    />
+                                    <label
+                                      htmlFor="visual"
+                                      className="ml-3 block text-sm font-medium text-gray-700"
+                                    >
+                                      Found
+                                    </label>
+                                  </div>
+                                  <div key="text" className="flex items-center">
+                                    <input
+                                      {...register("wordChange")}
+                                      id="words_removed"
+                                      name="wordChange"
+                                      type="radio"
+                                      value="removed"
+                                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                                    />
+                                    <label
+                                      htmlFor="text"
+                                      className="ml-3 block text-sm font-medium text-gray-700"
+                                    >
+                                      Not found
+                                    </label>
+                                  </div>
+                                  <div key="text" className="flex items-center">
+                                    <input
+                                      {...register("wordChange")}
+                                      id="words_removed"
+                                      name="wordChange"
+                                      type="radio"
+                                      value="any_change"
+                                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                                    />
+                                    <label
+                                      htmlFor="text"
+                                      className="ml-3 block text-sm font-medium text-gray-700"
+                                    >
+                                      Any change
+                                    </label>
+                                  </div>
+                                </div>
+                              </fieldset>
+
+                              <p className="mt-2 text-sm max-w-md text-gray-500">
+                                Separate keywords with commas. A notification
+                                will be sent when any of these keywords is
+                                either found (<i>Added</i>) or not found (
+                                <i>Removed</i>) in the page. Alternatively,{" "}
+                                <i>Any change</i> will trigger on any change
+                                found in the whole text of the website.
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
