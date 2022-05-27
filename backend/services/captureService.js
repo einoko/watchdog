@@ -29,7 +29,7 @@ export const captureWebsiteToBuffer = async (url, additionalOptions) => {
     if (
       error.message.includes("Error: failed to find element matching selector")
     ) {
-      // In case of a CSS bad selector, we try again without the CSS selector.
+      // In case of a bad CSS selector, we try again without the CSS selector.
       delete options.scrollToElement;
       return captureWebsiteToBuffer(url, options);
     }

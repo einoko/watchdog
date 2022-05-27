@@ -492,4 +492,42 @@ router.get(
   }
 );
 
+/**
+ * @api {get} /api/jobs/all Get all visual and text monitoring jobs for user
+ */
+router.get(
+  "/jobs/all",
+  auth,
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userId = req.userId;
+
+    const jobs = {};
+
+    const visualJobs = await VisualMonitoringJob.find({ userId }).catch(
+      (err) => {
+        return res.status(500).json({
+          errors: [{ msg: "Could not find the visual monitoring jobs." }],
+        });
+      }
+    );
+
+    const textJobs = await TextMonitoringJob.find({ userId }).catch((err) => {
+      return res.status(500).json({
+        errors: [{ msg: "Could not find the text monitoring jobs." }],
+      });
+    });
+
+    jobs.visual = visualJobs;
+    jobs.text = textJobs;
+
+    res.status(200).json({ jobs });
+  }
+);
+
 export { router as jobRouter };
