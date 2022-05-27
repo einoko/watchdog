@@ -45,23 +45,17 @@ const textMonitoringJobSchema = new mongoose.Schema(
       required: true,
       default: () => randToken.generate(32),
     },
-    matches: [
-      {
-        matches: {
-          type: [String],
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-        fullText: {
-          type: String,
-        }
-      },
-    ],
+    cssText: {
+      type: String,
+      default: null,
+    },
+    states: {
+      type: [Object],
+      default: [],
+    },
     type: {
       type: String,
-      enum: ["added", "removed"],
+      enum: ["any_change", "added", "removed"],
     },
     words: {
       type: [String],

@@ -1,11 +1,13 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
 import {
-  getTextAlertMail,
+  getKeywordAlertMail,
   getVisualAlertMail,
+  getTextChangeAlertMail,
 } from "../utils/mailTemplateUtil.js";
 import { compressImage, getFullLink } from "./imageService.js";
 import fs from "fs";
+import Diff from "text-diff";
 
 // TODO: Refactor
 
@@ -85,11 +87,13 @@ export const sendVisualAlertMail = async (
   });*/
 };
 
-export const sendTextAlertMail = async (job, user, matches) => {
+export const sendKeywordAlertMail = async (job, user, matches = null) => {
   const templateObject = {
     jobName: job.name,
     jobUrl: job.url,
     matches: matches,
+    wordChange: job.type,
+    keywords: job.words,
     cancelLink: createDeletionLink(job.cancelToken),
   };
 
@@ -97,13 +101,53 @@ export const sendTextAlertMail = async (job, user, matches) => {
     from,
     to: user.email,
     subject: "Watchdog monitor detected a change!",
-    html: getTextAlertMail(templateObject),
+    html: getKeywordAlertMail(templateObject),
   };
 
-  const mailResult = getTextAlertMail(templateObject);
+  const mailResult = getKeywordAlertMail(templateObject);
 
   // save mail to file
   fs.writeFileSync(`./text_mail.html`, mailResult);
+
+  console.log("Mail sent...");
+
+  /*transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });*/
+};
+
+export const sendTextDiffMail = async (job, user) => {
+  // Get the last and second last state texts
+  const lastStateText = job.states[job.states.length - 1].text;
+  const secondLastStateText = job.states[job.states.length - 2].text;
+
+  const diff = new Diff();
+
+  let textDiff = diff.main(secondLastStateText, lastStateText);
+  diff.cleanupSemantic(textDiff);
+  const html = diff.prettyHtml(textDiff);
+
+  const templateObject = {
+    jobName: job.name,
+    jobUrl: job.url,
+    cancelLink: createDeletionLink(job.cancelToken),
+    diffHTML: html,
+  };
+
+  const mailOptions = {
+    from,
+    to: user.email,
+    subject: "Watchdog monitor detected a change!",
+    html: getTextChangeAlertMail(templateObject),
+  };
+
+  const mailResult = getTextChangeAlertMail(templateObject);
+
+  fs.writeFileSync("./text_mail.html", mailResult);
 
   console.log("Mail sent...");
 

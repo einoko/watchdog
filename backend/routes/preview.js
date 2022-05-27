@@ -37,8 +37,32 @@ router.post(
       });
     }
 
-    const { url } = req.body;
-    const preview = await captureWebsiteToBuffer(url);
+    const { url, scrollToElement, hideElements } = req.body;
+
+    const additionalOptions = {};
+
+    if (scrollToElement) {
+      additionalOptions.scrollToElement = {
+        element: scrollToElement,
+        offset: 0,
+        offsetFrom: "top",
+      };
+    }
+
+    if (hideElements) {
+      additionalOptions.hideElements = hideElements;
+    }
+
+    if (crop) {
+      additionalOptions.clip = {
+        x: crop.x,
+        y: crop.y,
+        width: crop.width,
+        height: crop.height,
+      }
+    }
+
+    const preview = await captureWebsiteToBuffer(url, additionalOptions);
 
     Preview.create({ userId, url, success: preview !== null });
 

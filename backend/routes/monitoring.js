@@ -255,8 +255,7 @@ router.post(
   body("interval")
     .isIn(acceptedIntervals)
     .withMessage("Please enter a valid interval."),
-  body("type").isIn(["added", "removed"]),
-  body("words").isArray(),
+  body("type").isIn(["any_change", "added", "removed"]),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -270,12 +269,8 @@ router.post(
 
     TextMonitoringJob.create(
       {
-        name,
-        url,
-        interval,
-        type,
-        words,
         userId,
+        ...req.body
       },
       (err, job) => {
         if (err) {

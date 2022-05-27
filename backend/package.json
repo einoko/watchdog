@@ -44,6 +44,7 @@
     "puppeteer": "^14.1.1",
     "rand-token": "^1.0.1",
     "sharp": "^0.30.4",
+    "text-diff": "^1.0.1",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {

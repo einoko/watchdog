@@ -20,7 +20,9 @@ export default function App({ location }) {
   const [url, setUrl] = useState("");
   const [comparisonType, setComparisonType] = useState("visual");
   const [textCSS, setTextCSS] = useState("");
+  const [scrollToElement, setScrollToElement] = useState("");
   const [textComparisonMethod, setTextComparisonMethod] = useState("");
+  const [hideElements, setHideElements] = useState("");
 
   const handleScreenshot = async () => {
     if (comparisonType === "visual") {
@@ -34,6 +36,8 @@ export default function App({ location }) {
         },
         body: JSON.stringify({
           url,
+          scrollToElement,
+          hideElements: hideElements.split(",").map((e) => e.trim()),
         }),
       });
       const json = await response.json();
@@ -72,10 +76,50 @@ export default function App({ location }) {
     }
   };
 
-  const onSubmit = (data) => {
-    data.crop = crop;
-
-    console.log(data);
+  const onSubmit = async (data) => {
+    if (comparisonType === "visual") {
+      const response = await fetch("/api/preview/image", {
+        method: "POST",
+        headers: {
+          Authorization: getJWT(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          url: data.url,
+          interval: data.interval,
+          scrollToElement: data.scrollToElement,
+          hideElements: data.hideElements.split(",").map((e) => e.trim()),
+          crop: crop,
+        }),
+      });
+      const json = await response.json();
+      if (json.error) {
+        setError(json.error);
+      }
+      console.log("Job added!");
+    } else {
+      const response = await fetch("/api/preview/text", {
+        method: "POST",
+        headers: {
+          Authorization: getJWT(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          url: data.url,
+          interval: data.interval,
+          textCSS: data.textCSS,
+          keywords: data.keywords.split(",").map((e) => e.trim()),
+          wordChange: data.wordChange,
+        }),
+      });
+      const json = await response.json();
+      if (json.error) {
+        setError(json.error);
+      }
+      console.log("Job added!");
+    }
   };
 
   return (
@@ -123,7 +167,7 @@ export default function App({ location }) {
                         <div>
                           <ReactCrop
                             crop={crop}
-                            onChange={(c, p) => setCrop(p)}
+                            onChange={(c, p) => setCrop(c)}
                           >
                             <img
                               src={`data:image/png;base64,${imageData}`}
@@ -146,14 +190,14 @@ export default function App({ location }) {
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                     <label
                       htmlFor="frequency"
-                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                     >
                       Comparison method
                     </label>
                     <div className="sm:col-span-2">
                       <div className="sm:col-span-2">
                         <div>
-                          <fieldset className="mt-2">
+                          <fieldset className="mt-[10px]">
                             <legend className="sr-only">
                               Comparison method
                             </legend>
@@ -211,7 +255,7 @@ export default function App({ location }) {
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                     <label
                       htmlFor="username"
-                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                     >
                       Job name
                     </label>
@@ -231,7 +275,7 @@ export default function App({ location }) {
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                     <label
                       htmlFor="username"
-                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                     >
                       URL
                     </label>
@@ -264,7 +308,7 @@ export default function App({ location }) {
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                     <label
                       htmlFor="frequency"
-                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                     >
                       Frequency
                     </label>
@@ -300,7 +344,7 @@ export default function App({ location }) {
                     <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                       <label
                         htmlFor="frequency"
-                        className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                        className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                       >
                         Trigger
                       </label>
@@ -331,7 +375,7 @@ export default function App({ location }) {
                       <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                         <label
                           htmlFor="username"
-                          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                         >
                           Select element
                         </label>
@@ -353,14 +397,16 @@ export default function App({ location }) {
                           </div>
                           <p className="mt-2 text-sm max-w-md text-gray-500">
                             Will only get the text of an element that matches
-                            the given CSS selector. Also accepts CSS paths.
+                            the given CSS selector. Also accepts CSS paths. If
+                            no element is found, all text on the page will be
+                            returned.
                           </p>
                         </div>
                       </div>
                       <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                         <label
                           htmlFor="frequency"
-                          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                         >
                           Keywords
                         </label>
@@ -481,7 +527,7 @@ export default function App({ location }) {
                                 <div className="w-full border-t border-gray-300" />
                               </div>
                               <div className="relative pt-6 flex justify-center">
-                                <div className="px-3 pl-0 lg:pl-48 flex flex-row items-center bg-white text-lg font-medium text-gray-900">
+                                <div className="px-3 pl-0 lg:pl-36 flex flex-row items-center bg-white text-lg font-medium text-gray-900">
                                   <div>Advanced settings</div>
                                   <div className="h-5 w-5 ml-1">
                                     <ChevronRightIcon
@@ -495,7 +541,7 @@ export default function App({ location }) {
                             </div>
                           </Disclosure.Button>
                           <Disclosure.Panel>
-                            <div className="pb-4 lg:pl-48 lg:w-[860px]">
+                            <div className="pb-4 lg:pl-36 lg:w-[860px]">
                               <p className="mt-2 text-sm text-gray-500">
                                 The following settings are optional. You can use
                                 them to improve the quality of the website
@@ -508,7 +554,7 @@ export default function App({ location }) {
                               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
                                 <label
                                   htmlFor="scrollToElement"
-                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                                 >
                                   Scroll to element
                                 </label>
@@ -518,12 +564,16 @@ export default function App({ location }) {
                                     name="scrollToElement"
                                     id="scrollToElement"
                                     {...register("scrollToElement")}
+                                    onChange={(e) =>
+                                      setScrollToElement(e.target.value)
+                                    }
                                     className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                                     placeholder=".content"
                                   />
                                   <p className="mt-2 text-sm text-gray-500 max-w-lg">
                                     Scrolls to the DOM element that matches the
-                                    given CSS selector.
+                                    given CSS selector. If the element is not
+                                    found, the page will not be scrolled.
                                   </p>
                                 </div>
                               </div>
@@ -531,7 +581,7 @@ export default function App({ location }) {
                               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-startsm:pt-5">
                                 <label
                                   htmlFor="username"
-                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                                 >
                                   Hide elements
                                 </label>
@@ -541,6 +591,9 @@ export default function App({ location }) {
                                     name="hideElements"
                                     id="hideElements"
                                     {...register("hideElements")}
+                                    onChange={(e) =>
+                                      setHideElements(e.target.value)
+                                    }
                                     className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                                     placeholder=".cookieBanner, #ad_overlay"
                                   />
@@ -548,35 +601,6 @@ export default function App({ location }) {
                                     Hide DOM elements that match given CSS
                                     selectors. Separate multiple selectors with
                                     a comma.
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-startsm:pt-5">
-                                <label
-                                  htmlFor="username"
-                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-48"
-                                >
-                                  Cookies
-                                </label>
-                                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                                  <input
-                                    type="text"
-                                    name="cookies"
-                                    id="cookies"
-                                    {...register("cookies")}
-                                    className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                                    placeholder="id=a3fWa; Expires=Thu, 31 Oct 2021 07:28:00 GMT;"
-                                  />
-                                  <p className="mt-2 text-sm text-gray-500 max-w-lg">
-                                    Include cookies that will be injected during
-                                    capturing. Enter cookies as one string. Tip:
-                                    Running{" "}
-                                    <pre className="inline">
-                                      document.cookie
-                                    </pre>{" "}
-                                    on any site will return all cookies that are
-                                    currently accessible from that location.
                                   </p>
                                 </div>
                               </div>

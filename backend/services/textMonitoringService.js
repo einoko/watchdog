@@ -1,41 +1,85 @@
 import { TextMonitoringJob } from "../models/textMonitoringJob.js";
 import { User } from "../models/user.js";
 import { deleteAgendaJob } from "./agendaService.js";
-import { sendTextAlertMail } from "./mailService.js";
+import { sendKeywordAlertMail, sendTextDiffMail } from "./mailService.js";
 import { getWebsiteText } from "./textService.js";
 
 const checkText = async (job) => {
-  const fullText = await getWebsiteText(job.url);
+  const fullText = await getWebsiteText(job.url, job.cssText);
 
   if (fullText === null) {
     console.error("Could not retrieve text from website. Send warning email.");
     return;
   }
 
-  const trimmedText = fullText.toLowerCase().replace(/\s+/g, " ").trim();
+  if (job.type === "any_change") {
+    if (job.states.length === 0) {
+      job.states.push({
+        text: fullText,
+        createdAt: new Date(),
+      });
 
-  const matches = [];
+      await job.save();
 
-  for (const word of job.words) {
-    if (job.type === "added") {
-      if (trimmedText.includes(word.toLowerCase())) {
+      console.log("Created initial state.");
+      return;
+    } else {
+      const lastState = job.states[job.states.length - 1];
+
+      if (lastState.text !== fullText) {
+        job.states.push({
+          text: fullText,
+          createdAt: new Date(),
+        });
+
+        await job.save();
+
+        // Send alert email.
+        const user = await User.findById(job.userId);
+
+        if (user) {
+          sendTextDiffMail(job, user);
+        } else {
+          console.error(`Could not find user ${job.userId}`);
+        }
+
+        console.log("Created new state.");
+        return;
+      } else {
+        return;
+      }
+    }
+  } else {
+    const trimmedText = fullText.toLowerCase().replace(/\s+/g, " ").trim();
+
+    const matches = [];
+
+    for (const word of job.words) {
+      if (job.type === "added") {
+        if (trimmedText.includes(word.toLowerCase())) {
+          matches.push(word);
+        }
+      } else if (!trimmedText.includes(word.toLowerCase())) {
         matches.push(word);
       }
-    } else if (!trimmedText.includes(word.toLowerCase())) {
-      matches.push(word);
+    }
+
+    if (matches.length > 0) {
+      const user = await User.findById(job.userId);
+      if (user) {
+        job.states.push({
+          matches,
+          createdAt: new Date(),
+          fullText,
+        });
+
+        await job.save();
+        sendKeywordAlertMail(job, user, matches);
+      } else {
+        console.error(`Could not find user ${job.userId}`);
+      }
     }
   }
-
-  if (matches.length > 0) {
-    const user = await User.findById(job.userId);
-    if (user) {
-      sendTextAlertMail(job, user, matches);
-    } else {
-      console.error(`Could not find user ${job.userId}`);
-    }
-  }
-
-  return { matches, fullText };
 };
 
 /**
@@ -52,17 +96,7 @@ const executeTextMonitoringJob = async (jobID) => {
     return;
   }
 
-  const { matches, fullText } = await checkText(job);
-
-  if (matches.length > 0) {
-    job.matches.push({
-      matches,
-      createdAt: new Date(),
-      fullText,
-    });
-
-    await job.save();
-  }
+  await checkText(job);
 };
 
 /**
