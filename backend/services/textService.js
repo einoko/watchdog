@@ -25,7 +25,7 @@ const scrollToBottom = async () => {
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const getWebsiteText = async (url) => {
+export const getWebsiteText = async (url, selector = null) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -47,10 +47,15 @@ export const getWebsiteText = async (url) => {
 
     await wait(1000);
 
-    const text = await page.evaluate(async () => {
-      const text = document.body.innerText;
-      return text;
-    });
+    const text = await page.evaluate(async (selector) => {
+      if (selector) {
+        const element = document.querySelector(selector);
+        if (element) {
+          return element.innerText;
+        }
+      }
+      return document.body.innerText;
+    }, selector);
 
     return text ? text : null;
   });
