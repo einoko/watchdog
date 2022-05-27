@@ -20,6 +20,7 @@ export default function App({ location }) {
   const [url, setUrl] = useState("");
   const [comparisonType, setComparisonType] = useState("visual");
   const [textCSS, setTextCSS] = useState("");
+  const [textComparisonMethod, setTextComparisonMethod] = useState("");
 
   const handleScreenshot = async () => {
     if (comparisonType === "visual") {
@@ -88,7 +89,13 @@ export default function App({ location }) {
             <div className="xl:rounded-lg bg-white shadow-lg sm:overflow-hidden pt-8">
               <div className="px-8">
                 <div className="aspect-[4/3]">
-                  <div className="overflow-scroll min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner overflow-hidden w-full h-full">
+                  <div
+                    className={
+                      comparisonType === "text"
+                        ? "overflow-scroll min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner w-full h-full"
+                        : "min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner overflow-hidden w-full h-full"
+                    }
+                  >
                     <div className="text-center flex min-h-full">
                       {!dataFetched ? (
                         <div className="m-auto">
@@ -158,9 +165,11 @@ export default function App({ location }) {
                                   name="comparison"
                                   type="radio"
                                   value="visual"
-                                  onChange={(e) =>
-                                    setComparisonType(e.target.value)
-                                  }
+                                  onChange={(e) => {
+                                    setDataFetched(false);
+                                    setFetchingData(false);
+                                    setComparisonType(e.target.value);
+                                  }}
                                   defaultChecked={true}
                                   className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
                                 />
@@ -178,9 +187,11 @@ export default function App({ location }) {
                                   name="comparison"
                                   type="radio"
                                   value="text"
-                                  onChange={(e) =>
-                                    setComparisonType(e.target.value)
-                                  }
+                                  onChange={(e) => {
+                                    setDataFetched(false);
+                                    setFetchingData(false);
+                                    setComparisonType(e.target.value);
+                                  }}
                                   className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
                                 />
                                 <label
@@ -357,19 +368,41 @@ export default function App({ location }) {
                         <div className="sm:col-span-2">
                           <div className="sm:col-span-2">
                             <div>
-                              <input
-                                type="text"
-                                name="keywords"
-                                id="name"
-                                required
-                                {...register("keywords")}
-                                className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                                placeholder="in stock, available"
-                              />
+                              {textComparisonMethod !== "any_change" && (
+                                <input
+                                  type="text"
+                                  name="keywords"
+                                  id="name"
+                                  required
+                                  {...register("keywords")}
+                                  className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                                  placeholder="in stock, available"
+                                />
+                              )}
 
-                              <fieldset className="mt-3">
+                              <fieldset className="mt-[11px]">
                                 <legend className="sr-only">Keywords</legend>
                                 <div className="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                                  <div key="text" className="flex items-center">
+                                    <input
+                                      {...register("wordChange")}
+                                      id="words_removed"
+                                      name="wordChange"
+                                      type="radio"
+                                      defaultChecked={true}
+                                      value="any_change"
+                                      onChange={(e) =>
+                                        setTextComparisonMethod(e.target.value)
+                                      }
+                                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                                    />
+                                    <label
+                                      htmlFor="text"
+                                      className="ml-3 block text-sm font-medium text-gray-700"
+                                    >
+                                      Any change
+                                    </label>
+                                  </div>
                                   <div
                                     key="visual"
                                     className="flex items-center"
@@ -380,7 +413,9 @@ export default function App({ location }) {
                                       name="wordChange"
                                       type="radio"
                                       value="added"
-                                      defaultChecked={true}
+                                      onChange={(e) =>
+                                        setTextComparisonMethod(e.target.value)
+                                      }
                                       className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
                                     />
                                     <label
@@ -397,6 +432,9 @@ export default function App({ location }) {
                                       name="wordChange"
                                       type="radio"
                                       value="removed"
+                                      onChange={(e) =>
+                                        setTextComparisonMethod(e.target.value)
+                                      }
                                       className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
                                     />
                                     <label
@@ -406,32 +444,23 @@ export default function App({ location }) {
                                       Not found
                                     </label>
                                   </div>
-                                  <div key="text" className="flex items-center">
-                                    <input
-                                      {...register("wordChange")}
-                                      id="words_removed"
-                                      name="wordChange"
-                                      type="radio"
-                                      value="any_change"
-                                      className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-                                    />
-                                    <label
-                                      htmlFor="text"
-                                      className="ml-3 block text-sm font-medium text-gray-700"
-                                    >
-                                      Any change
-                                    </label>
-                                  </div>
                                 </div>
                               </fieldset>
 
-                              <p className="mt-2 text-sm max-w-md text-gray-500">
-                                Separate keywords with commas. A notification
-                                will be sent when any of these keywords is
-                                either found (Added) or not found (Removed).
-                                Alternatively, Any change will trigger on any
-                                change found in the text.
-                              </p>
+                              <ul className="mt-2 text-sm max-w-md text-gray-500">
+                                <li className="mb-1">
+                                  When <b>Any change</b> is selected, a
+                                  notification will be sent whenever any change
+                                  in the selected text is detected.
+                                </li>
+                                <li>
+                                  Alternatively, you can define keywords, and
+                                  receive a notification whenever any of the
+                                  words are either <b>Found</b> or{" "}
+                                  <b>Not found</b> in the text. Separate
+                                  multiple keywords with commas.
+                                </li>
+                              </ul>
                             </div>
                           </div>
                         </div>
