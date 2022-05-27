@@ -83,9 +83,9 @@ router.post(
       });
     }
 
-    const { url, cssText } = req.body;
+    const { url, textCSS } = req.body;
 
-    const fullText = await getWebsiteText(url, null);
+    const fullText = await getWebsiteText(url, textCSS);
 
     Preview.create({ userId, url, success: fullText !== null });
 

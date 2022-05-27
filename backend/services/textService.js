@@ -2,12 +2,13 @@ import puppeteer from "puppeteer";
 import { PuppeteerBlocker } from "@cliqz/adblocker-puppeteer";
 import fetch from "cross-fetch";
 import { promises as fs } from "fs";
+import prependHttp from "prepend-http";
 
 const scrollToBottom = async () => {
   await new Promise((resolve) => {
     const maxDistance = 10000; // in case there is infinite scroll, should be enough for most sites
     const distance = 100;
-    const delay = 60;
+    const delay = 100;
     const timer = setInterval(() => {
       document.scrollingElement.scrollBy(0, distance);
       console.log(document.scrollingElement.scrollTop);
@@ -29,6 +30,8 @@ export const getWebsiteText = async (url, selector = null) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
+  console.log(selector);
+
   const text = await PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
     path: "engine.bin",
     read: fs.readFile,
@@ -37,7 +40,7 @@ export const getWebsiteText = async (url, selector = null) => {
     blocker.enableBlockingInPage(page);
 
     try {
-      await page.goto(url);
+      await page.goto(prependHttp(url));
     } catch (err) {
       await browser.close();
       return null;

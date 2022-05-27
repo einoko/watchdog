@@ -11,8 +11,8 @@ import { ChevronRightIcon } from "@heroicons/react/solid";
 
 export default function App({ location }) {
   const { register, handleSubmit } = useForm();
-  const [imageFetched, setImageFetched] = useState(false);
-  const [fetchingImage, setFetchingImage] = useState(false);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [fetchingData, setFetchingData] = useState(false);
   const [error, setError] = useState("");
   const [crop, setCrop] = useState();
   const [imageData, setImageData] = useState(null);
@@ -23,8 +23,8 @@ export default function App({ location }) {
 
   const handleScreenshot = async () => {
     if (comparisonType === "visual") {
-      setFetchingImage(true);
-      setImageFetched(false);
+      setFetchingData(true);
+      setDataFetched(false);
       const response = await fetch("/api/preview/image", {
         method: "POST",
         headers: {
@@ -36,8 +36,8 @@ export default function App({ location }) {
         }),
       });
       const json = await response.json();
-      setFetchingImage(false);
-      setImageFetched(true);
+      setFetchingData(false);
+      setDataFetched(true);
       if (json.error) {
         setError(json.error);
       }
@@ -45,8 +45,8 @@ export default function App({ location }) {
         setImageData(json.imageData);
       }
     } else {
-      setFetchingImage(true);
-      setImageFetched(false);
+      setFetchingData(true);
+      setDataFetched(false);
       const response = await fetch("/api/preview/text", {
         method: "POST",
         headers: {
@@ -59,13 +59,14 @@ export default function App({ location }) {
         }),
       });
       const json = await response.json();
-      setFetchingImage(false);
-      setImageFetched(true);
+      setFetchingData(false);
+      setDataFetched(true);
+      console.log(json);
       if (json.error) {
         setError(json.error);
       }
-      if (json.imageData) {
-        setImageData(json.text);
+      if (json.text) {
+        setTextData(json.text);
       }
     }
   };
@@ -79,7 +80,7 @@ export default function App({ location }) {
   return (
     <Layout location={location}>
       <div className="App bg-gray-200">
-        <div className="mx-auto max-w-7xl xl:pt-8 xl:pb-8">
+        <div className="mx-auto max-w-5xl xl:pt-8 xl:pb-8">
           <h1 className="text-2xl font-bold text-left py-4 text-black">
             New monitoring job
           </h1>
@@ -87,13 +88,13 @@ export default function App({ location }) {
             <div className="xl:rounded-lg bg-white shadow-lg sm:overflow-hidden pt-8">
               <div className="px-8">
                 <div className="aspect-[4/3]">
-                  <div className="min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner overflow-hidden w-full h-full">
+                  <div className="overflow-scroll min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner overflow-hidden w-full h-full">
                     <div className="text-center flex min-h-full">
-                      {!imageFetched ? (
+                      {!dataFetched ? (
                         <div className="m-auto">
-                          {fetchingImage ? (
+                          {fetchingData ? (
                             <h3 className="text-xl text-gray-600">
-                              Fetching a screenshot. Please wait...
+                              Fetching URL. Please wait...
                             </h3>
                           ) : (
                             <div>
@@ -111,8 +112,7 @@ export default function App({ location }) {
                             </div>
                           )}
                         </div>
-                      ) : // only show crop is compariton type is visual
-                      comparisonType === "visual" ? (
+                      ) : comparisonType === "visual" ? (
                         <div>
                           <ReactCrop
                             crop={crop}
@@ -125,8 +125,8 @@ export default function App({ location }) {
                           </ReactCrop>
                         </div>
                       ) : (
-                        <div>
-                          <div className="text-gray-600 text-center prose">
+                        <div className="min-w-full min-h-full flex flex-col items-center">
+                          <div className="mx-auto my-auto text-black text-center prose-xl">
                             {textData}
                           </div>
                         </div>
@@ -428,10 +428,9 @@ export default function App({ location }) {
                               <p className="mt-2 text-sm max-w-md text-gray-500">
                                 Separate keywords with commas. A notification
                                 will be sent when any of these keywords is
-                                either found (<i>Added</i>) or not found (
-                                <i>Removed</i>) in the page. Alternatively,{" "}
-                                <i>Any change</i> will trigger on any change
-                                found in the whole text of the website.
+                                either found (Added) or not found (Removed).
+                                Alternatively, Any change will trigger on any
+                                change found in the text.
                               </p>
                             </div>
                           </div>
