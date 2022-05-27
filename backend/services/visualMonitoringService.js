@@ -8,8 +8,41 @@ import { saveImage } from "./imageService.js";
 import { readFileFromPath } from "./fileService.js";
 import { sendVisualAlertMail } from "./mailService.js";
 
+export const getAdditionalCaptureOptions = (job) => {
+  const additionalOptions = {};
+
+  if (job.scrollToElement) {
+    additionalOptions.scrollToElement = {
+      element: job.scrollToElement,
+      offset: 0,
+      offsetFrom: "top",
+    };
+  }
+
+  if (job.hideElements) {
+    additionalOptions.hideElements = job.hideElements;
+  }
+
+  // TODO: Move to .env
+  const width = 1280;
+  const height = 960;
+
+  if (job.crop) {
+    additionalOptions.clip = {
+      x: Math.round((job.crop.x / 100) * width),
+      y: Math.round((job.crop.y / 100) * height),
+      width: Math.round((job.crop.width / 100) * width),
+      height: Math.round((job.crop.height / 100) * height)
+    };
+  }
+
+  return additionalOptions;
+};
+
 const initializeFirstState = async (job) => {
-  const screenshot = await captureWebsiteToBuffer(job.url);
+  const additionalOptions = getAdditionalCaptureOptions(job);
+
+  const screenshot = await captureWebsiteToBuffer(job.url, additionalOptions);
 
   if (screenshot === null) {
     console.error(`Could not capture screenshot for ${job._id} ${job.url}`);
@@ -28,6 +61,8 @@ const initializeFirstState = async (job) => {
 };
 
 const checkLastState = async (job) => {
+  const additionalOptions = getAdditionalCaptureOptions(job);
+
   const lastState = job.states[job.states.length - 1];
 
   const lastStateImage = await Image.findById(lastState.image);
@@ -38,7 +73,7 @@ const checkLastState = async (job) => {
   }
 
   const lastStateImageBuffer = await readFileFromPath(lastStateImage.path);
-  const newScreenshotBuffer = await captureWebsiteToBuffer(job.url);
+  const newScreenshotBuffer = await captureWebsiteToBuffer(job.url, additionalOptions);
 
   if (newScreenshotBuffer === null) {
     console.error(`Could not capture screenshot for ${job._id} ${job.url}`);
@@ -66,7 +101,13 @@ const checkLastState = async (job) => {
 
     const user = await User.findById(job.userId);
 
-    sendVisualAlertMail(user, job, lastStateImage, savedNewScreenshot, savedDiffImage);
+    sendVisualAlertMail(
+      user,
+      job,
+      lastStateImage,
+      savedNewScreenshot,
+      savedDiffImage
+    );
   }
 };
 

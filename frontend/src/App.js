@@ -76,9 +76,11 @@ export default function App({ location }) {
     }
   };
 
+  console.log(crop);
+
   const onSubmit = async (data) => {
     if (comparisonType === "visual") {
-      const response = await fetch("/api/preview/image", {
+      const response = await fetch("/api/job/visual", {
         method: "POST",
         headers: {
           Authorization: getJWT(),
@@ -88,8 +90,8 @@ export default function App({ location }) {
           name: data.name,
           url: data.url,
           interval: data.interval,
-          scrollToElement: data.scrollToElement,
-          hideElements: data.hideElements.split(",").map((e) => e.trim()),
+          scrollToElement: scrollToElement,
+          hideElements: hideElements.split(",").map((e) => e.trim()),
           crop: crop,
         }),
       });
@@ -99,7 +101,7 @@ export default function App({ location }) {
       }
       console.log("Job added!");
     } else {
-      const response = await fetch("/api/preview/text", {
+      const response = await fetch("/api/job/text", {
         method: "POST",
         headers: {
           Authorization: getJWT(),
@@ -167,7 +169,7 @@ export default function App({ location }) {
                         <div>
                           <ReactCrop
                             crop={crop}
-                            onChange={(c, p) => setCrop(c)}
+                            onChange={(c, p) => setCrop(p)}
                           >
                             <img
                               src={`data:image/png;base64,${imageData}`}

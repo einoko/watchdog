@@ -48,6 +48,15 @@ const visualMonitoringJobSchema = new mongoose.Schema(
       type: [Object],
       default: [],
     },
+    scrollToElement: {
+      type: String,
+    },
+    hideElements: {
+      type: [String],
+    },
+    crop: {
+      type: Object,
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: true },

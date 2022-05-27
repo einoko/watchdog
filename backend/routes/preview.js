@@ -53,15 +53,6 @@ router.post(
       additionalOptions.hideElements = hideElements;
     }
 
-    if (crop) {
-      additionalOptions.clip = {
-        x: crop.x,
-        y: crop.y,
-        width: crop.width,
-        height: crop.height,
-      }
-    }
-
     const preview = await captureWebsiteToBuffer(url, additionalOptions);
 
     Preview.create({ userId, url, success: preview !== null });

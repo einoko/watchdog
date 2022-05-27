@@ -57,7 +57,7 @@ export const createDiffImage = (oldBuffer, newBuffer) => {
     });
 
     return sharp(newBuffer)
-      .composite([{ input: PNG.sync.write(diff), blend: "screen" }])
+      .composite([{ input: PNG.sync.write(diff), blend: "multiply" }])
       .toBuffer();
   } catch (error) {
     console.error(error);
