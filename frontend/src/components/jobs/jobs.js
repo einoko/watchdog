@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Layout } from "../layout/layout";
 import { getJWT } from "../../utils/loginUtil.js";
 import { ClockIcon, EyeIcon, LinkIcon } from "@heroicons/react/solid";
+import { Link } from "react-router-dom";
 
 export const JobsView = ({ location }) => {
   const [visualJobs, setVisualJobs] = useState([]);
@@ -32,11 +33,15 @@ export const JobsView = ({ location }) => {
           <ul role="list" className="divide-y divide-gray-200">
             {visualJobs.map((jobListing) => (
               <li key={jobListing._id}>
-                <a href="#" className="block hover:bg-gray-50 rounded-lg">
+                <div href="#" className="block hover:bg-gray-50 rounded-lg">
                   <div className="px-4 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-indigo-600 truncate">
-                        {jobListing.name}
+                        <Link
+                          to={{
+                            pathname: `/jobs/${jobListing._id}`,
+                          }}
+                        >{jobListing.name}</Link>
                       </p>
                       <div className="ml-2 flex-shrink-0 flex">
                         <button className="text-red-500 underline">
@@ -73,7 +78,7 @@ export const JobsView = ({ location }) => {
                       </div>
                     </div>
                   </div>
-                </a>
+                </div>
               </li>
             ))}
           </ul>
