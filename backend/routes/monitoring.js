@@ -30,6 +30,13 @@ router.post(
   body("interval")
     .isIn(acceptedIntervals)
     .withMessage("Please enter a valid interval."),
+  body("threshold").isIn([0.0, 0.01, 0.1, 0.25, 0.5]),
+  body("scrollToElement")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString(),
+  body("hideElements")
+    .optional({ nullable: true, checkFalsy: true })
+    .isString(),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -39,9 +46,7 @@ router.post(
 
     const userId = req.userId;
 
-    const { name, url, interval } = req.body;
-
-    VisualMonitoringJob.create({ userId, name, url, interval }, (err, job) => {
+    VisualMonitoringJob.create({ userId, ...req.body }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not create the monitoring job." }],
@@ -256,6 +261,7 @@ router.post(
     .isIn(acceptedIntervals)
     .withMessage("Please enter a valid interval."),
   body("type").isIn(["any_change", "added", "removed"]),
+  body("selectElement").optional({ nullable: true, checkFalsy: true }),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -265,12 +271,10 @@ router.post(
 
     const userId = req.userId;
 
-    const { name, url, interval, type, words } = req.body;
-
     TextMonitoringJob.create(
       {
         userId,
-        ...req.body
+        ...req.body,
       },
       (err, job) => {
         if (err) {

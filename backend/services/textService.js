@@ -30,8 +30,6 @@ export const getWebsiteText = async (url, selector = null) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  console.log(selector);
-
   const text = await PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
     path: "engine.bin",
     read: fs.readFile,

@@ -13,70 +13,90 @@ export default function App({ location }) {
   const { register, handleSubmit } = useForm();
   const [dataFetched, setDataFetched] = useState(false);
   const [fetchingData, setFetchingData] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState([]);
   const [crop, setCrop] = useState();
   const [imageData, setImageData] = useState(null);
   const [textData, setTextData] = useState(null);
   const [url, setUrl] = useState("");
   const [comparisonType, setComparisonType] = useState("visual");
   const [textCSS, setTextCSS] = useState("");
-  const [scrollToElement, setScrollToElement] = useState("");
-  const [textComparisonMethod, setTextComparisonMethod] = useState("");
-  const [hideElements, setHideElements] = useState("");
+  const [scrollToElement, setScrollToElement] = useState();
+  const [textComparisonMethod, setTextComparisonMethod] =
+    useState("any_change");
+  const [hideElements, setHideElements] = useState();
 
-  const handleScreenshot = async () => {
-    if (comparisonType === "visual") {
-      setFetchingData(true);
-      setDataFetched(false);
-      const response = await fetch("/api/preview/image", {
-        method: "POST",
-        headers: {
-          Authorization: getJWT(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url,
-          scrollToElement,
-          hideElements: hideElements.split(",").map((e) => e.trim()),
-        }),
-      });
-      const json = await response.json();
-      setFetchingData(false);
-      setDataFetched(true);
-      if (json.error) {
-        setError(json.error);
-      }
-      if (json.imageData) {
-        setImageData(json.imageData);
-      }
-    } else {
-      setFetchingData(true);
-      setDataFetched(false);
-      const response = await fetch("/api/preview/text", {
-        method: "POST",
-        headers: {
-          Authorization: getJWT(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url,
-          textCSS,
-        }),
-      });
-      const json = await response.json();
-      setFetchingData(false);
-      setDataFetched(true);
-      console.log(json);
-      if (json.error) {
-        setError(json.error);
-      }
-      if (json.text) {
-        setTextData(json.text);
-      }
-    }
+  const classNames = (...classes) => {
+    return classes.filter(Boolean).join(" ");
   };
 
-  console.log(crop);
+  const handlePreview = async () => {
+    handleSubmit(async (data) => {
+      if (comparisonType === "visual") {
+        setErrors([]);
+        setFetchingData(true);
+        setDataFetched(false);
+        const response = await fetch("/api/preview/image", {
+          method: "POST",
+          headers: {
+            Authorization: getJWT(),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(
+            removeEmpty({
+              url: data.url,
+              scrollToElement: scrollToElement,
+              hideElements: hideElements,
+            })
+          ),
+        });
+        const json = await response.json();
+        setFetchingData(false);
+        if (json.errors) {
+          for (const error of json.errors) {
+            setErrors([error]);
+          }
+        } else {
+          setDataFetched(true);
+        }
+        if (json.imageData) {
+          setImageData(json.imageData);
+        }
+      } else {
+        setFetchingData(true);
+        setDataFetched(false);
+        const response = await fetch("/api/preview/text", {
+          method: "POST",
+          headers: {
+            Authorization: getJWT(),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url,
+            textCSS,
+          }),
+        });
+        const json = await response.json();
+        setFetchingData(false);
+        if (json.errors) {
+          json.errors.map((error) => {
+            setErrors([error.param]);
+          });
+        } else {
+          setDataFetched(true);
+        }
+        if (json.text) {
+          setTextData(json.text);
+        }
+      }
+    })();
+  };
+
+  const removeEmpty = (obj) => {
+    Object.keys(obj).forEach(
+      (k) => !obj[k] && obj[k] !== undefined && delete obj[k]
+    );
+    return obj;
+  };
 
   const onSubmit = async (data) => {
     if (comparisonType === "visual") {
@@ -86,20 +106,26 @@ export default function App({ location }) {
           Authorization: getJWT(),
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: data.name,
-          url: data.url,
-          interval: data.interval,
-          scrollToElement: scrollToElement,
-          hideElements: hideElements.split(",").map((e) => e.trim()),
-          crop: crop,
-        }),
+        body: JSON.stringify(
+          removeEmpty({
+            name: data.name,
+            url: data.url,
+            interval: data.interval,
+            threshold: data.threshold,
+            scrollToElement: data.scrollToElement,
+            hideElements: data.hideElements,
+          })
+        ),
       });
       const json = await response.json();
-      if (json.error) {
-        setError(json.error);
+      if (json.errors) {
+        for (const error of json.errors) {
+          setErrors([error]);
+        }
+      } else {
+        setDataFetched(true);
+        console.log("Job added!");
       }
-      console.log("Job added!");
     } else {
       const response = await fetch("/api/job/text", {
         method: "POST",
@@ -112,17 +138,21 @@ export default function App({ location }) {
           url: data.url,
           interval: data.interval,
           textCSS: data.textCSS,
-          keywords: data.keywords.split(",").map((e) => e.trim()),
-          wordChange: data.wordChange,
+          words: data.keywords,
+          type: data.wordChange,
         }),
       });
       const json = await response.json();
-      if (json.error) {
-        setError(json.error);
+      if (json.errors) {
+        json.errors.map((error) => {
+          setErrors([error.param]);
+        });
       }
       console.log("Job added!");
     }
   };
+
+  console.log(errors);
 
   return (
     <Layout location={location}>
@@ -136,11 +166,10 @@ export default function App({ location }) {
               <div className="px-8">
                 <div className="aspect-[4/3]">
                   <div
-                    className={
-                      comparisonType === "text"
-                        ? "overflow-scroll min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner w-full h-full"
-                        : "min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner overflow-hidden w-full h-full"
-                    }
+                    className={classNames(
+                      comparisonType === "text" ? "overflow-scroll" : "overflow-hidden",
+                      "min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner w-full h-full"
+                    )}
                   >
                     <div className="text-center flex min-h-full">
                       {!dataFetched ? (
@@ -151,17 +180,9 @@ export default function App({ location }) {
                             </h3>
                           ) : (
                             <div>
-                              {error === "" ? (
-                                <h3 className="text-xl text-gray-600">
-                                  Enter a URL and click ‘Fetch’.
-                                </h3>
-                              ) : (
-                                <div>
-                                  <div className="text-xl text-red-500 text-center">
-                                    {error}
-                                  </div>
-                                </div>
-                              )}
+                              <h3 className="text-xl text-gray-600">
+                                Enter a URL and click ‘Fetch’.
+                              </h3>
                             </div>
                           )}
                         </div>
@@ -277,12 +298,12 @@ export default function App({ location }) {
                   <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                     <label
                       htmlFor="username"
-                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
+                      className="inline text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                     >
                       URL
                     </label>
                     <div className="mt-1 sm:mt-0 sm:col-span-2">
-                      <div className="sm:max-w-md w-full flex flex-col sm:flex-row rounded-md shadow-sm">
+                      <div className="sm:max-w-md w-full flex flex-col flex-reverse sm:flex-row rounded-md shadow-sm">
                         <input
                           type="text"
                           name="url"
@@ -293,17 +314,34 @@ export default function App({ location }) {
                             setUrl(e.target.value);
                           }}
                           autoComplete="url"
-                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                          className={classNames(
+                            errors.filter((e) => e.param === "url").length > 0
+                              ? "border-red-500 border-2"
+                              : "",
+                            "flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                          )}
                           placeholder="Enter a URL"
                         />
                         <button
                           type="button"
-                          onClick={handleScreenshot}
+                          onClick={handlePreview}
                           className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                         >
                           Fetch
                         </button>
                       </div>
+                      {errors.map((error, index) => {
+                        if (error.param === "url") {
+                          return (
+                            <span
+                              key={index}
+                              className="absolute mt-1 font-semibold text-sm text-red-600"
+                            >
+                              {error.msg}
+                            </span>
+                          );
+                        }
+                      })}
                     </div>
                   </div>
 
@@ -355,14 +393,15 @@ export default function App({ location }) {
                           <select
                             id="threshold"
                             name="threshold"
+                            defaultValue={0.00}
                             className="sm:max-w-md w-full block focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded-md"
                             {...register("threshold")}
                           >
-                            <option value="0.00">Any change</option>
-                            <option value="0.01">Tiny (1%)</option>
-                            <option value="0.10">Medium (10%)</option>
-                            <option value="0.25">Major (25%)</option>
-                            <option value="0.50">Gigantic (50%)</option>
+                            <option value={0.00}>Any change</option>
+                            <option value={0.01}>Tiny (1%)</option>
+                            <option value={0.10}>Medium (10%)</option>
+                            <option value={0.25}>Major (25%)</option>
+                            <option value={0.50}>Gigantic (50%)</option>
                           </select>
                         </div>
                         <p className="mt-2 text-sm text-gray-500">
@@ -387,7 +426,6 @@ export default function App({ location }) {
                               type="text"
                               name="url"
                               id="url"
-                              required
                               {...register("textCSS")}
                               onChange={(e) => {
                                 setTextCSS(e.target.value);
@@ -401,7 +439,7 @@ export default function App({ location }) {
                             Will only get the text of an element that matches
                             the given CSS selector. Also accepts CSS paths. If
                             no element is found, all text on the page will be
-                            returned.
+                            selected.
                           </p>
                         </div>
                       </div>
@@ -410,7 +448,7 @@ export default function App({ location }) {
                           htmlFor="frequency"
                           className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
                         >
-                          Keywords
+                          Method
                         </label>
 
                         <div className="sm:col-span-2">
@@ -429,9 +467,14 @@ export default function App({ location }) {
                               )}
 
                               <fieldset className="mt-[11px]">
-                                <legend className="sr-only">Keywords</legend>
+                                <legend className="sr-only">
+                                  Comparison method
+                                </legend>
                                 <div className="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
-                                  <div key="text" className="flex items-center">
+                                  <div
+                                    key="comparisonMethod"
+                                    className="flex items-center"
+                                  >
                                     <input
                                       {...register("wordChange")}
                                       id="words_removed"
@@ -498,8 +541,8 @@ export default function App({ location }) {
                               <ul className="mt-2 text-sm max-w-md text-gray-500">
                                 <li className="mb-1">
                                   When <b>Any change</b> is selected, a
-                                  notification will be sent whenever any change
-                                  in the selected text is detected.
+                                  notification will be sent whenever a change in
+                                  the selected text is detected.
                                 </li>
                                 <li>
                                   Alternatively, you can define keywords, and

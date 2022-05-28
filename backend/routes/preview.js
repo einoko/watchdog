@@ -15,7 +15,7 @@ const router = express.Router();
 router.post(
   "/preview/image",
   auth,
-  body("url").isURL(),
+  body("url").isURL().withMessage("Not a valid URL."),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -60,7 +60,7 @@ router.post(
     switch (preview) {
       case null:
         return res.status(500).json({
-          errors: [{ msg: "Could not fetch a screenshot from the given URL." }],
+          errors: [{ msg: "Could not fetch a screenshot from the given URL.", param: "url" }],
         });
       default:
         return res

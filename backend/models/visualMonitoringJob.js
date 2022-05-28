@@ -34,6 +34,10 @@ const visualMonitoringJobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    threshold: {
+      type: Number,
+      required: true,
+    },
     interval: {
       type: String,
       required: true,

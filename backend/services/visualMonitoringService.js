@@ -20,7 +20,9 @@ export const getAdditionalCaptureOptions = (job) => {
   }
 
   if (job.hideElements) {
-    additionalOptions.hideElements = job.hideElements;
+    additionalOptions.hideElements = job.hideElements.toString()
+      .split(",")
+      .map((e) => e.trim());
   }
 
   // TODO: Move to .env
@@ -32,7 +34,7 @@ export const getAdditionalCaptureOptions = (job) => {
       x: Math.round((job.crop.x / 100) * width),
       y: Math.round((job.crop.y / 100) * height),
       width: Math.round((job.crop.width / 100) * width),
-      height: Math.round((job.crop.height / 100) * height)
+      height: Math.round((job.crop.height / 100) * height),
     };
   }
 
@@ -73,7 +75,10 @@ const checkLastState = async (job) => {
   }
 
   const lastStateImageBuffer = await readFileFromPath(lastStateImage.path);
-  const newScreenshotBuffer = await captureWebsiteToBuffer(job.url, additionalOptions);
+  const newScreenshotBuffer = await captureWebsiteToBuffer(
+    job.url,
+    additionalOptions
+  );
 
   if (newScreenshotBuffer === null) {
     console.error(`Could not capture screenshot for ${job._id} ${job.url}`);
@@ -85,7 +90,7 @@ const checkLastState = async (job) => {
     newScreenshotBuffer
   );
 
-  if (difference > 0) {
+  if (difference > job.threshold) {
     const savedNewScreenshot = await saveImage(newScreenshotBuffer);
     const savedDiffImage = await saveImage(
       await createDiffImage(lastStateImageBuffer, newScreenshotBuffer)

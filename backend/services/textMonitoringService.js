@@ -8,6 +8,7 @@ const checkText = async (job) => {
   const fullText = await getWebsiteText(job.url, job.cssText);
 
   if (fullText === null) {
+    // TODO: Implement
     console.error("Could not retrieve text from website. Send warning email.");
     return;
   }
