@@ -1,10 +1,6 @@
 import express from "express";
 import { body, header, param, validationResult } from "express-validator";
-import {
-  VisualMonitoringJob,
-  acceptedIntervals,
-} from "../models/visualMonitoringJob.js";
-import { TextMonitoringJob } from "../models/textMonitoringJob.js";
+import { MonitoringJob, acceptedIntervals } from "../models/monitoringJob.js";
 import {
   createVisualMonitoringJob,
   changeStatus,
@@ -17,26 +13,25 @@ import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Visual monitoring jobs
-
 /**
  * @api {post} /api/job/visual Create a new visual monitoring job
  */
 router.post(
-  "/job/visual",
+  "/job",
   auth,
   body("name").isString(),
   body("url").isURL(),
+  body("jobType").isIn(["visual", "text"]),
   body("interval")
     .isIn(acceptedIntervals)
     .withMessage("Please enter a valid interval."),
-  body("threshold").isIn([0.0, 0.01, 0.1, 0.25, 0.5]),
-  body("scrollToElement")
-    .optional({ nullable: true, checkFalsy: true })
-    .isString(),
-  body("hideElements")
-    .optional({ nullable: true, checkFalsy: true })
-    .isString(),
+  body("threshold").isIn([0.0, 0.01, 0.1, 0.25, 0.5]).optional(),
+  body("visual_scrollToElement").optional().isString(),
+  body("visual_hideElements").optional().isString(),
+  body("visual_crop").optional().isObject(),
+  body("text_css").optional().isString(),
+  body("text_type").optional().isIn(["any_change", "added", "removed"]),
+  body("text_words").optional().isArray(),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -46,13 +41,19 @@ router.post(
 
     const userId = req.userId;
 
-    VisualMonitoringJob.create({ userId, ...req.body }, (err, job) => {
+    console.log(req.body);
+
+    MonitoringJob.create({ userId, ...req.body }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not create the monitoring job." }],
         });
       } else {
-        createVisualMonitoringJob(job);
+        if (job.jobType === "visual") {
+          createVisualMonitoringJob(job);
+        } else if (job.jobType === "text") {
+          createTextMonitoringJob(job);
+        }
 
         return res.status(201).json({
           msg: "Successfully created a new monitoring job.",
@@ -63,14 +64,78 @@ router.post(
 );
 
 /**
+ * @api {get} /api/job/:id Get a job
+ */
+router.get(
+  "/job/:id",
+  auth,
+  param("id").isMongoId(),
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userId = req.userId;
+    const jobId = req.params.id;
+
+    MonitoringJob.findOne({ _id: jobId, userId }, (err, job) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "Could not find the monitoring job." }],
+        });
+      } else {
+        return res.status(200).json({
+          job,
+        });
+      }
+    });
+  }
+);
+
+/**
+ * @api {get} /api/jobs Get all jobs
+ */
+router.get("/jobs", auth, header("Authorization").isJWT(), async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const userId = req.userId;
+
+  MonitoringJob.find({ userId }, (err, jobs) => {
+    if (err) {
+      return res.status(500).json({
+        errors: [{ msg: "Could not find the monitoring jobs." }],
+      });
+    } else {
+      return res.status(200).json({
+        jobs,
+      });
+    }
+  });
+});
+
+/**
  * @api {update} /api/job/visual/:id Change the settings of a visual monitoring job
  */
 router.put(
-  "/job/visual/:_id",
+  "/job/:_id",
   auth,
   param("_id").isMongoId(),
   body("name").isString(),
-  body("interval").isIn(acceptedIntervals),
+  body("interval")
+    .isIn(acceptedIntervals)
+    .withMessage("Please enter a valid interval."),
+  body("threshold").isIn([0.0, 0.01, 0.1, 0.25, 0.5]).optional(),
+  body("visual_scrollToElement").optional().isString(),
+  body("visual_hideElements").optional().isString(),
+  body("visual_crop").optional().isObject(),
+  body("text_css").optional().isString(),
+  body("text_type").optional().isIn(["any_change", "added", "removed"]),
+  body("text_words").optional().isArray(),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -81,20 +146,29 @@ router.put(
     const userId = req.userId;
 
     const _id = req.params._id;
-    const { name, interval } = req.body;
 
-    VisualMonitoringJob.findOneAndUpdate(
+    // Update the job
+    MonitoringJob.findOneAndUpdate(
       { _id, userId },
-      { name, interval },
+      { $set: req.body },
       { new: true },
       (err, job) => {
         if (err) {
           return res.status(500).json({
             errors: [{ msg: "Could not update the monitoring job." }],
           });
+        } else if (!job) {
+          return res.status(404).json({
+            errors: [{ msg: "Could not find the monitoring job." }],
+          });
         } else {
-          deleteVisualMonitoringJob(job._id);
-          createVisualMonitoringJob(job);
+          if (job.jobType === "visual") {
+            deleteVisualMonitoringJob(job);
+            createVisualMonitoringJob(job);
+          } else if (job.jobType === "text") {
+            deleteTextMonitoringJob(job);
+            createTextMonitoringJob(job);
+          }
 
           return res.status(200).json({
             msg: "Successfully updated the monitoring job.",
@@ -106,10 +180,10 @@ router.put(
 );
 
 /**
- * @api {patch} /monitoring/job/visual/:id/status Pause or resume a visual monitoring job
+ * @api {patch} /monitoring/job/visual/:id/status Pause or resume a job.
  */
 router.patch(
-  "/job/visual/:_id/status",
+  "/job/:_id/status",
   auth,
   param("_id").isMongoId(),
   body("active").isBoolean(),
@@ -125,7 +199,7 @@ router.patch(
     const _id = req.params._id;
     const active = req.body.active;
 
-    VisualMonitoringJob.findById({ _id, userId }, (err, job) => {
+    MonitoringJob.findById({ _id, userId }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not find the monitoring job." }],
@@ -141,10 +215,10 @@ router.patch(
 );
 
 /**
- * @api {delete} /api/job/visual/:id Delete a visual monitoring job
+ * @api {delete} /api/job/visual/:id Delete a job
  */
 router.delete(
-  "/job/visual/:_id",
+  "/job/:_id",
   auth,
   param("_id").isMongoId(),
   header("Authorization").isJWT(),
@@ -157,7 +231,7 @@ router.delete(
     const userId = req.userId;
 
     const { _id } = req.params;
-    const job = await VisualMonitoringJob.findById(_id);
+    const job = await MonitoringJob.findById(_id);
 
     if (!job) {
       return res.status(500).json({
@@ -173,359 +247,24 @@ router.delete(
       });
     }
 
-    deleteVisualMonitoringJob(job._id);
+    if (job.jobType === "visual") {
+      deleteVisualMonitoringJob(job._id);
 
-    job.states.forEach((state) => {
-      if (state.image) {
-        deleteImage(state.image);
-      }
-      if (state.diff) {
-        deleteImage(state.diff);
-      }
-    });
+      job.states.forEach((state) => {
+        if (state.image) {
+          deleteImage(state.image);
+        }
+        if (state.diff) {
+          deleteImage(state.diff);
+        }
+      });
+    } else {
+      deleteTextMonitoringJob(job._id);
+    }
 
     job.remove();
 
     res.status(200).json({ msg: "Successfully deleted the monitoring job." });
-  }
-);
-
-/**
- * @api {get} /api/job/visual/:id Get a single visual monitoring job
- */
-router.get(
-  "/job/visual/:_id",
-  auth,
-  param("_id").isMongoId(),
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    const { _id } = req.params;
-
-    const job = await VisualMonitoringJob.findById(_id);
-
-    if (!job) {
-      return res.status(500).json({
-        errors: [{ msg: "Could not find the monitoring job." }],
-      });
-    }
-
-    if (job.userId.toString() !== userId) {
-      return res.status(401).json({
-        errors: [{ msg: "You are not authorized to view this job." }],
-      });
-    }
-
-    res.status(200).json({ job });
-  }
-);
-
-/**
- * @api {get} /api/jobs/visual Get all visual monitoring jobs for user
- */
-router.get(
-  "/jobs/visual",
-  auth,
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    const jobs = await VisualMonitoringJob.find({ userId });
-
-    res.status(200).json({ jobs });
-  }
-);
-
-// Text monitoring jobs
-
-/**
- * @api {post} /api/job/text Create a text monitoring job
- */
-router.post(
-  "/job/text",
-  auth,
-  body("name").isString(),
-  body("url").isURL(),
-  body("interval")
-    .isIn(acceptedIntervals)
-    .withMessage("Please enter a valid interval."),
-  body("type").isIn(["any_change", "added", "removed"]),
-  body("selectElement").optional({ nullable: true, checkFalsy: true }),
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    TextMonitoringJob.create(
-      {
-        userId,
-        ...req.body,
-      },
-      (err, job) => {
-        if (err) {
-          return res.status(500).json({
-            errors: [{ msg: "Could not create the monitoring job." }],
-          });
-        }
-        createTextMonitoringJob(job);
-
-        res
-          .status(201)
-          .json({ msg: "Successfully created a new monitoring job." });
-      }
-    );
-  }
-);
-
-/**
- * @api {update} /api/job/text/:id Change the settings of a text monitoring job
- */
-router.put(
-  "/job/text/:_id",
-  auth,
-  param("_id").isMongoId(),
-  body("name").isString(),
-  body("url").isURL(),
-  body("interval")
-    .isIn(acceptedIntervals)
-    .withMessage("Please enter a valid interval."),
-  body("type").isIn(["added", "removed"]),
-  body("words").isArray(),
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    const { _id } = req.params;
-    const { name, url, interval, type, words } = req.body;
-
-    const job = await TextMonitoringJob.findById(_id);
-
-    if (!job) {
-      return res.status(500).json({
-        errors: [{ msg: "Could not find the monitoring job." }],
-      });
-    }
-
-    if (job.userId.toString() !== userId) {
-      return res.status(401).json({
-        errors: [
-          { msg: "You are not authorized to edit this monitoring job." },
-        ],
-      });
-    }
-
-    TextMonitoringJob.findOneAndUpdate(
-      { _id, userId },
-      { name, url, interval, type, words },
-      { new: true },
-      (err, job) => {
-        if (err) {
-          return res.status(500).json({
-            errors: [{ msg: "Could not update the monitoring job." }],
-          });
-        } else {
-          deleteTextMonitoringJob(job._id);
-          createTextMonitoringJob(job);
-
-          return res.status(200).json({
-            msg: "Successfully updated the monitoring job.",
-          });
-        }
-      }
-    );
-  }
-);
-
-/**
- * @api {patch} /monitoring/job/text/:id/status Pause or resume a text monitoring job
- */
-router.patch(
-  "/job/text/:_id/status",
-  auth,
-  param("_id").isMongoId(),
-  body("active").isBoolean(),
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    const { _id } = req.params;
-    const { active } = req.body;
-
-    TextMonitoringJob.findById({ _id }, (err, job) => {
-      if (err) {
-        return res.status(500).json({
-          errors: [{ msg: "Could not find the monitoring job." }],
-        });
-      } else {
-        if (job.active === active) {
-          return res.status(200).json({
-            msg: "The monitoring job is already in the desired state.",
-          });
-        }
-
-        job.active = active;
-
-        job.save();
-        changeStatus(job);
-        res.status(200).json({ msg: "Job status changed." });
-      }
-    });
-  }
-);
-
-/**
- * @api {delete} /api/job/text/:id Delete a text monitoring job
- */
-router.delete(
-  "/job/text/:_id",
-  auth,
-  param("_id").isMongoId(),
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    const { _id } = req.params;
-
-    TextMonitoringJob.findById({ _id, userId }, (err, job) => {
-      if (err) {
-        return res.status(500).json({
-          errors: [{ msg: "Could not find the monitoring job." }],
-        });
-      } else {
-        deleteTextMonitoringJob(job._id);
-        job.remove();
-        res
-          .status(200)
-          .json({ msg: "Successfully deleted the monitoring job." });
-      }
-    });
-  }
-);
-
-/**
- * @api {get} /api/job/text/:_id Get a single text monitoring job
- */
-router.get(
-  "/job/text/:_id",
-  auth,
-  param("_id").isMongoId(),
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    const { _id } = req.params;
-
-    TextMonitoringJob.findById({ _id, userId }, (err, job) => {
-      if (err) {
-        return res.status(500).json({
-          errors: [{ msg: "Could not find the monitoring job." }],
-        });
-      } else {
-        res.status(200).json({ job });
-      }
-    });
-  }
-);
-
-/**
- * @api {get} /api/jobs/text Get all visual monitoring jobs for user
- */
-router.get(
-  "/jobs/text",
-  auth,
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    console.log(userId);
-
-    TextMonitoringJob.find({ userId }, (err, jobs) => {
-      if (err) {
-        return res.status(500).json({
-          errors: [{ msg: "Could not find the monitoring jobs." }],
-        });
-      } else {
-        res.status(200).json({ jobs });
-      }
-    });
-  }
-);
-
-/**
- * @api {get} /api/jobs/all Get all visual and text monitoring jobs for user
- */
-router.get(
-  "/jobs/all",
-  auth,
-  header("Authorization").isJWT(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const userId = req.userId;
-
-    const jobs = {};
-
-    const visualJobs = await VisualMonitoringJob.find({ userId }).catch(
-      (err) => {
-        return res.status(500).json({
-          errors: [{ msg: "Could not find the visual monitoring jobs." }],
-        });
-      }
-    );
-
-    const textJobs = await TextMonitoringJob.find({ userId }).catch((err) => {
-      return res.status(500).json({
-        errors: [{ msg: "Could not find the text monitoring jobs." }],
-      });
-    });
-
-    jobs.visual = visualJobs;
-    jobs.text = textJobs;
-
-    res.status(200).json({ jobs });
   }
 );
 

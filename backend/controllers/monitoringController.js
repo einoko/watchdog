@@ -15,13 +15,13 @@ const createTextMonitoringJob = (jobObject) => {
 
 const changeStatus = (jobObject) => {
   if (jobObject.active) {
-    if (jobObject.words) {
+    if (jobObject.jobType === "text") {
       createTextMonitoringJob(jobObject);
     } else {
       createVisualMonitoringJob(jobObject);
     }
   } else {
-    if (jobObject.words) {
+    if (jobObject.jobType === "text") {
       deleteTextMonitoringJob(jobObject);
     } else {
       deleteVisualMonitoringJob(jobObject);

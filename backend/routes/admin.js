@@ -2,8 +2,7 @@ import express from "express";
 import { header, param, validationResult } from "express-validator";
 import { verifyJWT } from "../utils/JWTUtil.js";
 import { User } from "../models/user.js";
-import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
-import { TextMonitoringJob } from "../models/textMonitoringJob.js";
+import { MonitoringJob } from "../models/monitoringJob.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
@@ -97,37 +96,20 @@ router.get(
             });
           }
 
-          VisualMonitoringJob.find(
-            { user: req.params.id },
-            (err, visualJobs) => {
-              if (err) {
-                return res.status(500).json({
-                  errors: [
-                    { msg: "Could not fetch visual jobs from the database." },
-                  ],
-                });
-              }
-
-              TextMonitoringJob.find(
-                { user: req.params.id },
-                (err, textJobs) => {
-                  if (err) {
-                    return res.status(500).json({
-                      errors: [
-                        { msg: "Could not fetch text jobs from the database." },
-                      ],
-                    });
-                  }
-
-                  return res.status(200).json({
-                    user,
-                    visualJobs,
-                    textJobs,
-                  });
-                }
-              );
+          MonitoringJob.find({ user: req.params.id }, (err, jobs) => {
+            if (err) {
+              return res.status(500).json({
+                errors: [
+                  { msg: "Could not fetch visual jobs from the database." },
+                ],
+              });
             }
-          );
+
+            return res.status(200).json({
+              user,
+              jobs,
+            });
+          });
         });
       } else {
         return res.status(401).json({
@@ -176,7 +158,7 @@ router.delete(
           }
 
           // Delete all jobs associated with the user
-          VisualMonitoringJob.find({ user: req.params.id }, (err, jobs) => {
+          MonitoringJob.find({ user: req.params.id }, (err, jobs) => {
             if (err) {
               return res.status(500).json({
                 errors: [
@@ -187,37 +169,24 @@ router.delete(
 
             if (jobs.length > 0) {
               for (const job of jobs) {
-                deleteVisualMonitoringJob(job._id);
+                if (job.jobType === "visual") {
+                  deleteVisualMonitoringJob(job._id);
 
-                job.states.forEach((state) => {
-                  if (state.image) {
-                    deleteImage(state.image);
-                  }
-                  if (state.diff) {
-                    deleteImage(state.diff);
-                  }
-                });
+                  job.states.forEach((state) => {
+                    if (state.image) {
+                      deleteImage(state.image);
+                    }
+                    if (state.diff) {
+                      deleteImage(state.diff);
+                    }
+                  });
+                } else {
+                  deleteTextMonitoringJob(job._id);
+                }
 
                 job.remove();
               }
             }
-
-            TextMonitoringJob.find({ user: req.params.id }, (err, jobs) => {
-              if (err) {
-                return res.status(500).json({
-                  errors: [
-                    { msg: "Could not fetch text jobs from the database." },
-                  ],
-                });
-              }
-
-              if (jobs.length > 0) {
-                for (const job of jobs) {
-                  deleteTextMonitoringJob(job._id);
-                  job.remove();
-                }
-              }
-            });
           });
           return res.status(200).json({
             msg: "User deleted successfully.",

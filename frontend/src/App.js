@@ -99,60 +99,38 @@ export default function App({ location }) {
   };
 
   const onSubmit = async (data) => {
-    if (comparisonType === "visual") {
-      const response = await fetch("/api/job/visual", {
-        method: "POST",
-        headers: {
-          Authorization: getJWT(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          removeEmpty({
-            name: data.name,
-            url: data.url,
-            interval: data.interval,
-            threshold: data.threshold,
-            scrollToElement: data.scrollToElement,
-            hideElements: data.hideElements,
-          })
-        ),
-      });
-      const json = await response.json();
-      if (json.errors) {
-        for (const error of json.errors) {
-          setErrors([error]);
-        }
-      } else {
-        setDataFetched(true);
-        console.log("Job added!");
-      }
-    } else {
-      const response = await fetch("/api/job/text", {
-        method: "POST",
-        headers: {
-          Authorization: getJWT(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    const response = await fetch("/api/job", {
+      method: "POST",
+      headers: {
+        Authorization: getJWT(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(
+        removeEmpty({
           name: data.name,
+          jobType: comparisonType,
           url: data.url,
           interval: data.interval,
-          textCSS: data.textCSS,
-          words: data.keywords,
-          type: data.wordChange,
-        }),
-      });
-      const json = await response.json();
-      if (json.errors) {
-        json.errors.map((error) => {
-          setErrors([error.param]);
-        });
+          threshold: data.threshold,
+          visual_scrollToElement: data.visual_scrollToElement,
+          visual_hideElements: data.visual_hideElements,
+          visual_crop: crop,
+          text_css: data.text_css,
+          text_type: data.text_type,
+          text_words: data.text_words,
+        })
+      ),
+    });
+    const json = await response.json();
+    if (json.errors) {
+      for (const error of json.errors) {
+        setErrors([error]);
       }
+    } else {
+      setDataFetched(true);
       console.log("Job added!");
     }
   };
-
-  console.log(errors);
 
   return (
     <Layout location={location}>
@@ -167,7 +145,9 @@ export default function App({ location }) {
                 <div className="aspect-[4/3]">
                   <div
                     className={classNames(
-                      comparisonType === "text" ? "overflow-scroll" : "overflow-hidden",
+                      comparisonType === "text"
+                        ? "overflow-scroll"
+                        : "overflow-hidden",
                       "min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner w-full h-full"
                     )}
                   >
@@ -227,7 +207,7 @@ export default function App({ location }) {
                             <div className="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
                               <div key="visual" className="flex items-center">
                                 <input
-                                  {...register("comparison")}
+                                  {...register("jobType")}
                                   id="visual_comparison"
                                   name="comparison"
                                   type="radio"
@@ -235,6 +215,7 @@ export default function App({ location }) {
                                   onChange={(e) => {
                                     setDataFetched(false);
                                     setFetchingData(false);
+                                    setCrop(null);
                                     setComparisonType(e.target.value);
                                   }}
                                   defaultChecked={true}
@@ -257,6 +238,7 @@ export default function App({ location }) {
                                   onChange={(e) => {
                                     setDataFetched(false);
                                     setFetchingData(false);
+                                    setCrop(null);
                                     setComparisonType(e.target.value);
                                   }}
                                   className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
@@ -393,15 +375,15 @@ export default function App({ location }) {
                           <select
                             id="threshold"
                             name="threshold"
-                            defaultValue={0.00}
+                            defaultValue={0.0}
                             className="sm:max-w-md w-full block focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded-md"
                             {...register("threshold")}
                           >
-                            <option value={0.00}>Any change</option>
+                            <option value={0.0}>Any change</option>
                             <option value={0.01}>Tiny (1%)</option>
-                            <option value={0.10}>Medium (10%)</option>
+                            <option value={0.1}>Medium (10%)</option>
                             <option value={0.25}>Major (25%)</option>
-                            <option value={0.50}>Gigantic (50%)</option>
+                            <option value={0.5}>Gigantic (50%)</option>
                           </select>
                         </div>
                         <p className="mt-2 text-sm text-gray-500">
@@ -426,7 +408,7 @@ export default function App({ location }) {
                               type="text"
                               name="url"
                               id="url"
-                              {...register("textCSS")}
+                              {...register("text_css")}
                               onChange={(e) => {
                                 setTextCSS(e.target.value);
                               }}
@@ -460,7 +442,7 @@ export default function App({ location }) {
                                   name="keywords"
                                   id="name"
                                   required
-                                  {...register("keywords")}
+                                  {...register("text_words")}
                                   className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                                   placeholder="in stock, available"
                                 />
@@ -476,7 +458,7 @@ export default function App({ location }) {
                                     className="flex items-center"
                                   >
                                     <input
-                                      {...register("wordChange")}
+                                      {...register("text_type")}
                                       id="words_removed"
                                       name="wordChange"
                                       type="radio"
@@ -499,7 +481,7 @@ export default function App({ location }) {
                                     className="flex items-center"
                                   >
                                     <input
-                                      {...register("wordChange")}
+                                      {...register("text_type")}
                                       id="words_added"
                                       name="wordChange"
                                       type="radio"
@@ -518,7 +500,7 @@ export default function App({ location }) {
                                   </div>
                                   <div key="text" className="flex items-center">
                                     <input
-                                      {...register("wordChange")}
+                                      {...register("text_type")}
                                       id="words_removed"
                                       name="wordChange"
                                       type="radio"
@@ -608,7 +590,7 @@ export default function App({ location }) {
                                     type="text"
                                     name="scrollToElement"
                                     id="scrollToElement"
-                                    {...register("scrollToElement")}
+                                    {...register("visual_scrollToElement")}
                                     onChange={(e) =>
                                       setScrollToElement(e.target.value)
                                     }
@@ -635,7 +617,7 @@ export default function App({ location }) {
                                     type="text"
                                     name="hideElements"
                                     id="hideElements"
-                                    {...register("hideElements")}
+                                    {...register("visual_hideElements")}
                                     onChange={(e) =>
                                       setHideElements(e.target.value)
                                     }

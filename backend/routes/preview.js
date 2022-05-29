@@ -76,7 +76,7 @@ router.post(
 router.post(
   "/preview/text",
   auth,
-  body("url").isURL(),
+  body("url").isURL().withMessage("Not a valid URL."),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);

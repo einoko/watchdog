@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import randToken from "rand-token";
 
-// TODO: Remove 1 minute
 const acceptedIntervals = [
   "1 minute",
   "5 minutes",
@@ -17,23 +16,32 @@ const acceptedIntervals = [
   "year",
 ];
 
-const textMonitoringJobSchema = new mongoose.Schema(
+const monitoringJobSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
-    name: {
-      type: String,
       required: true,
     },
     active: {
       type: Boolean,
       default: true,
     },
+    jobType: {
+      type: String,
+      required: true,
+      enum: ["text", "visual"],
+      immutable: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
     url: {
       type: String,
       required: true,
+    },
+    threshold: {
+      type: Number,
     },
     interval: {
       type: String,
@@ -45,21 +53,28 @@ const textMonitoringJobSchema = new mongoose.Schema(
       required: true,
       default: () => randToken.generate(32),
     },
-    cssText: {
-      type: String,
-      default: null,
-    },
     states: {
       type: [Object],
       default: [],
     },
-    type: {
+    visual_scrollToElement: {
+      type: String,
+    },
+    visual_hideElements: {
+      type: [String],
+    },
+    visual_crop: {
+      type: Object,
+    },
+    text_css: {
+      type: String,
+    },
+    text_type: {
       type: String,
       enum: ["any_change", "added", "removed"],
     },
-    words: {
+    text_words: {
       type: [String],
-      required: true,
     },
   },
   {
@@ -67,9 +82,6 @@ const textMonitoringJobSchema = new mongoose.Schema(
   }
 );
 
-const TextMonitoringJob = mongoose.model(
-  "TextMonitoringJob",
-  textMonitoringJobSchema
-);
+const MonitoringJob = mongoose.model("MonitoringJob", monitoringJobSchema);
 
-export { TextMonitoringJob, acceptedIntervals };
+export { MonitoringJob, acceptedIntervals };

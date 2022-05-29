@@ -4,11 +4,12 @@ import { User } from "../models/user.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { verifyJWT } from "../utils/JWTUtil.js";
-import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
+import { MonitoringJob } from "../models/monitoringJob.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import { auth } from "../middleware/auth.js";
 import "dotenv/config";
+import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
 
 const router = express.Router();
 
@@ -239,7 +240,7 @@ router.delete(
     });
 
     // Delete all monitoring jobs and files associated with the user
-    VisualMonitoringJob.find({ user: userId }, (err, jobs) => {
+    MonitoringJob.find({ user: userId }, (err, jobs) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "An error occurred while deleting account." }],
@@ -247,16 +248,20 @@ router.delete(
       }
       if (jobs.length > 0) {
         for (const job of jobs) {
-          deleteVisualMonitoringJob(job._id);
+          if (job.jobType === "visual") {
+            deleteVisualMonitoringJob(job._id);
 
-          job.states.forEach((state) => {
-            if (state.image) {
-              deleteImage(state.image);
-            }
-            if (state.diff) {
-              deleteImage(state.diff);
-            }
-          });
+            job.states.forEach((state) => {
+              if (state.image) {
+                deleteImage(state.image);
+              }
+              if (state.diff) {
+                deleteImage(state.diff);
+              }
+            });
+          } else {
+            deleteTextMonitoringJob(job._id);
+          }
 
           job.remove();
         }

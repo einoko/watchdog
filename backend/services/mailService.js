@@ -92,8 +92,8 @@ export const sendKeywordAlertMail = async (job, user, matches = null) => {
     jobName: job.name,
     jobUrl: job.url,
     matches: matches,
-    wordChange: job.type,
-    keywords: job.words,
+    wordChange: job.text_type,
+    keywords: job.text_words,
     cancelLink: createDeletionLink(job.cancelToken),
   };
 

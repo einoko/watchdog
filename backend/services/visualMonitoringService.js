@@ -1,4 +1,4 @@
-import { VisualMonitoringJob } from "../models/visualMonitoringJob.js";
+import { MonitoringJob } from "../models/monitoringJob.js";
 import { calculateDifference, createDiffImage } from "../utils/compareUtil.js";
 import { deleteAgendaJob } from "./agendaService.js";
 import { Image } from "../models/image.js";
@@ -11,16 +11,16 @@ import { sendVisualAlertMail } from "./mailService.js";
 export const getAdditionalCaptureOptions = (job) => {
   const additionalOptions = {};
 
-  if (job.scrollToElement) {
+  if (job.visual_scrollToElement) {
     additionalOptions.scrollToElement = {
-      element: job.scrollToElement,
+      element: job.visual_scrollToElement,
       offset: 0,
       offsetFrom: "top",
     };
   }
 
-  if (job.hideElements) {
-    additionalOptions.hideElements = job.hideElements.toString()
+  if (job.visual_hideElements) {
+    additionalOptions.hideElements = job.visual_hideElements.toString()
       .split(",")
       .map((e) => e.trim());
   }
@@ -29,12 +29,12 @@ export const getAdditionalCaptureOptions = (job) => {
   const width = 1280;
   const height = 960;
 
-  if (job.crop) {
+  if (job.visual_crop) {
     additionalOptions.clip = {
-      x: Math.round((job.crop.x / 100) * width),
-      y: Math.round((job.crop.y / 100) * height),
-      width: Math.round((job.crop.width / 100) * width),
-      height: Math.round((job.crop.height / 100) * height),
+      x: Math.round((job.visual_crop.x / 100) * width),
+      y: Math.round((job.visual_crop.y / 100) * height),
+      width: Math.round((job.visual_crop.width / 100) * width),
+      height: Math.round((job.visual_crop.height / 100) * height),
     };
   }
 
@@ -123,7 +123,7 @@ const checkLastState = async (job) => {
 const executeVisualMonitoringJob = async (jobID) => {
   console.info(`Executing monitoring job ${jobID}`);
 
-  const job = await VisualMonitoringJob.findById(jobID);
+  const job = await MonitoringJob.findById(jobID);
 
   if (!job) {
     console.error(`Monitoring job ${jobID} not found`);

@@ -1,11 +1,11 @@
-import { TextMonitoringJob } from "../models/textMonitoringJob.js";
+import { MonitoringJob } from "../models/monitoringJob.js";
 import { User } from "../models/user.js";
 import { deleteAgendaJob } from "./agendaService.js";
 import { sendKeywordAlertMail, sendTextDiffMail } from "./mailService.js";
 import { getWebsiteText } from "./textService.js";
 
 const checkText = async (job) => {
-  const fullText = await getWebsiteText(job.url, job.cssText);
+  const fullText = await getWebsiteText(job.url, job.text_css);
 
   if (fullText === null) {
     // TODO: Implement
@@ -13,7 +13,7 @@ const checkText = async (job) => {
     return;
   }
 
-  if (job.type === "any_change") {
+  if (job.text_type === "any_change") {
     if (job.states.length === 0) {
       job.states.push({
         text: fullText,
@@ -55,8 +55,8 @@ const checkText = async (job) => {
 
     const matches = [];
 
-    for (const word of job.words) {
-      if (job.type === "added") {
+    for (const word of job.text_words) {
+      if (job.text_type === "added") {
         if (trimmedText.includes(word.toLowerCase())) {
           matches.push(word);
         }
@@ -90,7 +90,7 @@ const checkText = async (job) => {
 const executeTextMonitoringJob = async (jobID) => {
   console.info(`Executing monitoring job ${jobID}`);
 
-  const job = await TextMonitoringJob.findById(jobID);
+  const job = await MonitoringJob.findById(jobID);
 
   if (!job) {
     console.error(`Monitoring job ${jobID} not found`);
