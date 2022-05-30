@@ -13,21 +13,18 @@ export const AdminPanel = () => {
     <div className="bg-white px-4 py-5 sm:rounded-lg sm:p-6">
       <div className="md:grid md:grid-cols-3 md:gap-6">
         <div className="md:col-span-1">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">
+          <h3 className="text-lg font-semibold leading-6 text-gray-900 lg:pl-48">
             Admin settings
           </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            These settings can only be changed by the admin account.
-          </p>
         </div>
         <div className="mt-5 md:mt-0 md:col-span-2">
-          <form action="#" method="POST">
+          <form>
             <div className="grid grid-cols-3 gap-6">
               <div className="col-span-3 sm:col-span-2">
-                <ul role="list" className="mt-2 divide-y divide-gray-200">
+                <ul role="list" className="divide-y divide-gray-200">
                   <Switch.Group
                     as="li"
-                    className="py-4 flex items-center justify-between"
+                    className="flex items-center justify-between"
                   >
                     <div className="flex flex-col">
                       <Switch.Label
@@ -35,7 +32,7 @@ export const AdminPanel = () => {
                         className="text-sm font-medium text-gray-900"
                         passive
                       >
-                        Enable new account creation
+                        Open Sign Up
                       </Switch.Label>
                       <Switch.Description className="text-sm text-gray-500">
                         When disabled, new accounts cannot be created.

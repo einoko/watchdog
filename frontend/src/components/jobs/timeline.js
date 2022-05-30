@@ -7,12 +7,14 @@ export const Timeline = ({ states }) => {
       aria-labelledby="timeline-title"
       className="lg:col-start-3 lg:col-span-1"
     >
-      <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
-        <h2 id="timeline-title" className="text-lg font-medium text-gray-900">
+      <div className="bg-white px-4 py-5 sm:px-6">
+        <h2
+          id="timeline-title"
+          className="text-2xl font-semibold text-gray-900"
+        >
           Timeline
         </h2>
 
-        {/* Activity Feed */}
         <div className="mt-6 flow-root">
           <ul role="list" className="-mb-8">
             {states.map((item, itemIdx) => (
@@ -44,21 +46,42 @@ export const Timeline = ({ states }) => {
                         )}
                       </span>
                     </div>
-                    <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                    <div className="min-w-0 flex-1 flex justify-between space-x-4">
                       <div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-lg font-semibold mb-3 text-gray-800">
                           {itemIdx === 0
                             ? "Job created"
                             : "Difference was detected"}
+                          {itemIdx !== 0 && (
+                            <a
+                              className="pl-1 underline text-blue-600"
+                              target="_blank"
+                              rel="noreferrer"
+                              href={`http://localhost:3001/api/image/${item.diff}`}
+                            >
+                              (difference)
+                            </a>
+                          )}
                         </p>
                         <div>
                           <img
+                            alt={"New state"}
                             src={`http://localhost:3001/api/image/${item.image}`}
                           />
                         </div>
                       </div>
-                      <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                        <time dateTime={item.createdAt}>{item.createdAt}</time>
+                      <div className="text-right text whitespace-nowrap text-gray-500">
+                        <time dateTime={item.createdAt}>
+                          {new Date(item.createdAt).toLocaleDateString(
+                            "en-gb",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              timeZone: "utc",
+                            }
+                          )}
+                        </time>
                       </div>
                     </div>
                   </div>

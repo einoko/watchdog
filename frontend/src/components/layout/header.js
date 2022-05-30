@@ -22,7 +22,7 @@ export const Header = ({ location }) => {
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <span className="text-white font-extrabold text-2xl tracking-wide">Watchdog</span>
+                    <span className="text-white font-extrabold text-2xl tracking-wide"><a href="/">Watchdog</a></span>
                   </div>
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">

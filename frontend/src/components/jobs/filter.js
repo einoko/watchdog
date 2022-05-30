@@ -3,10 +3,8 @@ function classNames(...classes) {
 }
 
 export default function Filter({ jobCounts, setFilter }) {
-  console.log(jobCounts)
-
   return (
-    <div>
+    <div className="lg:p-6">
       <div className="sm:hidden">
         <select
           id="tabs"
@@ -43,7 +41,7 @@ export default function Filter({ jobCounts, setFilter }) {
                       job.current
                         ? "bg-indigo-100 text-indigo-600"
                         : "bg-gray-100 text-gray-900",
-                      "hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block"
+                      "ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium"
                     )}
                   >
                     {job.count}
