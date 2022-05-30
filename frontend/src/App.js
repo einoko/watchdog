@@ -9,6 +9,8 @@ import { Disclosure } from "@headlessui/react";
 import "react-image-crop/dist/ReactCrop.css";
 import { ChevronRightIcon } from "@heroicons/react/solid";
 
+import { successToast, warningToast } from "./utils/customToasts";
+
 export default function App({ location }) {
   const { register, handleSubmit } = useForm();
   const [dataFetched, setDataFetched] = useState(false);
@@ -114,7 +116,7 @@ export default function App({ location }) {
           threshold: data.threshold,
           visual_scrollToElement: data.visual_scrollToElement,
           visual_hideElements: data.visual_hideElements,
-          visual_crop: crop,
+          visual_crop: crop.width === 0 && crop.height === 0 ? null : crop,
           text_css: data.text_css,
           text_type: data.text_type,
           text_words: data.text_words,
@@ -134,6 +136,8 @@ export default function App({ location }) {
 
   return (
     <Layout location={location}>
+      <button onClick={() => successToast("Hello", "Description")}>Test</button>
+      <button onClick={() => warningToast("Hello", "Description")}>Warning</button>
       <div className="App bg-gray-200">
         <div className="mx-auto max-w-5xl xl:pt-8 xl:pb-8">
           <h1 className="text-2xl font-bold text-left py-4 text-black">

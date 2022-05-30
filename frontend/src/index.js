@@ -13,12 +13,14 @@ import { JobsView } from "./components/jobs/jobs";
 import { JobView } from "./components/jobs/job";
 import { SettingsView } from "./components/settings";
 import { NotFound } from "./components/notfound";
+import { Toaster } from "react-hot-toast";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const loggedIn = isLoggedIn();
 
 root.render(
   <React.StrictMode>
+    <Toaster position="top-right" reverseOrder={false} />
     <BrowserRouter>
       <Routes>
         <Route

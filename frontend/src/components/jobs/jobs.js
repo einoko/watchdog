@@ -5,18 +5,16 @@ import { ClockIcon, EyeIcon, LinkIcon } from "@heroicons/react/solid";
 import { Link } from "react-router-dom";
 
 export const JobsView = ({ location }) => {
-  const [visualJobs, setVisualJobs] = useState([]);
-  const [textJobs, setTextJobs] = useState([]);
+  const [jobs, setJobs] = useState([]);
   useEffect(() => {
-    fetch("/api/jobs/all", {
+    fetch("/api/jobs", {
       headers: {
         Authorization: getJWT(),
       },
     })
       .then((res) => res.json())
       .then((data) => {
-        setVisualJobs(data.jobs.visual);
-        setTextJobs(data.jobs.text);
+        setJobs(data.jobs);
       });
   }, []);
 
@@ -25,13 +23,13 @@ export const JobsView = ({ location }) => {
       <div className="mx-auto max-w-7xl pt-8">
         <div className="min-h-screen bg-white sm:overflow-hidden p-8">
           <h1 className="pl-6 mb-5 text-2xl font-semibold">Scheduled jobs</h1>
-          {visualJobs.length === 0 && (
+          {jobs.length === 0 && (
             <div className="pt-8 text-center text-xl">
               There are no scheduled jobs running. Go add some!
             </div>
           )}
           <ul role="list" className="divide-y divide-gray-200">
-            {visualJobs.map((jobListing) => (
+            {jobs.map((jobListing) => (
               <li key={jobListing._id}>
                 <div href="#" className="block hover:bg-gray-50 rounded-lg">
                   <div className="px-4 py-4 sm:px-6">
@@ -51,13 +49,13 @@ export const JobsView = ({ location }) => {
                     </div>
                     <div className="mt-2 sm:flex sm:justify-between">
                       <div className="sm:flex flex-col gap-y-2">
-                        <p className="flex items-center text-sm text-gray-500">
+                        <a href={jobListing.url} className="flex items-center text-sm text-gray-500">
                           <LinkIcon
                             className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                             aria-hidden="true"
                           />
                           {jobListing.url}
-                        </p>
+                        </a>
                         <p className="flex items-center text-sm text-gray-500">
                           <ClockIcon
                             className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
