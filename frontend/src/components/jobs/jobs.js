@@ -3,9 +3,12 @@ import { Layout } from "../layout/layout";
 import { getJWT } from "../../utils/loginUtil.js";
 import { ClockIcon, EyeIcon, LinkIcon } from "@heroicons/react/solid";
 import { Link } from "react-router-dom";
+import Filter from "./filter";
 
 export const JobsView = ({ location }) => {
   const [jobs, setJobs] = useState([]);
+  const [filter, setFilter] = useState("All");
+
   useEffect(() => {
     fetch("/api/jobs", {
       headers: {
@@ -18,18 +21,43 @@ export const JobsView = ({ location }) => {
       });
   }, []);
 
+  const jobCounts = [
+    {
+      type: "All",
+      count: jobs.length,
+      current: filter === "All",
+    },
+    {
+      type: "Visual",
+      count: jobs.filter((job) => job.jobType === "visual").length,
+      current: filter === "Visual",
+    },
+    {
+      type: "Text",
+      count: jobs.filter((job) => job.jobType === "text").length,
+      current: filter === "Text",
+    },
+  ];
+
+  const filteredJobs = jobs.filter((job) => {
+    if (filter === "All") return true;
+    if (job.jobType.toLowerCase().includes(filter.toLowerCase())) return true;
+    return false;
+  });
+
   return (
     <Layout location={location}>
       <div className="mx-auto max-w-7xl pt-8">
         <div className="min-h-screen bg-white sm:overflow-hidden p-8">
           <h1 className="pl-6 mb-5 text-2xl font-semibold">Scheduled jobs</h1>
+          <Filter jobCounts={jobCounts} setFilter={setFilter} />
           {jobs.length === 0 && (
             <div className="pt-8 text-center text-xl">
               There are no scheduled jobs running. Go add some!
             </div>
           )}
           <ul role="list" className="divide-y divide-gray-200">
-            {jobs.map((jobListing) => (
+            {filteredJobs.map((jobListing) => (
               <li key={jobListing._id}>
                 <div href="#" className="block hover:bg-gray-50 rounded-lg">
                   <div className="px-4 py-4 sm:px-6">
@@ -39,7 +67,9 @@ export const JobsView = ({ location }) => {
                           to={{
                             pathname: `/jobs/${jobListing._id}`,
                           }}
-                        >{jobListing.name}</Link>
+                        >
+                          {jobListing.name}
+                        </Link>
                       </p>
                       <div className="ml-2 flex-shrink-0 flex">
                         <button className="text-red-500 underline">
@@ -49,7 +79,10 @@ export const JobsView = ({ location }) => {
                     </div>
                     <div className="mt-2 sm:flex sm:justify-between">
                       <div className="sm:flex flex-col gap-y-2">
-                        <a href={jobListing.url} className="flex items-center text-sm text-gray-500">
+                        <a
+                          href={jobListing.url}
+                          className="flex items-center text-sm text-gray-500"
+                        >
                           <LinkIcon
                             className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                             aria-hidden="true"

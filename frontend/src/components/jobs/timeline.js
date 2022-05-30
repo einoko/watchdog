@@ -1,5 +1,5 @@
 import React from "react";
-import { EyeIcon } from "@heroicons/react/outline";
+import { EyeIcon, PlusIcon } from "@heroicons/react/outline";
 
 export const Timeline = ({ states }) => {
   return (
@@ -27,24 +27,35 @@ export const Timeline = ({ states }) => {
                   <div className="relative flex space-x-3">
                     <div>
                       <span
-                        className={
-                          "h-8 w-8 rounded-full flex items-center justify-center ring-8 bg-green-500 ring-white"
-                        }
+                        className={`${
+                          itemIdx === 0 ? "bg-gray-500" : "bg-green-500"
+                        } h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white`}
                       >
-                        <EyeIcon
-                          className="w-5 h-5 text-white"
-                          aria-hidden="true"
-                        />
+                        {itemIdx === 0 ? (
+                          <PlusIcon
+                            className="w-5 h-5 text-white"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <EyeIcon
+                            className="w-5 h-5 text-white"
+                            aria-hidden="true"
+                          />
+                        )}
                       </span>
                     </div>
                     <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                       <div>
                         <p className="text-sm text-gray-500">
-                          Difference was detected
+                          {itemIdx === 0
+                            ? "Job created"
+                            : "Difference was detected"}
                         </p>
-                    <div>
-                      <img src={`http://localhost:3001/api/image/${item.image}`} />
-                    </div>
+                        <div>
+                          <img
+                            src={`http://localhost:3001/api/image/${item.image}`}
+                          />
+                        </div>
                       </div>
                       <div className="text-right text-sm whitespace-nowrap text-gray-500">
                         <time dateTime={item.createdAt}>{item.createdAt}</time>

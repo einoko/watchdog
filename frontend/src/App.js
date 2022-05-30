@@ -117,7 +117,7 @@ export default function App({ location }) {
           visual_scrollToElement: data.visual_scrollToElement,
           visual_hideElements: data.visual_hideElements,
           visual_crop:
-            crop === undefined
+            crop === null
               ? null
               : crop.width === 0 && crop.height === 0
               ? null
