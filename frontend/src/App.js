@@ -116,7 +116,12 @@ export default function App({ location }) {
           threshold: data.threshold,
           visual_scrollToElement: data.visual_scrollToElement,
           visual_hideElements: data.visual_hideElements,
-          visual_crop: crop.width === 0 && crop.height === 0 ? null : crop,
+          visual_crop:
+            crop === undefined
+              ? null
+              : crop.width === 0 && crop.height === 0
+              ? null
+              : crop,
           text_css: data.text_css,
           text_type: data.text_type,
           text_words: data.text_words,
@@ -130,14 +135,12 @@ export default function App({ location }) {
       }
     } else {
       setDataFetched(true);
-      console.log("Job added!");
+      successToast("Job added!", "Monitoring job successfully added.");
     }
   };
 
   return (
     <Layout location={location}>
-      <button onClick={() => successToast("Hello", "Description")}>Test</button>
-      <button onClick={() => warningToast("Hello", "Description")}>Warning</button>
       <div className="App bg-gray-200">
         <div className="mx-auto max-w-5xl xl:pt-8 xl:pb-8">
           <h1 className="text-2xl font-bold text-left py-4 text-black">
