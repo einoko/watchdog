@@ -165,10 +165,10 @@ router.post(
 );
 
 /**
- * @api {put} /api/account Change user password
+ * @api {post} /api/account/change-password Change user password
  */
-router.put(
-  "/account",
+router.post(
+  "/account/change-password",
   auth,
   body("username").isString(),
   body("password").isString(),
@@ -239,6 +239,7 @@ router.put(
 router.post(
   "/account/change-email",
   auth,
+  body("username").isString(),
   body("email").isEmail(),
   header("Authorization").isJWT(),
   (req, res) => {
@@ -247,9 +248,9 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email } = req.body;
+    const { username, email } = req.body;
 
-    User.findOne({ _id: req.userId }, (err, user) => {
+    User.findOne({ _id: req.userId, username }, (err, user) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "User not found in the database." }],

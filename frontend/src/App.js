@@ -278,7 +278,7 @@ export default function App({ location }) {
                         id="name"
                         required
                         {...register("name")}
-                        className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                        className="flex-1 block sm:max-w-md w-full  min-w-0 rounded-md sm:text-sm border-gray-300"
                         placeholder="Enter a name for the job"
                       />
                     </div>
@@ -307,7 +307,7 @@ export default function App({ location }) {
                             errors.filter((e) => e.param === "url").length > 0
                               ? "border-red-500 border-2"
                               : "",
-                            "flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                            "flex-1 block w-full  min-w-0 rounded-md sm:text-sm border-gray-300"
                           )}
                           placeholder="Enter a URL"
                         />
@@ -347,7 +347,7 @@ export default function App({ location }) {
                           id="interval"
                           name="interval"
                           defaultValue={"day"}
-                          className="sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          className="sm:max-w-md w-full  shadow-sm sm:text-sm border-gray-300 rounded-md"
                           {...register("interval")}
                         >
                           <option value="1 minute">Every minute</option>
@@ -383,7 +383,7 @@ export default function App({ location }) {
                             id="threshold"
                             name="threshold"
                             defaultValue={0.0}
-                            className="sm:max-w-md w-full block focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded-md"
+                            className="sm:max-w-md w-full block  shadow-sm sm:text-sm border-gray-300 rounded-md"
                             {...register("threshold")}
                           >
                             <option value={0.0}>Any change</option>
@@ -420,7 +420,7 @@ export default function App({ location }) {
                                 setTextCSS(e.target.value);
                               }}
                               autoComplete="url"
-                              className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                              className="flex-1 block w-full  min-w-0 rounded-md sm:text-sm border-gray-300"
                               placeholder="#product-12305 > div > div.col-12.col-lg-10 > div > div.col-12.col-lg-7.summary.entry-summary"
                             />
                           </div>
@@ -450,7 +450,7 @@ export default function App({ location }) {
                                   id="name"
                                   required
                                   {...register("text_words")}
-                                  className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                                  className="flex-1 block sm:max-w-md w-full  min-w-0 rounded-md sm:text-sm border-gray-300"
                                   placeholder="in stock, available"
                                 />
                               )}
@@ -601,7 +601,7 @@ export default function App({ location }) {
                                     onChange={(e) =>
                                       setScrollToElement(e.target.value)
                                     }
-                                    className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                                    className="flex-1 block sm:max-w-md w-full  min-w-0 rounded-md sm:text-sm border-gray-300"
                                     placeholder=".content"
                                   />
                                   <p className="mt-2 text-sm text-gray-500 max-w-lg">
@@ -628,7 +628,7 @@ export default function App({ location }) {
                                     onChange={(e) =>
                                       setHideElements(e.target.value)
                                     }
-                                    className="flex-1 block sm:max-w-md w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                                    className="flex-1 block sm:max-w-md w-full  min-w-0 rounded-md sm:text-sm border-gray-300"
                                     placeholder=".cookieBanner, #ad_overlay"
                                   />
                                   <p className="mt-2 text-sm text-gray-500 max-w-lg">
