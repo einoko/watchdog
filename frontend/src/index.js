@@ -11,7 +11,7 @@ import LoginView from "./components/account/login";
 import RegisterView from "./components/account/register";
 import { JobsView } from "./components/jobs/jobs";
 import { JobView } from "./components/jobs/job";
-import { SettingsView } from "./components/settings";
+import { SettingsView } from "./components/settings/settings";
 import { NotFound } from "./components/notfound";
 import { Toaster } from "react-hot-toast";
 

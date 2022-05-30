@@ -20,6 +20,9 @@ export default function LoginView() {
       setErrors(json.errors);
     } else {
       setJWT(json.token);
+      localStorage.setItem("username", json.user.username);
+      localStorage.setItem("email", json.user.email);
+      localStorage.setItem("userId", json.user.id);
       window.location.href = "/";
     }
   };

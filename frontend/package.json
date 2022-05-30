@@ -15,6 +15,7 @@
     "react-dom": "^18.1.0",
     "react-hook-form": "^7.31.2",
     "react-hot-toast": "^2.2.0",
+    "react-icons": "^4.3.1",
     "react-image-crop": "^10.0.1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",

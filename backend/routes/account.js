@@ -68,6 +68,35 @@ router.post(
 );
 
 /**
+ * @api {get} /api/account/:id Get account information
+ */
+router.get("/account/:id", auth, (req, res) => {
+  const userId = req.params.id;
+
+  User.findOne({ _id: userId }, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        errors: [
+          { msg: "An error occurred while fetching account information." },
+        ],
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        errors: [{ msg: "Account not found." }],
+      });
+    }
+
+    return res.status(200).json({
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  });
+});
+
+/**
  * @api {post} /api/account/login Log in a user
  */
 router.post(
@@ -125,6 +154,7 @@ router.post(
               user: {
                 id: user.id,
                 username: user.username,
+                email: user.email,
               },
             });
           }
@@ -198,6 +228,50 @@ router.put(
               .json({ msg: "Password changed successfully." });
           });
         });
+      });
+    });
+  }
+);
+
+/**
+ * @api {post} /api/account/change-email Change user email
+ */
+router.post(
+  "/account/change-email",
+  auth,
+  body("email").isEmail(),
+  header("Authorization").isJWT(),
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email } = req.body;
+
+    User.findOne({ _id: req.userId }, (err, user) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "User not found in the database." }],
+        });
+      }
+
+      if (!user) {
+        return res.status(400).json({
+          errors: [{ msg: "No account with this username exists." }],
+        });
+      }
+
+      user.email = email;
+
+      user.save((err) => {
+        if (err) {
+          return res.status(500).json({
+            errors: [{ msg: "An error occurred while saving email." }],
+          });
+        }
+
+        return res.status(200).json({ msg: "Email changed successfully." });
       });
     });
   }
