@@ -10,7 +10,7 @@ export const AdminPanel = () => {
   const accountCreation = true;
 
   return (
-    <div className="bg-white px-4 py-5 sm:rounded-lg sm:p-6">
+    <div className="bg-white py-5 sm:rounded-lg sm:p-6">
       <div className="md:grid md:grid-cols-3 md:gap-6">
         <div className="md:col-span-1">
           <h3 className="text-lg font-semibold leading-6 text-gray-900 lg:pl-48">

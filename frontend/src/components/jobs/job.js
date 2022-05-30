@@ -3,7 +3,7 @@ import { Layout } from "../layout/layout";
 import { useParams } from "react-router-dom";
 import { getJWT } from "../../utils/loginUtil";
 import { Timeline } from "./timeline";
-import { LinkIcon, ClockIcon, EyeIcon } from "@heroicons/react/outline";
+import { JobInfo } from "./jobInfo";
 
 export const JobView = ({ location }) => {
   const [job, setJob] = useState({});
@@ -27,29 +27,45 @@ export const JobView = ({ location }) => {
       <div className="lg:p-8">
         <div className="max-w-7xl mx-auto space-y-6 pt-6 lg:pt-8">
           <div className="px-4 pb-0 lg:px-8 lg:pb-12">
-            <h1 className="lg:pl-6 text-3xl font-bold">{job.name}</h1>
-            <div className="flex flex-row lg:px-6 mt-3 text-gray-500 hover:text-gray-800">
-              <LinkIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-              <a className="hover:underline font-semibold" href={job.url}>
-                {job.url}
-              </a>
-            </div>
-            <div className="flex flex-row lg:px-6 mt-3 text-gray-500 hover:text-gray-800">
-              <ClockIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-              <p>Checking every {job.interval}</p>
-            </div>
-            {job.states !== undefined && (
-              <div>
-                <div className="flex flex-row lg:px-6 mt-3 text-gray-500 hover:text-gray-800">
-                  <EyeIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-                  <p>Detected {job.states.length - 1} changes so far.</p>
+            <main className="-mt-24 pb-8">
+              <div className="max-w-3xl pt-24 mx-auto lg:max-w-7xl">
+                <h1 className="sr-only">Page title</h1>
+                <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-4 lg:gap-8">
+                  <div className="sm:px-6 lg:px-0 grid grid-cols-1 gap-4 lg:col-span-2">
+                    <section aria-labelledby="section-1-title">
+                      <div className="bg-white overflow-hidden">
+                        <div className="p-0">
+                          <JobInfo job={job} />
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+
+                  {/* Right column */}
+                  <div className="grid grid-cols-1 col-span-2 gap-4">
+                    <section aria-labelledby="section-2-title">
+                      <div className="bg-white overflow-hidden">
+                        <div className="px-0">
+                          {job.states !== undefined && (
+                            <Timeline states={job.states} />
+                          )}
+                        </div>
+                      </div>
+                    </section>
+                  </div>
                 </div>
-                <Timeline states={job.states} />
               </div>
-            )}
+            </main>
           </div>
         </div>
       </div>
     </Layout>
   );
 };
+
+/**
+<div className="md:px-6 lg:px-0 md:pt-4">
+
+            </div>
+
+ */

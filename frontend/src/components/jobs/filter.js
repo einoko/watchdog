@@ -4,7 +4,7 @@ function classNames(...classes) {
 
 export default function Filter({ jobCounts, setFilter }) {
   return (
-    <div className="lg:p-6">
+    <div className="md:p-6 py-6">
       <div className="sm:hidden">
         <select
           id="tabs"

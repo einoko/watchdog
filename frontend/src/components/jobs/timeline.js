@@ -1,5 +1,5 @@
 import React from "react";
-import { EyeIcon, PlusIcon } from "@heroicons/react/outline";
+import { BellIcon, PlusIcon } from "@heroicons/react/outline";
 
 export const Timeline = ({ states }) => {
   return (
@@ -7,7 +7,7 @@ export const Timeline = ({ states }) => {
       aria-labelledby="timeline-title"
       className="lg:col-start-3 lg:col-span-1"
     >
-      <div className="bg-white px-4 py-5 sm:px-6">
+      <div className="bg-white py-5 sm:px-6">
         <h2
           id="timeline-title"
           className="text-2xl font-semibold text-gray-900"
@@ -39,7 +39,7 @@ export const Timeline = ({ states }) => {
                             aria-hidden="true"
                           />
                         ) : (
-                          <EyeIcon
+                          <BellIcon
                             className="w-5 h-5 text-white"
                             aria-hidden="true"
                           />
@@ -52,22 +52,26 @@ export const Timeline = ({ states }) => {
                           {itemIdx === 0
                             ? "Job created"
                             : "Difference was detected"}
+                        </p>
+                        <div>
+                          <a
+                            className="underline text-blue-600"
+                            target="_blank"
+                            rel="noreferrer"
+                            href={`http://localhost:3001/api/image/${item.image}`}
+                          >
+                            screenshot
+                          </a>
                           {itemIdx !== 0 && (
                             <a
-                              className="pl-1 underline text-blue-600"
+                              className="pl-3 underline text-blue-600"
                               target="_blank"
                               rel="noreferrer"
                               href={`http://localhost:3001/api/image/${item.diff}`}
                             >
-                              (difference)
+                              difference
                             </a>
                           )}
-                        </p>
-                        <div>
-                          <img
-                            alt={"New state"}
-                            src={`http://localhost:3001/api/image/${item.image}`}
-                          />
                         </div>
                       </div>
                       <div className="text-right text whitespace-nowrap text-gray-500">
@@ -78,7 +82,8 @@ export const Timeline = ({ states }) => {
                               year: "numeric",
                               month: "long",
                               day: "numeric",
-                              timeZone: "utc",
+                              hour: "numeric",
+                              minute: "numeric",
                             }
                           )}
                         </time>
