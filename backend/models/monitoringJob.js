@@ -61,7 +61,7 @@ const monitoringJobSchema = new mongoose.Schema(
       type: String,
     },
     visual_hideElements: {
-      type: [String],
+      type: String,
     },
     visual_crop: {
       type: Object,

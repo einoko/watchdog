@@ -34,6 +34,8 @@ router.post(
   body("text_words").optional().isString(),
   header("Authorization").isJWT(),
   async (req, res) => {
+    console.log(req.body);
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -125,10 +127,10 @@ router.put(
   "/job/:_id",
   auth,
   param("_id").isMongoId(),
-  body("name").isString(),
+  body("name").isString().optional(),
   body("interval")
     .isIn(acceptedIntervals)
-    .withMessage("Please enter a valid interval."),
+    .withMessage("Please enter a valid interval.").optional(),
   body("threshold").isIn([0.0, 0.01, 0.1, 0.25, 0.5]).optional(),
   body("visual_scrollToElement").optional().isString(),
   body("visual_hideElements").optional().isString(),
@@ -146,6 +148,8 @@ router.put(
     const userId = req.userId;
 
     const _id = req.params._id;
+
+    req.body.states = []
 
     // Update the job
     MonitoringJob.findOneAndUpdate(

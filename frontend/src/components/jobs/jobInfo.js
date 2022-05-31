@@ -140,13 +140,10 @@ export const JobInfo = ({ job, active, setActive }) => {
       {job.visual_hideElements && job.visual_hideElements.length > 0 && (
         <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
           <EyeOffIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-          <p>{job.visual_hideElements.join(", ")}</p>
+          <p>{job.visual_hideElements}</p>
         </div>
       )}
       <div className="lg:px-6 pt-8 flex flex-row">
-        <button className="bg-indigo-500 hover:bg-indigo-700 text-sm font-semibold text-white p-3 rounded-md mr-3">
-          Edit job
-        </button>
         <button
           onClick={() => toggleActivity()}
           className="bg-indigo-500 hover:bg-indigo-700 text-sm font-semibold text-white p-3 rounded-md mr-3"

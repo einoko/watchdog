@@ -59,7 +59,7 @@ export const JobView = ({ location }) => {
                     <section aria-labelledby="section-2-title">
                       <div className="bg-white overflow-hidden">
                         <div className="px-0">
-                          {job.states !== undefined && <Timeline job={job} />}
+                          {job.states !== undefined && job.states.length >= 1 && <Timeline job={job} />}
                         </div>
                       </div>
                     </section>

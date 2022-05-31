@@ -114,19 +114,18 @@ export const JobsView = ({ location }) => {
                             <p>
                               Detected{" "}
                               {Math.max(jobListing.states.length - 1, 0)}{" "}
-                              changes so far
+                              {jobListing.states.length === 2 ? "change" : "changes"} so far
                             </p>
                           </div>
                           <div className="flex items text-sm text-gray-500 sm:mt-0">
                             <p>
-                              Last check:{" "}
+                              Last change:{" "}
                               {new Date(
                                 jobListing.updatedAt
                               ).toLocaleDateString("en-gb", {
                                 year: "numeric",
                                 month: "numeric",
                                 day: "numeric",
-                                timeZone: "utc",
                                 hour: "numeric",
                                 minute: "numeric",
                               })}
