@@ -81,6 +81,8 @@ const checkText = async (job) => {
       }
     }
   }
+
+  await job.save()
 };
 
 /**
@@ -96,6 +98,8 @@ const executeTextMonitoringJob = async (jobID) => {
     console.error(`Monitoring job ${jobID} not found`);
     return;
   }
+
+  job.updatedAt = new Date();
 
   await checkText(job);
 };

@@ -114,6 +114,8 @@ const checkLastState = async (job) => {
       savedDiffImage
     );
   }
+
+  await job.save();
 };
 
 /**
@@ -129,6 +131,8 @@ const executeVisualMonitoringJob = async (jobID) => {
     console.error(`Monitoring job ${jobID} not found`);
     return;
   }
+
+  job.updatedAt = new Date();
 
   if (job.states.length === 0) {
     await initializeFirstState(job);

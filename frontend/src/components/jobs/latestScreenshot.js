@@ -6,7 +6,7 @@ export const LatestScreenshot = ({ job }) => {
       {job.states !== undefined && job.states.length > 0 && (
         <div>
           <h2 className="lg:pl-6 pt-6 text-2xl font-bold">
-            {job.states.length === 1 ? "Latest screenshot" : "Latest changes"}
+            {job.states.length === 1 ? "Latest screenshot" : "Latest change"}
           </h2>
           <span className="font-normal lg:pl-6 text-lg text-gray-500">
             {new Date(

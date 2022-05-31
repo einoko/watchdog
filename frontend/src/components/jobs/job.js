@@ -5,6 +5,8 @@ import { getJWT } from "../../utils/loginUtil";
 import { Timeline } from "./timeline";
 import { JobInfo } from "./jobInfo";
 import { LatestScreenshot } from "./latestScreenshot";
+import { LatestTextDiff } from "./latestTextDiff";
+import { LatestKeywordAlert } from "./latestKeywordAlert";
 
 export const JobView = ({ location }) => {
   const [job, setJob] = useState({});
@@ -43,8 +45,12 @@ export const JobView = ({ location }) => {
                             setActive={setActive}
                           />
                         </div>
-                        {job.jobType === "visual" && (
+                        {job.jobType === "visual" ? (
                           <LatestScreenshot job={job} />
+                        ) : job.text_type === "any_change" ? (
+                          <LatestTextDiff job={job} />
+                        ) : (
+                          <LatestKeywordAlert job={job} />
                         )}
                       </div>
                     </section>
@@ -53,9 +59,7 @@ export const JobView = ({ location }) => {
                     <section aria-labelledby="section-2-title">
                       <div className="bg-white overflow-hidden">
                         <div className="px-0">
-                          {job.states !== undefined && (
-                            <Timeline job={job} />
-                          )}
+                          {job.states !== undefined && <Timeline job={job} />}
                         </div>
                       </div>
                     </section>

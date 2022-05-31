@@ -54,7 +54,10 @@ export const JobInfo = ({ job, active, setActive }) => {
     }).then((res) => {
       if (res.status === 200) {
         setActive(!active);
-        successToast("Job status updated", `Job ${active ? "paused" : "resumed"} successfully.`);
+        successToast(
+          "Job status updated",
+          `Job ${active ? "paused" : "resumed"} successfully.`
+        );
       }
     });
   };
@@ -78,9 +81,7 @@ export const JobInfo = ({ job, active, setActive }) => {
       <div className="py-3">
         <span
           className={`${
-            active
-              ? "bg-green-300 text-green-800"
-              : "text-gray-900 bg-gray-300"
+            active ? "bg-green-300 text-green-800" : "text-gray-900 bg-gray-300"
           } lg:ml-4 py-2 px-3 font-semibold text-sm rounded-full`}
         >
           {active ? "Active" : "Paused"}
@@ -120,8 +121,7 @@ export const JobInfo = ({ job, active, setActive }) => {
           <BellIcon className="h-5 w-5 mr-2 flex-shrink-0" />
           <p>
             Detected {Math.max(job.states.length - 1, 0)}{" "}
-            {job.states.length === 2 ? "change" : "changes"} so far. (Threshold
-            set to {Math.round(job.threshold * 100)}%)
+            {job.states.length === 2 ? "change" : "changes"} so far.
           </p>
         </div>
       )}
@@ -144,6 +144,9 @@ export const JobInfo = ({ job, active, setActive }) => {
         </div>
       )}
       <div className="lg:px-6 pt-8 flex flex-row">
+        <button className="bg-indigo-500 hover:bg-indigo-700 text-sm font-semibold text-white p-3 rounded-md mr-3">
+          Edit job
+        </button>
         <button
           onClick={() => toggleActivity()}
           className="bg-indigo-500 hover:bg-indigo-700 text-sm font-semibold text-white p-3 rounded-md mr-3"
