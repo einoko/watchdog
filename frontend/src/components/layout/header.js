@@ -22,7 +22,9 @@ export const Header = ({ location }) => {
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <span className="text-white font-extrabold text-2xl tracking-wide"><a href="/">Watchdog</a></span>
+                    <span className="text-white font-extrabold text-2xl tracking-wide">
+                      <a href="/">Watchdog</a>
+                    </span>
                   </div>
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">
@@ -53,9 +55,11 @@ export const Header = ({ location }) => {
                     {/* Profile dropdown */}
                     <Menu as="div" className="ml-3 relative">
                       <div>
-                        <Menu.Button className="bg-gray-800 flex hover:text-white text-gray-300 text-sm p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <Menu.Button className="bg-gray-800 flex hover:text-white text-gray-300 text-sm p-2 rounded-full focus:outline-none">
                           <FaUser className="w-5 h-5 mr-2" />
-                          <span className="font-semibold text-md">{username}</span>
+                          <span className="font-semibold text-md">
+                            {username}
+                          </span>
                         </Menu.Button>
                       </div>
                       <Transition
@@ -67,7 +71,7 @@ export const Header = ({ location }) => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white focus:outline-none">
                           <Menu.Item>
                             {({ active }) => (
                               <button
@@ -77,7 +81,7 @@ export const Header = ({ location }) => {
                                 }}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block text-left w-full px-4 py-2 text-sm text-gray-700"
                                 )}
                               >
                                 Sign out
@@ -91,7 +95,7 @@ export const Header = ({ location }) => {
                 </div>
                 <div className="-mr-2 flex sm:hidden">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
                       <XIcon className="block h-6 w-6" aria-hidden="true" />

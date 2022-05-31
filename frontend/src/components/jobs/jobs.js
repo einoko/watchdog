@@ -67,29 +67,25 @@ export const JobsView = ({ location }) => {
                   <div className="block">
                     <div className="md:px-6 py-4 sm:px-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-xl font-semibold text-indigo-600 truncate">
+                        <p className="text-xl flex flex-wrap items-center font-semibold text-indigo-600 truncate">
                           <Link
+                            className="pr-3"
                             to={{
                               pathname: `/jobs/${jobListing._id}`,
                             }}
                           >
                             {jobListing.name}{" "}
-                            <span
-                              className={`${
-                                jobListing.active
-                                  ? "bg-green-300 text-green-800"
-                                  : "text-red-800 bg-red-400"
-                              } ml-2 text-xs py-1 px-2 font-semibold rounded-full`}
-                            >
-                              {jobListing.active ? "Active" : "Paused"}
-                            </span>
                           </Link>
+                          <span
+                            className={`${
+                              jobListing.active
+                                ? "bg-green-300 text-green-800"
+                                : "text-gray-900 bg-gray-300"
+                            } text-xs py-1 px-2 font-semibold rounded-full`}
+                          >
+                            {jobListing.active ? "Active" : "Paused"}
+                          </span>
                         </p>
-                        <div className="ml-2 flex-shrink-0 flex">
-                          <button className="text-red-500 underline">
-                            Delete job
-                          </button>
-                        </div>
                       </div>
                       <div className="mt-2 sm:flex sm:justify-between">
                         <div className="sm:flex flex-col gap-y-2">
@@ -105,7 +101,7 @@ export const JobsView = ({ location }) => {
                               {jobListing.url}
                             </span>
                           </a>
-                          <p className="flex items-center mt-2 sm:mt-0 text-sm text-gray-500">
+                          <p className="flex items-center my-2 sm:mt-0 text-sm text-gray-500">
                             <ClockIcon
                               className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                               aria-hidden="true"
@@ -114,15 +110,26 @@ export const JobsView = ({ location }) => {
                           </p>
                         </div>
                         <div>
-                          <div className="flex items text-sm text-gray-500 sm:mt-0">
-                            <EyeIcon
-                              className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                              aria-hidden="true"
-                            />
+                          <div className="flex py-1 items text-sm text-gray-500 sm:mt-0">
                             <p>
                               Detected{" "}
                               {Math.max(jobListing.states.length - 1, 0)}{" "}
                               changes so far
+                            </p>
+                          </div>
+                          <div className="flex items text-sm text-gray-500 sm:mt-0">
+                            <p>
+                              Last check:{" "}
+                              {new Date(
+                                jobListing.updatedAt
+                              ).toLocaleDateString("en-gb", {
+                                year: "numeric",
+                                month: "numeric",
+                                day: "numeric",
+                                timeZone: "utc",
+                                hour: "numeric",
+                                minute: "numeric",
+                              })}
                             </p>
                           </div>
                         </div>

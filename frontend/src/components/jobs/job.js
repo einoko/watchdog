@@ -4,9 +4,11 @@ import { useParams } from "react-router-dom";
 import { getJWT } from "../../utils/loginUtil";
 import { Timeline } from "./timeline";
 import { JobInfo } from "./jobInfo";
+import { LatestScreenshot } from "./latestScreenshot";
 
 export const JobView = ({ location }) => {
   const [job, setJob] = useState({});
+  const [active, setActive] = useState(true);
 
   useEffect(() => {
     fetch(`/api/job/${params.jobID}`, {
@@ -16,8 +18,8 @@ export const JobView = ({ location }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.job);
         setJob(data.job);
+        setActive(data.job.active);
       });
   }, []);
 
@@ -35,19 +37,24 @@ export const JobView = ({ location }) => {
                     <section aria-labelledby="section-1-title">
                       <div className="bg-white overflow-hidden">
                         <div className="p-0">
-                          <JobInfo job={job} />
+                          <JobInfo
+                            job={job}
+                            active={active}
+                            setActive={setActive}
+                          />
                         </div>
+                        {job.jobType === "visual" && (
+                          <LatestScreenshot job={job} />
+                        )}
                       </div>
                     </section>
                   </div>
-
-                  {/* Right column */}
                   <div className="grid grid-cols-1 col-span-2 gap-4">
                     <section aria-labelledby="section-2-title">
                       <div className="bg-white overflow-hidden">
                         <div className="px-0">
                           {job.states !== undefined && (
-                            <Timeline states={job.states} />
+                            <Timeline job={job} />
                           )}
                         </div>
                       </div>
@@ -62,10 +69,3 @@ export const JobView = ({ location }) => {
     </Layout>
   );
 };
-
-/**
-<div className="md:px-6 lg:px-0 md:pt-4">
-
-            </div>
-
- */

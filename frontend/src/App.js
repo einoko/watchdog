@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import ReactCrop from "react-image-crop";
 import { getJWT } from "./utils/loginUtil";
 import { Disclosure } from "@headlessui/react";
+import { useNavigate } from "react-router-dom";
 
 import "react-image-crop/dist/ReactCrop.css";
 import { ChevronRightIcon } from "@heroicons/react/solid";
@@ -26,6 +27,8 @@ export default function App({ location }) {
   const [textComparisonMethod, setTextComparisonMethod] =
     useState("any_change");
   const [hideElements, setHideElements] = useState();
+
+  let navigate = useNavigate();
 
   const classNames = (...classes) => {
     return classes.filter(Boolean).join(" ");
@@ -101,6 +104,7 @@ export default function App({ location }) {
   };
 
   const onSubmit = async (data) => {
+    console.log(data.text_type);
     const response = await fetch("/api/job", {
       method: "POST",
       headers: {
@@ -123,7 +127,7 @@ export default function App({ location }) {
               ? null
               : crop,
           text_css: data.text_css,
-          text_type: data.text_type,
+          text_type: textComparisonMethod,
           text_words: data.text_words,
         })
       ),
@@ -135,6 +139,7 @@ export default function App({ location }) {
       }
     } else {
       setDataFetched(false);
+      navigate("/jobs");
       successToast("Job added!", "Monitoring job successfully added.");
     }
   };

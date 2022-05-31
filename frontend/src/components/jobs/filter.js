@@ -11,9 +11,14 @@ export default function Filter({ jobCounts, setFilter }) {
           name="tabs"
           className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none  sm:text-sm rounded-md"
           defaultValue={jobCounts.find((job) => job.current).type}
+          onClick={(e) => {
+            setFilter(e.target.value);
+          }}
         >
           {jobCounts.map((job) => (
-            <option key={job.type}>{job.type}</option>
+            <option value={job.type} key={job.type}>
+              {job.type}
+            </option>
           ))}
         </select>
       </div>
@@ -24,7 +29,7 @@ export default function Filter({ jobCounts, setFilter }) {
               <button
                 key={job.type}
                 onClick={() => {
-                  setFilter(job.type)
+                  setFilter(job.type);
                 }}
                 className={classNames(
                   job.current

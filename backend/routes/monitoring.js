@@ -31,7 +31,7 @@ router.post(
   body("visual_crop").optional().isObject(),
   body("text_css").optional().isString(),
   body("text_type").optional().isIn(["any_change", "added", "removed"]),
-  body("text_words").optional().isArray(),
+  body("text_words").optional().isString(),
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);

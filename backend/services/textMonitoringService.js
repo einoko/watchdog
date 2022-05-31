@@ -55,7 +55,7 @@ const checkText = async (job) => {
 
     const matches = [];
 
-    for (const word of job.text_words) {
+    for (const word of job.text_words.toString().split(",").map((word) => word.trim())) {
       if (job.text_type === "added") {
         if (trimmedText.includes(word.toLowerCase())) {
           matches.push(word);

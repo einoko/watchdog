@@ -1,6 +1,7 @@
 import express from "express";
 import { param, validationResult } from "express-validator";
 import { Image } from "../models/image.js";
+import sharp from "sharp";
 import fs from "fs";
 
 const router = express.Router();
@@ -36,8 +37,20 @@ router.get("/image/:id", param("id").isMongoId(), (req, res) => {
         });
       }
 
-      res.writeHead(200, { "Content-Type": "image/png" });
-      res.end(data);
+      // Resize image to low quality JPEG
+      sharp(data)
+        .toFormat("jpeg")
+        .jpeg({ quality: 50 })
+        .toBuffer((err, buffer) => {
+          if (err) {
+            return res.status(500).json({
+              errors: [{ msg: "An error occurred while fetching image." }],
+            });
+          }
+
+          res.set("Content-Type", "image/jpeg");
+          res.send(buffer);
+        });
     });
   });
 });
