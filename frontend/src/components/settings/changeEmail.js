@@ -4,7 +4,6 @@ import { successToast, warningToast } from "../../utils/customToasts.js";
 import { getJWT } from "../../utils/loginUtil";
 
 export const ChangeEmail = ({ userData }) => {
-  const [email, setEmail] = useState(userData.email);
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
@@ -52,13 +51,10 @@ export const ChangeEmail = ({ userData }) => {
                     name="email"
                     type="email"
                     {...register("email")}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
                     autoComplete="email"
                     className=" flex-1 block w-full rounded-md sm:text-sm border-gray-300"
                     placeholder="you@example.com"
-                    value={email === undefined ? userData.email : email}
+                    defaultValue={userData.email}
                   />
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
