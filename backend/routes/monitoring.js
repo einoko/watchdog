@@ -82,15 +82,21 @@ router.get(
     const userId = req.userId;
     const jobId = req.params.id;
 
-    MonitoringJob.findOne({ _id: jobId, userId }, (err, job) => {
+    MonitoringJob.findOne({ _id: jobId }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not find the monitoring job." }],
         });
       } else {
-        return res.status(200).json({
-          job,
-        });
+        if (job.userId.toString() !== userId && req.isAdmin === false) {
+          return res.status(401).json({
+            errors: [{ msg: "You are not authorized to view this job." }],
+          });
+        } else {
+          return res.status(200).json({
+            job,
+          });
+        }
       }
     });
   }
@@ -130,7 +136,8 @@ router.put(
   body("name").isString().optional(),
   body("interval")
     .isIn(acceptedIntervals)
-    .withMessage("Please enter a valid interval.").optional(),
+    .withMessage("Please enter a valid interval.")
+    .optional(),
   body("threshold").isIn([0.0, 0.01, 0.1, 0.25, 0.5]).optional(),
   body("visual_scrollToElement").optional().isString(),
   body("visual_hideElements").optional().isString(),
@@ -149,7 +156,7 @@ router.put(
 
     const _id = req.params._id;
 
-    req.body.states = []
+    req.body.states = [];
 
     // Update the job
     MonitoringJob.findOneAndUpdate(
@@ -203,12 +210,18 @@ router.patch(
     const _id = req.params._id;
     const active = req.body.active;
 
-    MonitoringJob.findById({ _id, userId }, (err, job) => {
+    MonitoringJob.findById({ _id }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not find the monitoring job." }],
         });
       } else {
+        if (job.userId.toString() !== userId && req.isAdmin === false) {
+          return res.status(401).json({
+            errors: [{ msg: "You are not authorized to pause this job." }],
+          });
+        }
+
         job.active = active;
         job.save();
         changeStatus(job);
@@ -243,7 +256,7 @@ router.delete(
       });
     }
 
-    if (job.userId.toString() !== userId) {
+    if (job.userId.toString() !== userId && req.isAdmin === false) {
       return res.status(401).json({
         errors: [
           { msg: "You are not authorized to delete this monitoring job." },

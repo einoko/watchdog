@@ -14,6 +14,8 @@ import { JobView } from "./components/jobs/job";
 import { SettingsView } from "./components/settings/settings";
 import { NotFound } from "./components/notfound";
 import { Toaster } from "react-hot-toast";
+import { AllUsers } from "./components/admin/allUsers";
+import { User } from "./components/admin/user";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const loggedIn = isLoggedIn();
@@ -58,6 +60,22 @@ root.render(
             <LoggedInRoute loggedIn={loggedIn}>
               <RegisterView />
             </LoggedInRoute>
+          }
+        />
+        <Route
+          path="admin/all_users"
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <AllUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/user/:id"
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <User />
+            </ProtectedRoute>
           }
         />
         <Route path="*" element={<NotFound />} />

@@ -9,6 +9,7 @@ export const auth = async function (req, res, next) {
   }
 
   const userId = userToken.decoded.user.id;
+  const isAdmin = userToken.decoded.user.isAdmin;
   const user = await User.findOne({ _id: userId });
   if (!user) {
     return res.status(400).json({
@@ -16,9 +17,8 @@ export const auth = async function (req, res, next) {
     });
   }
 
-  console.log(userId);
-
   req.userId = userId;
+  req.isAdmin = isAdmin;
 
   return next();
 };

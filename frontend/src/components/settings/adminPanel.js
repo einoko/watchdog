@@ -1,5 +1,6 @@
 import { Switch } from "@headlessui/react";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
@@ -54,6 +55,14 @@ export const AdminPanel = () => {
                     </Switch>
                   </Switch.Group>
                 </ul>
+                <div className="pt-12">
+                <Link className="py-3 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold" to={"/admin/all_users"}>
+                  All users
+                </Link>
+                <Link className="ml-4 py-3 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold" to={"/admin/all_jobs"}>
+                  All jobs
+                </Link>
+                </div>
               </div>
             </div>
           </form>
