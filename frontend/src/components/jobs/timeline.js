@@ -99,7 +99,12 @@ export const Timeline = ({ job }) => {
                               </Disclosure.Button>
                               <Disclosure.Panel className="text-gray-700">
                                 {job.jobType === "visual" ? (
-                                  <ScreenshotTimelineItem item={item} />
+                                  <ScreenshotTimelineItem
+                                    previousItem={
+                                      itemIdx > 0 ? states[itemIdx - 1] : null
+                                    }
+                                    item={item}
+                                  />
                                 ) : job.text_type === "any_change" ? (
                                   <div>
                                     <TextDiffTimelineItem

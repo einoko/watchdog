@@ -1,4 +1,5 @@
 import React from "react";
+import { ScreenshotTimelineItem } from "./screenshotTimelineItem";
 
 export const LatestScreenshot = ({ job }) => {
   return (
@@ -19,42 +20,28 @@ export const LatestScreenshot = ({ job }) => {
               minute: "numeric",
             })}
           </span>
-          <div>
-            <a href={`/api/image/${job.states[job.states.length - 1].image}`}>
-              <img
-                className="mx-auto lg:pl-6 pt-4"
-                alt={"Latest screenshot"}
-                src={`/api/image/${job.states[job.states.length - 1].image}`}
-              />
-            </a>
-          </div>
-          {job.states.length >= 2 && (
+          {job.states.length === 1 ? (
             <div>
-              <h3 className="lg:pl-6 pt-6 text-2xl font-semibold">Before</h3>
-              <span className="font-normal lg:pl-6 text-lg text-gray-500">
-                {new Date(
-                  job.states[job.states.length - 2].createdAt
-                ).toLocaleDateString("en-gb", {
-                  year: "numeric",
-                  month: "numeric",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </span>
               <div>
                 <a
-                  href={`/api/image/${job.states[job.states.length - 2].image}`}
+                  href={`/api/image/${job.states[job.states.length - 1].image}`}
                 >
                   <img
                     className="mx-auto lg:pl-6 pt-4"
                     alt={"Latest screenshot"}
                     src={`/api/image/${
-                      job.states[job.states.length - 2].image
+                      job.states[job.states.length - 1].image
                     }`}
                   />
                 </a>
               </div>
+            </div>
+          ) : (
+            <div className="lg:pl-6">
+              <ScreenshotTimelineItem
+                previousItem={job.states[job.states.length - 2]}
+                item={job.states[job.states.length - 1]}
+              />
             </div>
           )}
         </div>
