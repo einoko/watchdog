@@ -195,7 +195,7 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const isAdmin = userToken.decoded.user.isAdmin;
+    const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
       return res.status(401).json({

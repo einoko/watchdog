@@ -85,11 +85,6 @@ export default function LoginView() {
               </div>
             )}
             <div>
-              <div className="pt-4">
-                <p className="text-right text-sm font-semibold text-gray-700 hover:text-gray-800">
-                  Forgot your password?
-                </p>
-              </div>
               <button
                 type="submit"
                 className="w-full mt-8 text-sm rounded-md p-2 tracking-wide font-medium bg-gray-700 text-white hover:bg-gray-800 focus:outline-none"

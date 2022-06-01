@@ -6,10 +6,7 @@ import {
   getTextChangeAlertMail,
 } from "../utils/mailTemplateUtil.js";
 import { compressImage, getFullLink } from "./imageService.js";
-import fs from "fs";
 import Diff from "text-diff";
-
-// TODO: Refactor
 
 const createDeletionLink = (token) => {
   return `${process.env.APP_URL}/api/emailCancel/${token}`;
@@ -71,20 +68,13 @@ export const sendVisualAlertMail = async (
     html: getVisualAlertMail(templateObject),
   };
 
-  console.log("Mail sent...");
-
-  const mailResult = getVisualAlertMail(templateObject);
-
-  // save mail to file
-  fs.writeFileSync(`./visual_mail.html`, mailResult);
-
-  /*transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
     } else {
       console.log("Email sent: " + info.response);
     }
-  });*/
+  });
 };
 
 export const sendKeywordAlertMail = async (job, user, matches = null) => {
@@ -104,20 +94,13 @@ export const sendKeywordAlertMail = async (job, user, matches = null) => {
     html: getKeywordAlertMail(templateObject),
   };
 
-  const mailResult = getKeywordAlertMail(templateObject);
-
-  // save mail to file
-  fs.writeFileSync(`./text_mail.html`, mailResult);
-
-  console.log("Mail sent...");
-
-  /*transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
     } else {
       console.log("Email sent: " + info.response);
     }
-  });*/
+  });
 };
 
 export const sendTextDiffMail = async (job, user) => {
@@ -145,17 +128,11 @@ export const sendTextDiffMail = async (job, user) => {
     html: getTextChangeAlertMail(templateObject),
   };
 
-  const mailResult = getTextChangeAlertMail(templateObject);
-
-  fs.writeFileSync("./text_mail.html", mailResult);
-
-  console.log("Mail sent...");
-
-  /*transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
     } else {
       console.log("Email sent: " + info.response);
     }
-  });*/
+  });
 };

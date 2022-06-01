@@ -147,7 +147,7 @@ export const JobInfo = ({ job, active, setActive }) => {
       <div className=" pt-8 flex flex-row">
         <button
           onClick={() => toggleActivity()}
-          className="bg-gray-500 hover:bg-gray-800 text-sm font-semibold text-white p-3 rounded-md mr-3"
+          className="bg-gray-700 hover:bg-gray-800 text-sm font-semibold text-white p-3 rounded-md mr-3"
         >
           {active ? "Pause" : "Resume"} job
         </button>
