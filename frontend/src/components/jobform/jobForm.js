@@ -75,9 +75,9 @@ export const JobForm = () => {
         const json = await response.json();
         setFetchingData(false);
         if (json.errors) {
-          json.errors.map((error) => {
+          for (const error of errors) {
             setErrors([error.param]);
-          });
+          }
         } else {
           setDataFetched(true);
         }
@@ -171,7 +171,7 @@ export const JobForm = () => {
                               setComparisonType(e.target.value);
                             }}
                             defaultChecked={true}
-                            className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                            className="focus:ring-gray-500 h-4 w-4 text-gray-700 border-gray-300"
                           />
                           <label
                             htmlFor="visual"
@@ -193,7 +193,7 @@ export const JobForm = () => {
                               setCrop(null);
                               setComparisonType(e.target.value);
                             }}
-                            className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                            className="focus:ring-gray-500 h-4 w-4 text-gray-700 border-gray-300"
                           />
                           <label
                             htmlFor="text"
@@ -258,7 +258,7 @@ export const JobForm = () => {
                   <button
                     type="button"
                     onClick={handlePreview}
-                    className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                   >
                     Fetch
                   </button>
@@ -281,7 +281,7 @@ export const JobForm = () => {
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
               <label
                 htmlFor="frequency"
-                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 lg:pl-36"
+                className="block text-sm font-medium sm:mt-px sm:pt-2 lg:pl-36"
               >
                 Frequency
               </label>
@@ -291,7 +291,7 @@ export const JobForm = () => {
                     id="interval"
                     name="interval"
                     defaultValue={"day"}
-                    className="sm:max-w-md w-full  shadow-sm sm:text-sm border-gray-300 rounded-md"
+                    className="sm:max-w-md w-full shadow-sm text-black bg-white sm:text-sm border-gray-300 rounded-md"
                     {...register("interval")}
                   >
                     <option value="1 minute">Every minute</option>
@@ -415,7 +415,7 @@ export const JobForm = () => {
                                 onChange={(e) =>
                                   setTextComparisonMethod(e.target.value)
                                 }
-                                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                                className="focus:ring-gray-500 h-4 w-4 text-gray-700 border-gray-300"
                               />
                               <label
                                 htmlFor="text"
@@ -434,7 +434,7 @@ export const JobForm = () => {
                                 onChange={(e) =>
                                   setTextComparisonMethod(e.target.value)
                                 }
-                                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                                className="focus:ring-gray-500 h-4 w-4 text-gray-700 border-gray-300"
                               />
                               <label
                                 htmlFor="visual"
@@ -453,7 +453,7 @@ export const JobForm = () => {
                                 onChange={(e) =>
                                   setTextComparisonMethod(e.target.value)
                                 }
-                                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
+                                className="focus:ring-gray-500 h-4 w-4 text-gray-700 border-gray-300"
                               />
                               <label
                                 htmlFor="text"
@@ -583,7 +583,7 @@ export const JobForm = () => {
         <div className="px-7 py-6 mt-8 text-left sm:px-6 text-right max-w-7xl">
           <button
             type="submit"
-            className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
           >
             Start monitoring
           </button>

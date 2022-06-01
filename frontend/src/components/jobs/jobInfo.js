@@ -147,7 +147,7 @@ export const JobInfo = ({ job, active, setActive }) => {
       <div className=" pt-8 flex flex-row">
         <button
           onClick={() => toggleActivity()}
-          className="bg-indigo-500 hover:bg-indigo-700 text-sm font-semibold text-white p-3 rounded-md mr-3"
+          className="bg-gray-500 hover:bg-gray-800 text-sm font-semibold text-white p-3 rounded-md mr-3"
         >
           {active ? "Pause" : "Resume"} job
         </button>
@@ -195,7 +195,7 @@ export const JobInfo = ({ job, active, setActive }) => {
             </button>
             <button
               type="button"
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:w-auto sm:text-sm"
               onClick={closeModal}
             >
               Cancel

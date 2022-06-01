@@ -23,7 +23,7 @@ export const Timeline = ({ job }) => {
 
         <div className="mt-6 flow-root">
           <div>
-            <ul role="list" className="-mb-8">
+            <ul className="-mb-8">
               {states.map((item, itemIdx) => (
                 <li key={item.createdAt}>
                   <div className="relative pb-8">

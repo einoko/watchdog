@@ -30,19 +30,31 @@ export const Header = ({ location }) => {
                     <div className="flex space-x-4">
                       <Link
                         to={"/"}
-                        className={location.pathname === "/" ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"}
+                        className={
+                          location.pathname === "/"
+                            ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        }
                       >
                         New Job
                       </Link>
                       <Link
                         to={"/jobs"}
-                        className={location.pathname.includes("/jobs") ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"}
+                        className={
+                          location.pathname.includes("/jobs")
+                            ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        }
                       >
                         Jobs
                       </Link>
                       <Link
                         to={"/settings"}
-                        className={location.pathname === "/settings" ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"}
+                        className={
+                          location.pathname === "/settings"
+                            ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        }
                       >
                         Settings
                       </Link>
@@ -105,25 +117,38 @@ export const Header = ({ location }) => {
             </div>
 
             <Disclosure.Panel className="sm:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1">s
+              <div className="px-2 pt-2 pb-3 space-y-1">
+                s
                 <Disclosure.Button
                   as="a"
                   href="/"
-                  className={location.pathname === "/" ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"}
+                  className={
+                    location.pathname === "/"
+                      ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                  }
                 >
                   New Job
                 </Disclosure.Button>
                 <Disclosure.Button
                   as="a"
                   href="/jobs"
-                  className={location.pathname.includes("/jobs") ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"}
+                  className={
+                    location.pathname.includes("/jobs")
+                      ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                  }
                 >
                   Jobs
                 </Disclosure.Button>
                 <Disclosure.Button
                   as="a"
                   href="/settings"
-                  className={location.pathname === "/settings" ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"}
+                  className={
+                    location.pathname === "/settings"
+                      ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                  }
                 >
                   Settings
                 </Disclosure.Button>

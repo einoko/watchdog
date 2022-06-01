@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Layout } from "../layout/layout";
 import { getJWT } from "../../utils/loginUtil.js";
-import { ClockIcon, EyeIcon, LinkIcon } from "@heroicons/react/solid";
+import { ClockIcon, LinkIcon } from "@heroicons/react/solid";
 import { Link } from "react-router-dom";
 import Filter from "./filter";
 
@@ -42,8 +42,8 @@ export const JobsView = ({ location }) => {
   const filteredJobs = jobs
     .filter((job) => {
       if (filter === "All") return true;
-      if (job.jobType.toLowerCase().includes(filter.toLowerCase())) return true;
-      return false;
+      return job.jobType.toLowerCase().includes(filter.toLowerCase());
+
     })
     .sort((a, b) => {
       return new Date(b.updatedAt) > new Date(a.updatedAt);
@@ -61,13 +61,13 @@ export const JobsView = ({ location }) => {
                 There are no scheduled jobs running. Go add some!
               </div>
             )}
-            <ul role="list" className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-200">
               {filteredJobs.map((jobListing) => (
                 <li key={jobListing._id}>
                   <div className="block">
                     <div className="md:px-6 py-4 sm:px-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-xl flex flex-wrap items-center font-semibold text-indigo-600 truncate">
+                        <p className="text-2xl flex flex-wrap items-center font-bold text-gray-700 truncate">
                           <Link
                             className="pr-3"
                             to={{

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getJWT } from "../../utils/loginUtil";
-import { Layout } from "../layout/layout";
 
 export const UsersTable = () => {
   const [users, setUsers] = useState([]);
@@ -65,7 +64,7 @@ export const UsersTable = () => {
               <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                 <Link
                   to={`/admin/user/${user._id}`}
-                  className="text-indigo-600 hover:text-indigo-900"
+                  className="text-gray-700 hover:text-gray-900"
                 >
                   View
                   <span className="sr-only">, {user.name}</span>

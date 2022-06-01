@@ -33,7 +33,7 @@ export default function Filter({ jobCounts, setFilter }) {
                 }}
                 className={classNames(
                   job.current
-                    ? "border-indigo-500 text-indigo-600"
+                    ? "border-gray-900 text-gray-700"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200",
                   "whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                 )}
@@ -44,7 +44,7 @@ export default function Filter({ jobCounts, setFilter }) {
                   <span
                     className={classNames(
                       job.current
-                        ? "bg-indigo-100 text-indigo-600"
+                        ? "bg-gray-100 text-gray-700"
                         : "bg-gray-100 text-gray-900",
                       "ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium"
                     )}

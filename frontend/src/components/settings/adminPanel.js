@@ -57,7 +57,7 @@ export const AdminPanel = () => {
           <form>
             <div className="grid grid-cols-3 gap-6">
               <div className="col-span-3 sm:col-span-2">
-                <ul role="list" className="divide-y divide-gray-200">
+                <ul className="divide-y divide-gray-200">
                   <Switch.Group
                     as="li"
                     className="flex items-center justify-between"
@@ -97,7 +97,7 @@ export const AdminPanel = () => {
                 </ul>
                 <div className="pt-12">
                   <Link
-                    className="py-3 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold"
+                    className="py-3 px-4 rounded-md bg-gray-700 hover:bg-gray-800 text-white text-sm font-semibold"
                     to={"/admin/dashboard"}
                   >
                     Open admin dashboard

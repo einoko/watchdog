@@ -137,7 +137,7 @@ export default function RegisterView() {
             <div>
               <button
                 type="submit"
-                className="w-full mt-8 text-sm rounded-md p-2 tracking-wide font-medium bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none"
+                className="w-full mt-8 text-sm rounded-md p-2 tracking-wide font-medium bg-gray-700 text-white hover:bg-gray-800 focus:outline-none"
               >
                 Sign up
               </button>
@@ -148,7 +148,7 @@ export default function RegisterView() {
               <span className="text-gray-600">Already have an account? </span>
               <a
                 href="/login"
-                className="font-semibold text-indigo-600 hover:text-indigo-700"
+                className="font-semibold text-gray-700 hover:text-gray-800"
               >
                 Sign in.
               </a>
