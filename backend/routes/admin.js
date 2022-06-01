@@ -61,7 +61,6 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userId = req.userId;
     const isAdmin = req.isAdmin;
     const userIdFromUrl = req.params.id;
 
@@ -71,38 +70,25 @@ router.get(
       });
     }
 
-    const user = await User.findOne({ _id: userId }, (err, user) => {
+    User.findOne({ _id: userIdFromUrl }, (err, user) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "User not found in the database." }],
         });
       }
 
-      if (!user) {
-        return res.status(400).json({
-          errors: [{ msg: "No account with this username exists." }],
-        });
-      }
-
-      return user;
-    });
-
-    const jobs = await MonitoringJob.find(
-      { userId: userIdFromUrl },
-      (err, jobs) => {
+      MonitoringJob.find({ userId: userIdFromUrl }, (err, jobs) => {
         if (err) {
           return res.status(500).json({
             errors: [{ msg: "Could not fetch jobs from the database." }],
           });
         }
 
-        return jobs;
-      }
-    );
-
-    return res.status(200).json({
-      user,
-      jobs,
+        return res.status(200).json({
+          user,
+          jobs,
+        });
+      });
     });
   }
 );
