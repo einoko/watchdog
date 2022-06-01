@@ -23,19 +23,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
-    const user = await User.findOne({ _id: userId });
-    if (!user) {
-      return res.status(400).json({
-        errors: [{ msg: "No account with this username exists." }],
-      });
-    }
+    const userId = req.userId;
 
     const { url, scrollToElement, hideElements } = req.body;
 
@@ -60,7 +48,12 @@ router.post(
     switch (preview) {
       case null:
         return res.status(500).json({
-          errors: [{ msg: "Could not fetch a screenshot from the given URL.", param: "url" }],
+          errors: [
+            {
+              msg: "Could not fetch a screenshot from the given URL.",
+              param: "url",
+            },
+          ],
         });
       default:
         return res
@@ -84,19 +77,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
-    const user = await User.findOne({ _id: userId });
-    if (!user) {
-      return res.status(400).json({
-        errors: [{ msg: "No account with this username exists." }],
-      });
-    }
+    const userId = req.userId;
 
     const { url, textCSS } = req.body;
 

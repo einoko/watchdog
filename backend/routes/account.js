@@ -3,14 +3,13 @@ import { body, header, param, validationResult } from "express-validator";
 import { User } from "../models/user.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-import { verifyJWT } from "../utils/JWTUtil.js";
 import { MonitoringJob } from "../models/monitoringJob.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import { auth } from "../middleware/auth.js";
-import "dotenv/config";
 import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
 import { SiteConfig } from "../models/siteConfig.js";
+import "dotenv/config";
 
 const router = express.Router();
 
@@ -30,7 +29,6 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // get siteCOnfig
     const siteConfig = await SiteConfig.findOne({});
 
     if (!siteConfig.openSignup) {
@@ -64,7 +62,6 @@ router.post(
 
         newUser.save((err) => {
           if (err) {
-            console.log(err);
             return res.status(500).json({
               errors: [{ msg: "An error occurred while signing up." }],
             });
@@ -76,35 +73,6 @@ router.post(
     });
   }
 );
-
-/**
- * @api {get} /api/account/:id Get account information
- */
-router.get("/account/:id", auth, (req, res) => {
-  const userId = req.params.id;
-
-  User.findOne({ _id: userId }, (err, user) => {
-    if (err) {
-      return res.status(500).json({
-        errors: [
-          { msg: "An error occurred while fetching account information." },
-        ],
-      });
-    }
-
-    if (!user) {
-      return res.status(404).json({
-        errors: [{ msg: "Account not found." }],
-      });
-    }
-
-    return res.status(200).json({
-      username: user.username,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    });
-  });
-});
 
 /**
  * @api {post} /api/account/login Log in a user
@@ -192,13 +160,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     const { username, password, newPassword } = req.body;
 
@@ -229,7 +191,7 @@ router.post(
           user.save((err) => {
             if (err) {
               return res.status(500).json({
-                errors: [{ msg: "An error occurred while saving password." }],
+                errors: [{ msg: "An error occurred while changing password." }],
               });
             }
 
@@ -278,7 +240,7 @@ router.post(
       user.save((err) => {
         if (err) {
           return res.status(500).json({
-            errors: [{ msg: "An error occurred while saving email." }],
+            errors: [{ msg: "An error occurred while changing email." }],
           });
         }
 
@@ -289,7 +251,7 @@ router.post(
 );
 
 /**
- * @api {delete} /api/account Delete user account
+ * @api {delete} /api/account/:id Delete user account
  */
 router.delete(
   "/account/:_id",
@@ -302,13 +264,7 @@ router.delete(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.userId;
 
     if (userId !== req.params._id) {
       return res.status(401).json({
@@ -324,7 +280,6 @@ router.delete(
       }
     });
 
-    // Delete all monitoring jobs and files associated with the user
     MonitoringJob.find({ user: userId }, (err, jobs) => {
       if (err) {
         return res.status(500).json({

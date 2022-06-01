@@ -20,12 +20,10 @@ const changeStatus = (jobObject) => {
     } else {
       createVisualMonitoringJob(jobObject);
     }
+  } else if (jobObject.jobType === "text") {
+    deleteTextMonitoringJob(jobObject);
   } else {
-    if (jobObject.jobType === "text") {
-      deleteTextMonitoringJob(jobObject);
-    } else {
-      deleteVisualMonitoringJob(jobObject);
-    }
+    deleteVisualMonitoringJob(jobObject);
   }
 };
 

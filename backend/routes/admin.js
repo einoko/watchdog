@@ -1,6 +1,5 @@
 import express from "express";
 import { body, header, param, validationResult } from "express-validator";
-import { verifyJWT } from "../utils/JWTUtil.js";
 import { User } from "../models/user.js";
 import { MonitoringJob } from "../models/monitoringJob.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
@@ -9,64 +8,16 @@ import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
 import "dotenv/config";
 import { getSizeOfFolder } from "../services/fileService.js";
 import { SiteConfig } from "../models/siteConfig.js";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
 /**
  * @api {get} /admin/users Get all users
  */
-router.get("/admin/users", header("Authorization").isJWT(), (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const userToken = verifyJWT(req.headers.authorization);
-
-  if (userToken.errors.length > 0) {
-    return res.status(401).json({ errors: userToken.errors });
-  }
-
-  const userId = userToken.decoded.user.id;
-
-  User.findOne({ _id: userId }, (err, user) => {
-    if (err) {
-      return res.status(500).json({
-        errors: [{ msg: "User not found in the database." }],
-      });
-    }
-
-    if (!user) {
-      return res.status(401).json({
-        errors: [{ msg: "You are not authorized to view this page." }],
-      });
-    }
-
-    if (user.isAdmin) {
-      User.find({}, (err, users) => {
-        if (err) {
-          return res.status(500).json({
-            errors: [{ msg: "Could not fetch users from the database." }],
-          });
-        }
-
-        return res.status(200).json({ users });
-      });
-    } else {
-      return res.status(401).json({
-        errors: [{ msg: "Not authorized." }],
-      });
-    }
-  });
-});
-
-/**
- * @api {get} /admin/user/:id Get a single user and all their jobs
- */
 router.get(
-  "/admin/user/:id",
-  param("id").isMongoId(),
+  "/admin/users",
+  auth,
   header("Authorization").isJWT(),
   (req, res) => {
     const errors = validationResult(req);
@@ -75,48 +26,83 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
+    const isAdmin = req.isAdmin;
 
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
+    if (!isAdmin) {
+      return res.status(401).json({
+        errors: [{ msg: "You are not authorized to perform this action." }],
+      });
     }
 
-    const userId = userToken.decoded.user.id;
+    User.find({}, (err, users) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "Could not fetch users from the database." }],
+        });
+      }
+
+      return res.status(200).json({ users });
+    });
+  }
+);
+
+/**
+ * @api {get} /admin/user/:id Get a single user and all their jobs
+ */
+router.get(
+  "/admin/user/:id",
+  auth,
+  param("id").isMongoId(),
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userId = req.userId;
+    const isAdmin = req.isAdmin;
     const userIdFromUrl = req.params.id;
 
-    User.findOne({ _id: userId }, (err, user) => {
+    if (!isAdmin) {
+      return res.status(401).json({
+        errors: [{ msg: "Not authorized." }],
+      });
+    }
+
+    const user = await User.findOne({ _id: userId }, (err, user) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "User not found in the database." }],
         });
       }
 
-      if (user.isAdmin) {
-        User.findOne({ _id: userIdFromUrl }, (err, user) => {
-          if (err) {
-            return res.status(500).json({
-              errors: [{ msg: "User not found in the database." }],
-            });
-          }
-
-          MonitoringJob.find({ userId: userIdFromUrl }, (err, jobs) => {
-            if (err) {
-              return res.status(500).json({
-                errors: [{ msg: "Could not fetch jobs from the database." }],
-              });
-            }
-
-            return res.status(200).json({
-              user,
-              jobs,
-            });
-          });
-        });
-      } else {
-        return res.status(401).json({
-          errors: [{ msg: "Not authorized." }],
+      if (!user) {
+        return res.status(400).json({
+          errors: [{ msg: "No account with this username exists." }],
         });
       }
+
+      return user;
+    });
+
+    const jobs = await MonitoringJob.find(
+      { userId: userIdFromUrl },
+      (err, jobs) => {
+        if (err) {
+          return res.status(500).json({
+            errors: [{ msg: "Could not fetch jobs from the database." }],
+          });
+        }
+
+        return jobs;
+      }
+    );
+
+    return res.status(200).json({
+      user,
+      jobs,
     });
   }
 );
@@ -135,13 +121,7 @@ router.delete(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
+    const userId = req.body.id;
 
     User.findOne({ _id: userId }, (err, user) => {
       if (err) {
@@ -158,7 +138,6 @@ router.delete(
             });
           }
 
-          // Delete all jobs associated with the user
           MonitoringJob.find({ user: req.params.id }, (err, jobs) => {
             if (err) {
               return res.status(500).json({
@@ -207,6 +186,7 @@ router.delete(
  */
 router.get(
   "/admin/statistics",
+  auth,
   header("Authorization").isJWT(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -215,13 +195,6 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
-
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
-    }
-
-    const userId = userToken.decoded.user.id;
     const isAdmin = userToken.decoded.user.isAdmin;
 
     if (!isAdmin) {
@@ -258,6 +231,7 @@ router.get(
  */
 router.post(
   "/admin/site-config",
+  auth,
   header("Authorization").isJWT(),
   body("openSignup").isBoolean(),
   (req, res) => {
@@ -267,48 +241,32 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
+    const isAdmin = req.isAdmin;
 
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
+    if (!isAdmin) {
+      return res.status(401).json({
+        errors: [{ msg: "Not authorized." }],
+      });
     }
 
-    const userId = userToken.decoded.user.id;
+    SiteConfig.findOneAndUpdate(
+      {},
+      {
+        $set: req.body,
+      },
+      { new: true },
+      (err, siteConfig) => {
+        if (err) {
+          return res.status(500).json({
+            errors: [{ msg: "Could not update site configuration." }],
+          });
+        }
 
-    console.log(req.body);
-
-    User.findOne({ _id: userId }, (err, user) => {
-      if (err) {
-        return res.status(500).json({
-          errors: [{ msg: "User not found in the database." }],
+        return res.status(200).json({
+          siteConfig,
         });
       }
-
-      if (user.isAdmin) {
-        SiteConfig.findOneAndUpdate(
-          {},
-          {
-            ...req.body,
-          },
-          { new: true },
-          (err, siteConfig) => {
-            if (err) {
-              return res.status(500).json({
-                errors: [{ msg: "Could not update site configuration." }],
-              });
-            }
-
-            return res.status(200).json({
-              siteConfig,
-            });
-          }
-        );
-      } else {
-        return res.status(401).json({
-          errors: [{ msg: "Not authorized." }],
-        });
-      }
-    });
+    );
   }
 );
 
@@ -317,6 +275,7 @@ router.post(
  */
 router.get(
   "/admin/site-config",
+  auth,
   header("Authorization").isJWT(),
   (req, res) => {
     const errors = validationResult(req);
@@ -325,40 +284,24 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userToken = verifyJWT(req.headers.authorization);
+    const isAdmin = req.isAdmin;
 
-    if (userToken.errors.length > 0) {
-      return res.status(401).json({ errors: userToken.errors });
+    if (!isAdmin) {
+      return res.status(401).json({
+        errors: [{ msg: "Not authorized." }],
+      });
     }
 
-    const userId = userToken.decoded.user.id;
-
-    User.findOne({ _id: userId }, (err, user) => {
+    SiteConfig.findOne({}, (err, siteConfig) => {
       if (err) {
         return res.status(500).json({
-          errors: [{ msg: "User not found in the database." }],
+          errors: [{ msg: "Could not fetch site config from the database." }],
         });
       }
 
-      if (user.isAdmin) {
-        SiteConfig.findOne({}, (err, siteConfig) => {
-          if (err) {
-            return res.status(500).json({
-              errors: [
-                { msg: "Could not fetch site config from the database." },
-              ],
-            });
-          }
-
-          return res.status(200).json({
-            siteConfig,
-          });
-        });
-      } else {
-        return res.status(401).json({
-          errors: [{ msg: "Not authorized." }],
-        });
-      }
+      return res.status(200).json({
+        siteConfig,
+      });
     });
   }
 );
