@@ -114,21 +114,21 @@ export const Header = ({ location }) => {
                 <Disclosure.Button
                   as="a"
                   href="/"
-                  className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                  className={location.pathname === "/" ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"}
                 >
                   New Job
                 </Disclosure.Button>
                 <Disclosure.Button
                   as="a"
                   href="/jobs"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                  className={location.pathname.includes("/jobs") ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"}
                 >
                   Jobs
                 </Disclosure.Button>
                 <Disclosure.Button
                   as="a"
                   href="/settings"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                  className={location.pathname === "/settings" ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"}
                 >
                   Settings
                 </Disclosure.Button>

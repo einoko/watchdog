@@ -1,12 +1,12 @@
 import { Disclosure } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/outline";
-import React, { useState, useEffect } from "react";
-import ReactCrop from "react-image-crop";
+import React, { useState } from "react";
 import { useForm, register } from "react-hook-form";
 import { successToast } from "../../utils/customToasts";
 import { useNavigate } from "react-router-dom";
 import { getJWT } from "../../utils/loginUtil";
 import { removeEmpty } from "../../utils/bodyUtils";
+import { Screen } from "./screen";
 
 export const JobForm = () => {
   const { register, handleSubmit } = useForm();
@@ -24,11 +24,7 @@ export const JobForm = () => {
     useState("any_change");
   const [hideElements, setHideElements] = useState();
 
-  let navigate = useNavigate();
-
-  const classNames = (...classes) => {
-    return classes.filter(Boolean).join(" ");
-  };
+  const navigate = useNavigate();
 
   const handlePreview = async () => {
     await handleSubmit(async (data) => {
@@ -137,49 +133,15 @@ export const JobForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="bg-white sm:overflow-hidden pt-8">
         <div className="lg:px-12">
-          <div className="aspect-[4/3]">
-            <div
-              className={classNames(
-                comparisonType === "text"
-                  ? "overflow-scroll"
-                  : "overflow-hidden",
-                "min-h-full min-w-full border border-gray-300 rounded-lg shadow-inner w-full h-full"
-              )}
-            >
-              <div className="text-center flex min-h-full">
-                {!dataFetched ? (
-                  <div className="m-auto">
-                    {fetchingData ? (
-                      <h3 className="text-xl text-gray-600">
-                        Fetching URL. Please wait...
-                      </h3>
-                    ) : (
-                      <div>
-                        <h3 className="text-xl text-gray-600">
-                          Enter a URL and click ‘Fetch’.
-                        </h3>
-                      </div>
-                    )}
-                  </div>
-                ) : comparisonType === "visual" ? (
-                  <div>
-                    <ReactCrop crop={crop} onChange={(c, p) => setCrop(p)}>
-                      <img
-                        src={`data:image/png;base64,${imageData}`}
-                        alt="Screenshot of a website"
-                      />
-                    </ReactCrop>
-                  </div>
-                ) : (
-                  <div className="min-w-full min-h-full flex flex-col items-center">
-                    <div className="mx-auto my-auto text-black text-center prose-xl">
-                      {textData}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <Screen
+            dataFetched={dataFetched}
+            fetchingData={fetchingData}
+            comparisonType={comparisonType}
+            crop={crop}
+            setCrop={setCrop}
+            imageData={imageData}
+            textData={textData}
+          />
 
           <div className="mt-6 sm:mt-5 text-left space-y-6 sm:space-y-5">
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
@@ -286,12 +248,11 @@ export const JobForm = () => {
                       setUrl(e.target.value);
                     }}
                     autoComplete="url"
-                    className={classNames(
+                    className={`${
                       errors.filter((e) => e.param === "url").length > 0
                         ? "border-red-500 border-2"
-                        : "",
-                      "flex-1 block w-full  min-w-0 rounded-md sm:text-sm border-gray-300"
-                    )}
+                        : ""
+                    } flex-1 block w-full  min-w-0 rounded-md sm:text-sm border-gray-300`}
                     placeholder="Enter a URL"
                   />
                   <button
