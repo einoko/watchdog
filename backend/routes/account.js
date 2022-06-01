@@ -251,6 +251,35 @@ router.post(
 );
 
 /**
+ * @api {get} /api/account/:id Get account information
+ */
+router.get("/account/:id", auth, (req, res) => {
+  const userId = req.params.id;
+
+  User.findOne({ _id: userId }, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        errors: [
+          { msg: "An error occurred while fetching account information." },
+        ],
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        errors: [{ msg: "Account not found." }],
+      });
+    }
+
+    return res.status(200).json({
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  });
+});
+
+/**
  * @api {delete} /api/account/:id Delete user account
  */
 router.delete(
