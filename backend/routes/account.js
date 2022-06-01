@@ -10,6 +10,7 @@ import { deleteImage } from "../services/imageService.js";
 import { auth } from "../middleware/auth.js";
 import "dotenv/config";
 import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
+import { SiteConfig } from "../models/siteConfig.js";
 
 const router = express.Router();
 
@@ -23,10 +24,19 @@ router.post(
   body("password")
     .isLength({ min: 6 })
     .withMessage("Please enter a password with at least 6 characters."),
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
+    }
+
+    // get siteCOnfig
+    const siteConfig = await SiteConfig.findOne({});
+
+    if (!siteConfig.openSignup) {
+      return res.status(401).json({
+        errors: [{ msg: "Signup is not open." }],
+      });
     }
 
     const { username, email, password } = req.body;

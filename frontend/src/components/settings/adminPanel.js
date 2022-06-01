@@ -1,14 +1,49 @@
 import { Switch } from "@headlessui/react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { successToast } from "../../utils/customToasts";
+import { getJWT } from "../../utils/loginUtil";
 
 const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
 };
 
 export const AdminPanel = () => {
-  // TODO: Implement
-  const accountCreation = true;
+  const [openSignup, setOpenSignup] = useState(false);
+
+  const changeAccountCreation = async () => {
+    await fetch("/api/admin/site-config", {
+      method: "POST",
+      headers: {
+        Authorization: getJWT(),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        openSignup: !openSignup,
+      }),
+    }).then((res) => {
+      if (res.status === 200) {
+        successToast("Settings updated", "Account creation settings updated.");
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetch("/api/admin/site-config", {
+      method: "GET",
+      headers: {
+        Authorization: getJWT(),
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          console.log(data);
+          setOpenSignup(data.siteConfig.openSignup);
+        });
+      }
+    });
+  }, []);
 
   return (
     <div className="bg-white py-5 sm:rounded-lg sm:p-6">
@@ -41,14 +76,19 @@ export const AdminPanel = () => {
                     </div>
                     <Switch
                       className={classNames(
-                        accountCreation ? "bg-teal-500" : "bg-gray-200",
+                        openSignup ? "bg-teal-500" : "bg-gray-200",
                         "ml-4 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                       )}
+                      defaultChecked={openSignup}
+                      onChange={() => {
+                        setOpenSignup(!openSignup);
+                        changeAccountCreation();
+                      }}
                     >
                       <span
                         aria-hidden="true"
                         className={classNames(
-                          accountCreation ? "translate-x-5" : "translate-x-0",
+                          openSignup ? "translate-x-5" : "translate-x-0",
                           "inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
                         )}
                       />

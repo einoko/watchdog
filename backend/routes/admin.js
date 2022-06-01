@@ -1,15 +1,14 @@
 import express from "express";
-import { header, param, validationResult } from "express-validator";
+import { body, header, param, validationResult } from "express-validator";
 import { verifyJWT } from "../utils/JWTUtil.js";
 import { User } from "../models/user.js";
 import { MonitoringJob } from "../models/monitoringJob.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
-import fs from "fs";
-import path from "path";
 import "dotenv/config";
 import { getSizeOfFolder } from "../services/fileService.js";
+import { SiteConfig } from "../models/siteConfig.js";
 
 const router = express.Router();
 
@@ -103,9 +102,7 @@ router.get(
           MonitoringJob.find({ userId: userIdFromUrl }, (err, jobs) => {
             if (err) {
               return res.status(500).json({
-                errors: [
-                  { msg: "Could not fetch jobs from the database." },
-                ],
+                errors: [{ msg: "Could not fetch jobs from the database." }],
               });
             }
 
@@ -252,6 +249,116 @@ router.get(
       visualJobCount,
       textJobCount,
       imageFolderSize,
+    });
+  }
+);
+
+/**
+ * @api {post} /admin/site-config Update site configuration
+ */
+router.post(
+  "/admin/site-config",
+  header("Authorization").isJWT(),
+  body("openSignup").isBoolean(),
+  (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userToken = verifyJWT(req.headers.authorization);
+
+    if (userToken.errors.length > 0) {
+      return res.status(401).json({ errors: userToken.errors });
+    }
+
+    const userId = userToken.decoded.user.id;
+
+    console.log(req.body);
+
+    User.findOne({ _id: userId }, (err, user) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "User not found in the database." }],
+        });
+      }
+
+      if (user.isAdmin) {
+        SiteConfig.findOneAndUpdate(
+          {},
+          {
+            ...req.body,
+          },
+          { new: true },
+          (err, siteConfig) => {
+            if (err) {
+              return res.status(500).json({
+                errors: [{ msg: "Could not update site configuration." }],
+              });
+            }
+
+            return res.status(200).json({
+              siteConfig,
+            });
+          }
+        );
+      } else {
+        return res.status(401).json({
+          errors: [{ msg: "Not authorized." }],
+        });
+      }
+    });
+  }
+);
+
+/**
+ * @api {get} /admin/site-config Get site config
+ */
+router.get(
+  "/admin/site-config",
+  header("Authorization").isJWT(),
+  (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userToken = verifyJWT(req.headers.authorization);
+
+    if (userToken.errors.length > 0) {
+      return res.status(401).json({ errors: userToken.errors });
+    }
+
+    const userId = userToken.decoded.user.id;
+
+    User.findOne({ _id: userId }, (err, user) => {
+      if (err) {
+        return res.status(500).json({
+          errors: [{ msg: "User not found in the database." }],
+        });
+      }
+
+      if (user.isAdmin) {
+        SiteConfig.findOne({}, (err, siteConfig) => {
+          if (err) {
+            return res.status(500).json({
+              errors: [
+                { msg: "Could not fetch site config from the database." },
+              ],
+            });
+          }
+
+          return res.status(200).json({
+            siteConfig,
+          });
+        });
+      } else {
+        return res.status(401).json({
+          errors: [{ msg: "Not authorized." }],
+        });
+      }
     });
   }
 );
