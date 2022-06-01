@@ -56,12 +56,12 @@ export const AdminPanel = () => {
                   </Switch.Group>
                 </ul>
                 <div className="pt-12">
-                <Link className="py-3 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold" to={"/admin/all_users"}>
-                  All users
-                </Link>
-                <Link className="ml-4 py-3 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold" to={"/admin/all_jobs"}>
-                  All jobs
-                </Link>
+                  <Link
+                    className="py-3 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold"
+                    to={"/admin/dashboard"}
+                  >
+                    Open admin dashboard
+                  </Link>
                 </div>
               </div>
             </div>

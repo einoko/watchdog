@@ -12,10 +12,10 @@ export const LatestKeywordAlert = ({ job }) => {
       {lastState !== undefined && (
         <>
           <div>
-            <h2 className="lg:pl-6 pt-12 text-2xl font-bold">
+            <h2 className=" pt-12 text-2xl font-bold">
               Latest keyword alert
             </h2>
-            <span className="font-normal lg:pl-6 text-lg text-gray-500">
+            <span className="font-normal  text-lg text-gray-500">
               {new Date(
                 job.states[job.states.length - 1].createdAt
               ).toLocaleDateString("en-gb", {

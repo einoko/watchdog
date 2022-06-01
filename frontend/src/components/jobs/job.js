@@ -33,7 +33,7 @@ export const JobView = ({ location }) => {
           <div className="px-4 pb-0 lg:px-8 lg:pb-12">
             <main className="-mt-24 pb-8">
               <div className="max-w-3xl pt-24 mx-auto lg:max-w-7xl">
-                <h1 className="sr-only">Page title</h1>
+                <h1 className="sr-only">{job.name}</h1>
                 <div className="grid grid-cols-1 gap-4 items-start lg:grid-cols-4 lg:gap-8">
                   <div className="sm:px-6 lg:px-0 grid grid-cols-1 gap-4 lg:col-span-2">
                     <section aria-labelledby="section-1-title">

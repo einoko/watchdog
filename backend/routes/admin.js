@@ -6,6 +6,10 @@ import { MonitoringJob } from "../models/monitoringJob.js";
 import { deleteVisualMonitoringJob } from "../services/visualMonitoringService.js";
 import { deleteImage } from "../services/imageService.js";
 import { deleteTextMonitoringJob } from "../services/textMonitoringService.js";
+import fs from "fs";
+import path from "path";
+import "dotenv/config";
+import { getSizeOfFolder } from "../services/fileService.js";
 
 const router = express.Router();
 
@@ -197,6 +201,64 @@ router.delete(
           errors: [{ msg: "Not authorized." }],
         });
       }
+    });
+  }
+);
+
+/**
+ * @api {get} /admin/statistics Get statistics
+ */
+router.get(
+  "/admin/statistics",
+  header("Authorization").isJWT(),
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const userToken = verifyJWT(req.headers.authorization);
+
+    if (userToken.errors.length > 0) {
+      return res.status(401).json({ errors: userToken.errors });
+    }
+
+    const userId = userToken.decoded.user.id;
+    const isAdmin = userToken.decoded.user.isAdmin;
+
+    if (!isAdmin) {
+      return res.status(401).json({
+        errors: [{ msg: "Not authorized." }],
+      });
+    }
+
+    // Find number of users
+    const userCount = await User.countDocuments();
+
+    // Find number of jobs
+    const jobCount = await MonitoringJob.countDocuments();
+
+    // Find number of visual jobs
+    const visualJobCount = await MonitoringJob.countDocuments({
+      jobType: "visual",
+    });
+
+    // Find number of text jobs
+    const textJobCount = await MonitoringJob.countDocuments({
+      jobType: "text",
+    });
+
+    // Get the size of the images folder
+    const imageFolderSize = getSizeOfFolder(process.env.FILES_PATH);
+
+    // return the statistics
+    return res.status(200).json({
+      userCount,
+      jobCount,
+      visualJobCount,
+      textJobCount,
+      imageFolderSize,
     });
   }
 );

@@ -77,23 +77,23 @@ export const JobInfo = ({ job, active, setActive }) => {
 
   return (
     <>
-      <h1 className="lg:pl-6 text-4xl font-extrabold pb-2">{job.name}</h1>
+      <h1 className=" text-4xl font-extrabold pb-2">{job.name}</h1>
       <div className="py-3">
         <span
           className={`${
             active ? "bg-green-300 text-green-800" : "text-gray-900 bg-gray-300"
-          } lg:ml-4 py-2 px-3 font-semibold text-sm rounded-full`}
+          } py-2 px-3 font-semibold text-sm rounded-full`}
         >
           {active ? "Active" : "Paused"}
         </span>
       </div>
       {job.jobType !== undefined && (
-        <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
+        <div className="flex flex-row  mt-3 text-gray-500">
           <EyeIcon className="h-5 w-5 mr-2 flex-shrink-0" />
           {job.jobType[0].toUpperCase() + job.jobType.slice(1)} comparison
         </div>
       )}
-      <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
+      <div className="flex flex-row  mt-3 text-gray-500">
         <LinkIcon className="h-5 w-5 mr-2 flex-shrink-0" />
         <a
           className="hover:underline font-semibold hover:text-gray-800"
@@ -102,7 +102,7 @@ export const JobInfo = ({ job, active, setActive }) => {
           {job.url}
         </a>
       </div>
-      <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
+      <div className="flex flex-row  mt-3 text-gray-500">
         <ClockIcon className="h-5 w-5 mr-2 flex-shrink-0" />
         <p>
           Checking every {job.interval} (last check{" "}
@@ -117,7 +117,7 @@ export const JobInfo = ({ job, active, setActive }) => {
         </p>
       </div>
       {job.states !== undefined && (
-        <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
+        <div className="flex flex-row  mt-3 text-gray-500">
           <BellIcon className="h-5 w-5 mr-2 flex-shrink-0" />
           <p>
             Detected {Math.max(job.states.length - 1, 0)}{" "}
@@ -126,24 +126,24 @@ export const JobInfo = ({ job, active, setActive }) => {
         </div>
       )}
       {job.visual_crop && (
-        <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
+        <div className="flex flex-row  mt-3 text-gray-500">
           <ScissorsIcon className="h-5 w-5 mr-2 flex-shrink-0" />
           <p>Crop enabled</p>
         </div>
       )}
       {job.visual_scrollToElement && (
-        <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
+        <div className="flex flex-row  mt-3 text-gray-500">
           <HashtagIcon className="h-5 w-5 mr-2 flex-shrink-0" />
           <p>Scroll to {job.visual_scrollToElement}</p>
         </div>
       )}
       {job.visual_hideElements && job.visual_hideElements.length > 0 && (
-        <div className="flex flex-row lg:px-6 mt-3 text-gray-500">
+        <div className="flex flex-row  mt-3 text-gray-500">
           <EyeOffIcon className="h-5 w-5 mr-2 flex-shrink-0" />
           <p>{job.visual_hideElements}</p>
         </div>
       )}
-      <div className="lg:px-6 pt-8 flex flex-row">
+      <div className=" pt-8 flex flex-row">
         <button
           onClick={() => toggleActivity()}
           className="bg-indigo-500 hover:bg-indigo-700 text-sm font-semibold text-white p-3 rounded-md mr-3"

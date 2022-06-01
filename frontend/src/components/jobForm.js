@@ -146,7 +146,7 @@ export const JobForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="bg-white sm:overflow-hidden pt-8">
-        <div className="px-8">
+        <div className="lg:px-12">
           <div className="aspect-[4/3]">
             <div
               className={classNames(
@@ -548,7 +548,7 @@ export const JobForm = () => {
                         </div>
                         <div className="relative pt-6 flex justify-center">
                           <div className="px-3 pl-0 lg:pl-36 flex flex-row items-center bg-white text-lg font-medium text-gray-900">
-                            <div>Advanced settings</div>
+                            <div>Advanced capture settings</div>
                             <div className="h-5 w-5 ml-1">
                               <ChevronRightIcon
                                 className={`${
