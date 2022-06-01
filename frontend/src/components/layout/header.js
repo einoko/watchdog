@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { UserCircleIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { removeJWT } from "../../utils/loginUtil";
@@ -12,8 +12,6 @@ const classNames = (...classes) => {
 export const Header = ({ location }) => {
   const username = localStorage.getItem("username");
   const email = localStorage.getItem("email");
-
-  console.log(location.pathname);
 
   return (
     <header>
@@ -53,7 +51,6 @@ export const Header = ({ location }) => {
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex items-center">
-                    {/* Profile dropdown */}
                     <Menu as="div" className="ml-3 relative">
                       <div>
                         <Menu.Button className="bg-gray-800 flex hover:text-white text-gray-300 text-sm p-2 rounded-full focus:outline-none">
@@ -95,7 +92,6 @@ export const Header = ({ location }) => {
                   </div>
                 </div>
                 <div className="-mr-2 flex sm:hidden">
-                  {/* Mobile menu button */}
                   <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
@@ -109,8 +105,7 @@ export const Header = ({ location }) => {
             </div>
 
             <Disclosure.Panel className="sm:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
+              <div className="px-2 pt-2 pb-3 space-y-1">s
                 <Disclosure.Button
                   as="a"
                   href="/"
