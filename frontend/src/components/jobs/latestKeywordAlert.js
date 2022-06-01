@@ -12,9 +12,7 @@ export const LatestKeywordAlert = ({ job }) => {
       {lastState !== undefined && (
         <>
           <div>
-            <h2 className=" pt-12 text-2xl font-bold">
-              Latest keyword alert
-            </h2>
+            <h2 className=" pt-12 text-2xl font-bold">Latest keyword alert</h2>
             <span className="font-normal  text-lg text-gray-500">
               {new Date(
                 job.states[job.states.length - 1].createdAt

@@ -55,7 +55,7 @@ router.post(
 
     const preview = await captureWebsiteToBuffer(url, additionalOptions);
 
-    Preview.create({ userId, url, success: preview !== null });
+    await Preview.create({ userId, url, success: preview !== null });
 
     switch (preview) {
       case null:
@@ -102,7 +102,7 @@ router.post(
 
     const fullText = await getWebsiteText(url, textCSS);
 
-    Preview.create({ userId, url, success: fullText !== null });
+    await Preview.create({ userId, url, success: fullText !== null });
 
     switch (fullText) {
       case null:

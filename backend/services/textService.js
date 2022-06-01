@@ -35,7 +35,7 @@ export const getWebsiteText = async (url, selector = null) => {
     read: fs.readFile,
     write: fs.writeFile,
   }).then(async (blocker) => {
-    blocker.enableBlockingInPage(page);
+    await blocker.enableBlockingInPage(page);
 
     try {
       await page.goto(prependHttp(url));

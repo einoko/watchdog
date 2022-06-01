@@ -106,7 +106,7 @@ const checkLastState = async (job) => {
 
     const user = await User.findById(job.userId);
 
-    sendVisualAlertMail(
+    await sendVisualAlertMail(
       user,
       job,
       lastStateImage,

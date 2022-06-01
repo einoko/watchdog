@@ -3,9 +3,10 @@ import { ChevronRightIcon } from "@heroicons/react/outline";
 import React, { useState, useEffect } from "react";
 import ReactCrop from "react-image-crop";
 import { useForm, register } from "react-hook-form";
-import { successToast } from "../utils/customToasts";
+import { successToast } from "../../utils/customToasts";
 import { useNavigate } from "react-router-dom";
-import { getJWT } from "../utils/loginUtil";
+import { getJWT } from "../../utils/loginUtil";
+import { removeEmpty } from "../../utils/bodyUtils";
 
 export const JobForm = () => {
   const { register, handleSubmit } = useForm();
@@ -30,7 +31,7 @@ export const JobForm = () => {
   };
 
   const handlePreview = async () => {
-    handleSubmit(async (data) => {
+    await handleSubmit(async (data) => {
       if (comparisonType === "visual") {
         setErrors([]);
         setFetchingData(true);
@@ -89,17 +90,6 @@ export const JobForm = () => {
         }
       }
     })();
-  };
-
-  const removeEmpty = (obj) => {
-    Object.keys(obj).forEach(
-      (k) => !obj[k] && obj[k] !== undefined && delete obj[k]
-    );
-    if (obj.jobType === "visual") {
-      delete obj["text_type"];
-      delete obj["text_words"];
-    }
-    return obj;
   };
 
   const onSubmit = async (data) => {

@@ -13,6 +13,8 @@ export const Header = ({ location }) => {
   const username = localStorage.getItem("username");
   const email = localStorage.getItem("email");
 
+  console.log(location.pathname);
+
   return (
     <header>
       <Disclosure as="nav" className="bg-gray-800">
@@ -28,22 +30,21 @@ export const Header = ({ location }) => {
                   </div>
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">
-                      {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                       <Link
                         to={"/"}
-                        className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                        className={location.pathname === "/" ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"}
                       >
                         New Job
                       </Link>
                       <Link
                         to={"/jobs"}
-                        className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        className={location.pathname.includes("/jobs") ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"}
                       >
                         Jobs
                       </Link>
                       <Link
                         to={"/settings"}
-                        className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        className={location.pathname === "/settings" ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"}
                       >
                         Settings
                       </Link>

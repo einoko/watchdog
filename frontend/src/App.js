@@ -3,7 +3,7 @@ import "./App.css";
 import { Layout } from "./components/layout/layout";
 
 import "react-image-crop/dist/ReactCrop.css";
-import { JobForm } from "./components/jobForm";
+import { JobForm } from "./components/jobform/jobForm";
 
 export default function App({ location }) {
   return (

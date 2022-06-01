@@ -39,7 +39,7 @@ const checkText = async (job) => {
         const user = await User.findById(job.userId);
 
         if (user) {
-          sendTextDiffMail(job, user);
+          await sendTextDiffMail(job, user);
         } else {
           console.error(`Could not find user ${job.userId}`);
         }
@@ -75,7 +75,7 @@ const checkText = async (job) => {
         });
 
         await job.save();
-        sendKeywordAlertMail(job, user, matches);
+        await sendKeywordAlertMail(job, user, matches);
       } else {
         console.error(`Could not find user ${job.userId}`);
       }

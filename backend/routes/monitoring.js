@@ -45,7 +45,7 @@ router.post(
 
     console.log(req.body);
 
-    MonitoringJob.create({ userId, ...req.body }, (err, job) => {
+    await MonitoringJob.create({ userId, ...req.body }, (err, job) => {
       if (err) {
         return res.status(500).json({
           errors: [{ msg: "Could not create the monitoring job." }],
@@ -265,7 +265,7 @@ router.delete(
     }
 
     if (job.jobType === "visual") {
-      deleteVisualMonitoringJob(job._id);
+      await deleteVisualMonitoringJob(job._id);
 
       job.states.forEach((state) => {
         if (state.image) {
@@ -276,7 +276,7 @@ router.delete(
         }
       });
     } else {
-      deleteTextMonitoringJob(job._id);
+      await deleteTextMonitoringJob(job._id);
     }
 
     job.remove();

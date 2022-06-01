@@ -8,11 +8,11 @@ const agenda = new Agenda({
 });
 
 agenda.define("monitor website for visual changes", async (job) => {
-  executeVisualMonitoringJob(job.attrs.data.jobID);
+  await executeVisualMonitoringJob(job.attrs.data.jobID);
 });
 
 agenda.define("monitor website for text changes", async (job) => {
-  executeTextMonitoringJob(job.attrs.data.jobID);
+  await executeTextMonitoringJob(job.attrs.data.jobID);
 });
 
 export const deleteAgendaJob = async (id) => {

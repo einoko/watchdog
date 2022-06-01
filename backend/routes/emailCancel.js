@@ -31,7 +31,7 @@ router.get(
     }
 
     if (job.jobType === "visual") {
-      deleteVisualMonitoringJob(job._id);
+      await deleteVisualMonitoringJob(job._id);
 
       job.states.forEach((state) => {
         if (state.image) {
@@ -48,7 +48,7 @@ router.get(
         .status(200)
         .json({ msg: "Successfully canceled the monitoring job." });
     } else if (job.jobType === "text") {
-      deleteTextMonitoringJob(job._id);
+      await deleteTextMonitoringJob(job._id);
       job.remove();
       res
         .status(200)

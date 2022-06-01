@@ -49,7 +49,9 @@ export const User = () => {
                         <JobsTable jobs={jobs} />
                       </div>
                     ) : (
-                      <div className="text-xl font-bold">User has no jobs yet.</div>
+                      <div className="text-xl font-bold">
+                        User has no jobs yet.
+                      </div>
                     )}
                   </div>
                 </div>
