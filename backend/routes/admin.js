@@ -83,6 +83,7 @@ router.get(
     }
 
     const userId = userToken.decoded.user.id;
+    const userIdFromUrl = req.params.id;
 
     User.findOne({ _id: userId }, (err, user) => {
       if (err) {
@@ -92,19 +93,18 @@ router.get(
       }
 
       if (user.isAdmin) {
-        // Find user info
-        User.findOne({ _id: req.params.id }, (err, user) => {
+        User.findOne({ _id: userIdFromUrl }, (err, user) => {
           if (err) {
             return res.status(500).json({
               errors: [{ msg: "User not found in the database." }],
             });
           }
 
-          MonitoringJob.find({ user: req.params.id }, (err, jobs) => {
+          MonitoringJob.find({ userId: userIdFromUrl }, (err, jobs) => {
             if (err) {
               return res.status(500).json({
                 errors: [
-                  { msg: "Could not fetch visual jobs from the database." },
+                  { msg: "Could not fetch jobs from the database." },
                 ],
               });
             }
@@ -233,26 +233,19 @@ router.get(
       });
     }
 
-    // Find number of users
     const userCount = await User.countDocuments();
-
-    // Find number of jobs
     const jobCount = await MonitoringJob.countDocuments();
 
-    // Find number of visual jobs
     const visualJobCount = await MonitoringJob.countDocuments({
       jobType: "visual",
     });
 
-    // Find number of text jobs
     const textJobCount = await MonitoringJob.countDocuments({
       jobType: "text",
     });
 
-    // Get the size of the images folder
     const imageFolderSize = getSizeOfFolder(process.env.FILES_PATH);
 
-    // return the statistics
     return res.status(200).json({
       userCount,
       jobCount,
