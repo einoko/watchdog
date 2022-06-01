@@ -11,6 +11,14 @@ describe("Calculate difference between two images", () => {
     expect(difference).toBeGreaterThan(0.1);
   });
 
+  test("Difference is zero for two exact same images", async () => {
+    const image1 = await captureWebsiteToBuffer("https://example.com");
+    const image2 = await captureWebsiteToBuffer("https://example.com");
+
+    const difference = await compareUtil.calculateDifference(image1, image2);
+    expect(difference).toBe(0);
+  });
+
   test("Null is returned if images were not compared", async () => {
     const image1 = await captureWebsiteToBuffer("https://example.com");
     const image2 = null;

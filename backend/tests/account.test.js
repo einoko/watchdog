@@ -115,8 +115,8 @@ describe("Login tests", () => {
 describe("Password change test", () => {
   test("Change password", async () => {
     const res = await _fetch(
-      "PUT",
-      "/api/account",
+      "POST",
+      "/api/account/change-password",
       {
         username: "RustyShackleford",
         password: "password",
@@ -144,6 +144,40 @@ describe("Password change test", () => {
     const data = await res.json();
 
     expect(data.token).toBeDefined();
+  });
+});
+
+describe("Email change tests", () => {
+  test("Change email", async () => {
+    const res = await _fetch(
+      "POST",
+      "/api/account/change-email",
+      {
+        username: "RustyShackleford",
+        email: "new@email.com",
+      },
+      token
+    );
+
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+
+    expect(data.msg).toBeDefined();
+    expect(data.msg).toBe("Email changed successfully.");
+  });
+
+  test("Verify that email has changed", async () => {
+    const res = await _fetch("POST", "/api/account/login", {
+      username: "RustyShackleford",
+      password: "newpassword",
+    });
+
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+
+    expect(data.user.email).toBe("new@email.com");
   });
 });
 
