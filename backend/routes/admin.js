@@ -49,7 +49,7 @@ router.get(
 /**
  * @api {get} /admin/user/:id Get a single user and all their jobs
  */
-router.get(
+ router.get(
   "/admin/user/:id",
   auth,
   param("id").isMongoId(),

@@ -22,7 +22,7 @@ export const User = () => {
         setUser(data.user);
         setJobs(data.jobs);
       });
-  }, []);
+  }, [userId]);
 
   return (
     <Layout location={window.location}>

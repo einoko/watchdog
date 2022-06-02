@@ -82,6 +82,12 @@ router.get(
     const userId = req.userId;
     const jobId = req.params.id;
 
+    if (userId === null) {
+      return res.status(401).json({
+        errors: [{ msg: "Not authorized." }],
+      });
+    }
+
     MonitoringJob.findOne({ _id: jobId }, (err, job) => {
       if (err) {
         return res.status(500).json({

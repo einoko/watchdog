@@ -11,9 +11,10 @@ import { LatestKeywordAlert } from "./latestKeywordAlert";
 export const JobView = ({ location }) => {
   const [job, setJob] = useState({});
   const [active, setActive] = useState(true);
+  const { jobID } = useParams();
 
   useEffect(() => {
-    fetch(`/api/job/${params.jobID}`, {
+    fetch(`/api/job/${jobID}`, {
       headers: {
         Authorization: getJWT(),
       },
@@ -23,9 +24,8 @@ export const JobView = ({ location }) => {
         setJob(data.job);
         setActive(data.job.active);
       });
-  }, []);
+  }, [jobID]);
 
-  const params = useParams();
   return (
     <Layout location={location}>
       <div className="lg:p-8">
