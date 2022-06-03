@@ -96,12 +96,12 @@ export const JobInfo = ({ job, active, setActive }) => {
       )}
       <div className="flex flex-row  mt-3 text-gray-500">
         <LinkIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-        <Link
+        <a
           className="hover:underline font-semibold hover:text-gray-800"
-          to={job.url}
+          href={job.url}
         >
           {job.url}
-        </Link>
+        </a>
       </div>
       <div className="flex flex-row  mt-3 text-gray-500">
         <ClockIcon className="h-5 w-5 mr-2 flex-shrink-0" />

@@ -11,7 +11,7 @@ describe("Change settings", () => {
     cy.contains("Email changed successfully.");
   });
 
-  it("Verify email has changes", () => {
+  it("Verify email has changed", () => {
     cy.visit("http://localhost:3000/login");
     cy.get("#username").type("Test");
     cy.get("#password").type("testtest");

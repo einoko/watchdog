@@ -26,7 +26,7 @@ export default function LoginView() {
       localStorage.setItem("username", json.user.username);
       localStorage.setItem("email", json.user.email);
       localStorage.setItem("userId", json.user.id);
-      navigate("/");
+      window.location.reload();
     }
   };
 
