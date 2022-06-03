@@ -17,7 +17,7 @@ const app = express();
 app.use(cors());
 app.use(json());
 
-const basePath = "/watchdog";
+const basePath = ""
 
 app.use(`${basePath}/api`, emailCancelRouter);
 app.use(`${basePath}/api`, imageRouter);

@@ -23,7 +23,7 @@ const loggedIn = isLoggedIn();
 root.render(
   <React.StrictMode>
     <Toaster position="top-right" reverseOrder={false} />
-    <BrowserRouter>
+    <BrowserRouter basename="/watchdog">
       <Routes>
         <Route
           path="/"
