@@ -1,5 +1,6 @@
 import { Tab } from "@headlessui/react";
 import React from "react";
+import { Link } from "react-router-dom";
 
 export const ScreenshotTimelineItem = ({ previousItem, item }) => {
   return (
@@ -54,28 +55,28 @@ export const ScreenshotTimelineItem = ({ previousItem, item }) => {
           {previousItem !== null && (
             <Tab.Panel>
               <div className="pt-4">
-                <a href={`/api/image/${previousItem.image}`}>
+                <Link to={`/api/image/${previousItem.image}`}>
                   <img
                     src={`/api/image/${previousItem.image}`}
                     alt={"Screenshot"}
                   />
-                </a>
+                </Link>
               </div>
             </Tab.Panel>
           )}
           <Tab.Panel>
             <div className="pt-4">
-              <a href={`/api/image/${item.image}`}>
+              <Link to={`/api/image/${item.image}`}>
                 <img src={`/api/image/${item.image}`} alt={"Screenshot"} />
-              </a>
+              </Link>
             </div>
           </Tab.Panel>
           {item.diff && (
             <Tab.Panel>
               <div className="pt-4">
-                <a href={`/api/image/${item.diff}`}>
+                <Link to={`/api/image/${item.diff}`}>
                   <img src={`/api/image/${item.diff}`} alt={"Screenshot"} />
-                </a>
+                </Link>
               </div>
             </Tab.Panel>
           )}

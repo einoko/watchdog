@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { ScreenshotTimelineItem } from "./screenshotTimelineItem";
 
 export const LatestScreenshot = ({ job }) => {
@@ -23,8 +24,8 @@ export const LatestScreenshot = ({ job }) => {
           {job.states.length === 1 ? (
             <div>
               <div>
-                <a
-                  href={`/api/image/${job.states[job.states.length - 1].image}`}
+                <Link
+                  to={`/api/image/${job.states[job.states.length - 1].image}`}
                 >
                   <img
                     className="mx-auto  pt-4"
@@ -33,7 +34,7 @@ export const LatestScreenshot = ({ job }) => {
                       job.states[job.states.length - 1].image
                     }`}
                   />
-                </a>
+                </Link>
               </div>
             </div>
           ) : (

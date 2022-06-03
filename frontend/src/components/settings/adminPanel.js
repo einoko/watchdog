@@ -38,7 +38,6 @@ export const AdminPanel = () => {
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          console.log(data);
           setOpenSignup(data.siteConfig.openSignup);
         });
       }

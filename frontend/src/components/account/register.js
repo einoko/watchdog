@@ -1,11 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function RegisterView() {
   const { register, handleSubmit } = useForm();
   const [errors, setErrors] = React.useState([]);
   const [message, setMessage] = React.useState("");
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     const response = await fetch("/api/account/signup", {
@@ -22,7 +24,7 @@ export default function RegisterView() {
     } else {
       setMessage(json.msg);
       setTimeout(() => {
-        window.location.href = "/";
+        navigate("/");
       }, 5000);
     }
   };
@@ -146,12 +148,12 @@ export default function RegisterView() {
           <div className="pt-6 text-sm">
             <p className="text-center">
               <span className="text-gray-600">Already have an account? </span>
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="font-semibold text-gray-700 hover:text-gray-800"
               >
                 Sign in.
-              </a>
+              </Link>
             </p>
           </div>
         </div>

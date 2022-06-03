@@ -10,7 +10,7 @@ import {
 } from "@heroicons/react/outline";
 import React from "react";
 import { getJWT } from "../../utils/loginUtil";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { successToast } from "../../utils/customToasts";
 import Modal from "react-modal";
 
@@ -96,12 +96,12 @@ export const JobInfo = ({ job, active, setActive }) => {
       )}
       <div className="flex flex-row  mt-3 text-gray-500">
         <LinkIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-        <a
+        <Link
           className="hover:underline font-semibold hover:text-gray-800"
-          href={job.url}
+          to={job.url}
         >
           {job.url}
-        </a>
+        </Link>
       </div>
       <div className="flex flex-row  mt-3 text-gray-500">
         <ClockIcon className="h-5 w-5 mr-2 flex-shrink-0" />

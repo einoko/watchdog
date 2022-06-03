@@ -1,10 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { setJWT } from "../../utils/loginUtil";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginView() {
   const { register, handleSubmit } = useForm();
   const [errors, setErrors] = React.useState([]);
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     const response = await fetch("/api/account/login", {
@@ -23,7 +26,7 @@ export default function LoginView() {
       localStorage.setItem("username", json.user.username);
       localStorage.setItem("email", json.user.email);
       localStorage.setItem("userId", json.user.id);
-      window.location.href = "/";
+      navigate("/");
     }
   };
 
@@ -96,12 +99,12 @@ export default function LoginView() {
           <div className="pt-6 text-sm">
             <p className="text-center">
               <span className="text-gray-600">Don't have an account? </span>
-              <a
-                href="/register"
+              <Link
+                to="/register"
                 className="font-semibold text-gray-700 hover:text-gray-800"
               >
                 Sign up.
-              </a>
+              </Link>
             </p>
           </div>
         </div>

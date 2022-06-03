@@ -89,7 +89,6 @@ export const JobForm = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log(data.text_type);
     const response = await fetch("/api/job", {
       method: "POST",
       headers: {

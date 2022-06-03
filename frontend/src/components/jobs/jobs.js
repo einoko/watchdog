@@ -88,8 +88,8 @@ export const JobsView = ({ location }) => {
                       </div>
                       <div className="mt-2 sm:flex sm:justify-between">
                         <div className="sm:flex flex-col gap-y-2">
-                          <a
-                            href={jobListing.url}
+                          <Link
+                            to={jobListing.url}
                             className="flex items-center text-sm text-gray-500"
                           >
                             <LinkIcon
@@ -99,7 +99,7 @@ export const JobsView = ({ location }) => {
                             <span className="line-clamp-1">
                               {jobListing.url}
                             </span>
-                          </a>
+                          </Link>
                           <p className="flex items-center my-2 sm:mt-0 text-sm text-gray-500">
                             <ClockIcon
                               className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"

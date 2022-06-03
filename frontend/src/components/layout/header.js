@@ -23,7 +23,7 @@ export const Header = ({ location }) => {
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <span className="text-white font-extrabold text-2xl tracking-wide">
-                      <a href="/">Watchdog</a>
+                      <Link to="/">Watchdog</Link>
                     </span>
                   </div>
                   <div className="hidden sm:block sm:ml-6">
@@ -119,38 +119,41 @@ export const Header = ({ location }) => {
             <Disclosure.Panel className="sm:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1">
                 s
-                <Disclosure.Button
-                  as="a"
-                  href="/"
-                  className={
-                    location.pathname === "/"
-                      ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                  }
-                >
-                  New Job
+                <Disclosure.Button>
+                  <Link
+                    to="/"
+                    className={
+                      location.pathname === "/"
+                        ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                    }
+                  >
+                    New Job
+                  </Link>
                 </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="/jobs"
-                  className={
-                    location.pathname.includes("/jobs")
-                      ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                  }
-                >
-                  Jobs
+                <Disclosure.Button>
+                  <Link
+                    to="/jobs"
+                    className={
+                      location.pathname.includes("/jobs")
+                        ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                    }
+                  >
+                    Jobs
+                  </Link>
                 </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="/settings"
-                  className={
-                    location.pathname === "/settings"
-                      ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                  }
-                >
-                  Settings
+                <Disclosure.Button>
+                  <Link
+                    to="/settings"
+                    className={
+                      location.pathname === "/settings"
+                        ? "bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                    }
+                  >
+                    Settings
+                  </Link>
                 </Disclosure.Button>
               </div>
               <div className="pt-4 pb-3 border-t border-gray-700">
