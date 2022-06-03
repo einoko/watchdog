@@ -4,6 +4,7 @@ import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { removeJWT } from "../../utils/loginUtil";
+import { useNavigate } from "react-router-dom";
 
 const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
@@ -12,6 +13,8 @@ const classNames = (...classes) => {
 export const Header = ({ location }) => {
   const username = localStorage.getItem("username");
   const email = localStorage.getItem("email");
+
+  const navigate = useNavigate();
 
   return (
     <header>
@@ -172,7 +175,7 @@ export const Header = ({ location }) => {
                     as="button"
                     onClick={() => {
                       removeJWT();
-                      window.location.reload();
+                      navigate("/login")
                     }}
                     className="block text-left w-full px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                   >
