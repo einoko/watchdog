@@ -43,7 +43,6 @@ export const JobsView = ({ location }) => {
     .filter((job) => {
       if (filter === "All") return true;
       return job.jobType.toLowerCase().includes(filter.toLowerCase());
-
     })
     .sort((a, b) => {
       return new Date(b.updatedAt) > new Date(a.updatedAt);
@@ -117,7 +116,7 @@ export const JobsView = ({ location }) => {
                               {jobListing.states.length === 2
                                 ? "change"
                                 : "changes"}{" "}
-                              so far
+                              so far{" "}
                             </p>
                           </div>
                           <div className="flex items text-sm text-gray-500 sm:mt-0">

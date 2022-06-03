@@ -20,7 +20,8 @@ export const getAdditionalCaptureOptions = (job) => {
   }
 
   if (job.visual_hideElements) {
-    additionalOptions.hideElements = job.visual_hideElements.toString()
+    additionalOptions.hideElements = job.visual_hideElements
+      .toString()
       .split(",")
       .map((e) => e.trim());
   }
@@ -48,6 +49,11 @@ const initializeFirstState = async (job) => {
 
   if (screenshot === null) {
     console.error(`Could not capture screenshot for ${job._id} ${job.url}`);
+    job.errors.push({
+      errorMessage: "Could not capture screenshot.",
+      createdAt: new Date(),
+    });
+    await job.save();
   } else {
     const savedImage = await saveImage(screenshot);
 
@@ -82,6 +88,11 @@ const checkLastState = async (job) => {
 
   if (newScreenshotBuffer === null) {
     console.error(`Could not capture screenshot for ${job._id} ${job.url}`);
+    job.errors.push({
+      errorMessage: "Could not capture screenshot.",
+      createdAt: new Date(),
+    });
+    await job.save();
     return;
   }
 

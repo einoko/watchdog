@@ -57,6 +57,10 @@ const monitoringJobSchema = new mongoose.Schema(
       type: [Object],
       default: [],
     },
+    errors: {
+      type: [Object],
+      default: [],
+    },
     visual_scrollToElement: {
       type: String,
     },

@@ -15,4 +15,4 @@ export const deleteFileFromPath = (filePath) => {
 
 export const getSizeOfFolder = (folderPath) => {
   return fastFolderSize(folderPath);
-}
+};

@@ -86,7 +86,9 @@ describe("Initial preparation tests", () => {
 
 describe("Test visual monitoring", () => {
   test("New state was created", async () => {
-    const freshJob = await MonitoringJob.findOne({ name: "Random visual test" });
+    const freshJob = await MonitoringJob.findOne({
+      name: "Random visual test",
+    });
     job = freshJob;
     originalStates = freshJob.states.length;
 
@@ -98,7 +100,9 @@ describe("Test visual monitoring", () => {
   });
 
   test("Another state was created", async () => {
-    const freshJob = await MonitoringJob.findOne({ name: "Random visual test" });
+    const freshJob = await MonitoringJob.findOne({
+      name: "Random visual test",
+    });
 
     expect(freshJob.states.length).toBe(originalStates + 1);
   });

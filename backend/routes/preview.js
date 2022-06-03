@@ -2,8 +2,6 @@ import express from "express";
 import { body, header, validationResult } from "express-validator";
 import { captureWebsiteToBuffer } from "../services/captureService.js";
 import { Preview } from "../models/preview.js";
-import { User } from "../models/user.js";
-import { verifyJWT } from "../utils/JWTUtil.js";
 import { getWebsiteText } from "../services/textService.js";
 import { auth } from "../middleware/auth.js";
 

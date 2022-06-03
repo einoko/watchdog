@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { warningToast } from "../../utils/customToasts";
 
 export const JobView = ({ location }) => {
-  const [job, setJob] = useState({});
+  const [job, setJob] = useState({ states: [], errors: [] });
   const [active, setActive] = useState(true);
   const { jobID } = useParams();
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export const JobView = ({ location }) => {
         warningToast("Error", "Could not find the job.");
         navigate("/jobs");
       });
-  }, [jobID]);
+  }, [jobID, navigate]);
 
   return (
     <Layout location={location}>
@@ -66,8 +66,8 @@ export const JobView = ({ location }) => {
                     <section aria-labelledby="section-2-title">
                       <div className="bg-white overflow-hidden">
                         <div className="px-0">
-                          {job.states !== undefined &&
-                            job.states.length >= 1 && <Timeline job={job} />}
+                          {(job.states.length >= 1 ||
+                            job.errors.length >= 1) && <Timeline job={job} />}
                         </div>
                       </div>
                     </section>

@@ -45,7 +45,6 @@ export const compressImage = async (imageID) => {
   return compressedImageBuffer;
 };
 
-
 export const getFullLink = (imageID) => {
   return `${process.env.APP_URL}/api/image/${imageID}`;
-}
+};

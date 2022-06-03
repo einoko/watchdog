@@ -8,8 +8,11 @@ const checkText = async (job) => {
   const fullText = await getWebsiteText(job.url, job.text_css);
 
   if (fullText === null) {
-    // TODO: Implement
-    console.error("Could not retrieve text from website. Send warning email.");
+    job.errors.push({
+      errorMessage: "Could not fetch any text from the given URL.",
+      createdAt: new Date(),
+    });
+    await job.save();
     return;
   }
 
@@ -55,7 +58,10 @@ const checkText = async (job) => {
 
     const matches = [];
 
-    for (const word of job.text_words.toString().split(",").map((word) => word.trim())) {
+    for (const word of job.text_words
+      .toString()
+      .split(",")
+      .map((word) => word.trim())) {
       if (job.text_type === "added") {
         if (trimmedText.includes(word.toLowerCase())) {
           matches.push(word);
@@ -82,7 +88,7 @@ const checkText = async (job) => {
     }
   }
 
-  await job.save()
+  await job.save();
 };
 
 /**

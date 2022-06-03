@@ -97,7 +97,7 @@ describe("Job creation tests", () => {
     expect(data.errors[0].msg).toBe("Invalid value");
 
     const job = await MonitoringJob.findOne({
-      name: "No URL"
+      name: "No URL",
     });
 
     expect(job).toBeNull();
@@ -240,7 +240,7 @@ describe("Job reading tests", () => {
     expect(data.errors[0].msg).toBeDefined();
     expect(data.errors[0].msg).toBe("Invalid value");
   });
-})
+});
 
 describe("Job updating tests", () => {
   test("Update a job", async () => {
@@ -263,7 +263,7 @@ describe("Job updating tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully updated the monitoring job.");
 
-    const job = await MonitoringJob.findOne({name: "Updated test job"});
+    const job = await MonitoringJob.findOne({ name: "Updated test job" });
 
     expect(job).toBeDefined();
     expect(job.name).toBe("Updated test job");
@@ -293,12 +293,7 @@ describe("Job updating tests", () => {
 
 describe("Job deleting tests", () => {
   test("Delete a job", async () => {
-    const res = await _fetch(
-      "DELETE",
-      `/api/job/${jobID}`,
-      {},
-      token
-    );
+    const res = await _fetch("DELETE", `/api/job/${jobID}`, {}, token);
 
     expect(res.status).toBe(200);
 
@@ -307,18 +302,13 @@ describe("Job deleting tests", () => {
     expect(data.msg).toBeDefined();
     expect(data.msg).toBe("Successfully deleted the monitoring job.");
 
-    const job = await MonitoringJob.findOne({name: "Updated test job"});
+    const job = await MonitoringJob.findOne({ name: "Updated test job" });
 
     expect(job).toBeNull();
   });
 
   test("Delete a job that doesn't exist", async () => {
-    const res = await _fetch(
-      "DELETE",
-      "/api/job/1234567890",
-      {},
-      token
-    );
+    const res = await _fetch("DELETE", "/api/job/1234567890", {}, token);
 
     expect(res.status).toBe(400);
 
