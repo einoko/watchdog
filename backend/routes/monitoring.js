@@ -93,16 +93,22 @@ router.get(
         return res.status(500).json({
           errors: [{ msg: "Could not find the monitoring job." }],
         });
+      }
+
+      if (!job) {
+        return res.status(404).json({
+          errors: [{ msg: "Could not find the monitoring job." }],
+        });
+      }
+
+      if (job.userId.toString() !== userId && req.isAdmin === false) {
+        return res.status(401).json({
+          errors: [{ msg: "You are not authorized to view this job." }],
+        });
       } else {
-        if (job.userId.toString() !== userId && req.isAdmin === false) {
-          return res.status(401).json({
-            errors: [{ msg: "You are not authorized to view this job." }],
-          });
-        } else {
-          return res.status(200).json({
-            job,
-          });
-        }
+        return res.status(200).json({
+          job,
+        });
       }
     });
   }

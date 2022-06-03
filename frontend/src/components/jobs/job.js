@@ -7,11 +7,14 @@ import { JobInfo } from "./jobInfo";
 import { LatestScreenshot } from "./latestScreenshot";
 import { LatestTextDiff } from "./latestTextDiff";
 import { LatestKeywordAlert } from "./latestKeywordAlert";
+import { useNavigate } from "react-router-dom";
+import { warningToast } from "../../utils/customToasts";
 
 export const JobView = ({ location }) => {
   const [job, setJob] = useState({});
   const [active, setActive] = useState(true);
   const { jobID } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`/api/job/${jobID}`, {
@@ -23,6 +26,10 @@ export const JobView = ({ location }) => {
       .then((data) => {
         setJob(data.job);
         setActive(data.job.active);
+      })
+      .catch((err) => {
+        warningToast("Error", "Could not find the job.");
+        navigate("/jobs");
       });
   }, [jobID]);
 
