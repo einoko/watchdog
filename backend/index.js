@@ -17,12 +17,14 @@ const app = express();
 app.use(cors());
 app.use(json());
 
-app.use("/api", emailCancelRouter);
-app.use("/api", imageRouter);
-app.use("/api", adminRouter);
-app.use("/api", accountRouter);
-app.use("/api", previewRouter);
-app.use("/api", jobRouter);
+const basePath = "/watchdog";
+
+app.use(`${basePath}/api`, emailCancelRouter);
+app.use(`${basePath}/api`, imageRouter);
+app.use(`${basePath}/api`, adminRouter);
+app.use(`${basePath}/api`, accountRouter);
+app.use(`${basePath}/api`, previewRouter);
+app.use(`${basePath}/api`, jobRouter);
 
 connectToDB(process.env.MONGODB_URI).then((r) => {
   restartStuckJobs();
