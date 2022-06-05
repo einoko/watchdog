@@ -98,6 +98,7 @@ router.get(
  */
 router.delete(
   "/admin/user/:id",
+  auth,
   param("id").isMongoId(),
   header("Authorization").isJWT(),
   (req, res) => {
@@ -107,7 +108,8 @@ router.delete(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const userId = req.body.id;
+    const userId = req.userId;
+    const isAdmin = req.isAdmin;
 
     User.findOne({ _id: userId }, (err, user) => {
       if (err) {
