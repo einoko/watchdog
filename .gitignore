@@ -15,3 +15,5 @@ yarn-error.log*
 .env
 files/
 engine.bin
+/backend/text_mail.html
+/backend/visual_mail.html
