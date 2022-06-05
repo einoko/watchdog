@@ -1,5 +1,3 @@
-import { cyan } from "@tailwindcss/typography/src/styles";
-
 describe("Admin settings", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/login");
@@ -21,7 +19,6 @@ describe("Admin settings", () => {
 
   it("Can view other users and their jobs", () => {
     cy.visit("http://localhost:3000/admin/dashboard");
-    // click the third link in the table
     cy.get("tbody > tr:nth-child(3) > td:nth-child(4) > a").click();
     cy.contains("CypressTest");
     cy.contains("User has no jobs yet");
@@ -29,7 +26,6 @@ describe("Admin settings", () => {
 
   it("Can delete other users", () => {
     cy.visit("http://localhost:3000/admin/dashboard");
-    // click the third link in the table
     cy.get("tbody > tr:nth-child(3) > td:nth-child(4) > a").click();
     cy.get("button").contains("Delete user").click();
     cy.get("button").contains("Delete").click();
