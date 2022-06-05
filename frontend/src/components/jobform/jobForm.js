@@ -293,7 +293,6 @@ export const JobForm = () => {
                     className="sm:max-w-md w-full shadow-sm text-black bg-white sm:text-sm border-gray-300 rounded-md"
                     {...register("interval")}
                   >
-                    <option value="1 minute">Every minute</option>
                     <option value="5 minutes">Every 5 minutes</option>
                     <option value="15 minutes">Every 15 minutes</option>
                     <option value="30 minutes">Every 30 minutes</option>
