@@ -44,15 +44,17 @@ router.get(
 
       job.remove();
 
-      res
-        .status(200)
-        .json({ msg: "Successfully canceled the monitoring job." });
+      res.send(`
+        <h1>Job cancelled</h1>
+        <p>Successfully canceled the monitoring job.</p>
+        `);
     } else if (job.jobType === "text") {
       await deleteTextMonitoringJob(job._id);
       job.remove();
-      res
-        .status(200)
-        .json({ msg: "Successfully canceled the monitoring job." });
+      res.send(`
+        <h1>Job cancelled</h1>
+        <p>Successfully canceled the monitoring job.</p>
+        `);
     }
   }
 );
