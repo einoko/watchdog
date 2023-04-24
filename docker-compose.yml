@@ -1,0 +1,45 @@
+version: "3.9"
+services:
+  watchdog_front:
+    container_name: watchdog_front
+    build: ./frontend
+    environment:
+      - REACT_APP_API_PATH=<ADDRESS>:3000
+    ports:
+      - 3001:3000
+    networks:
+      - watchdog-network
+
+  watchdog_api:
+    container_name: watchdog_api
+    build: ./backend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend/files:/app/files
+    environment:
+      - DATABASE_HOST=mongodb
+      - JWT_SECRET=<LONG RANDOM STRING>
+      - JWT_EXPIRES_IN=30d
+      - PORT=3000
+      - APP_URL=<ADDRESS>:3000
+      - FILES_PATH=./files
+      # Account with this name will receive admin rights
+      - ADMIN_USERNAME=admin
+    restart: always
+    networks:
+      - watchdog-network
+    depends_on:
+      - mongodb
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    volumes:
+      - ./data:/data/db
+    networks:
+      - watchdog-network
+
+networks:
+  watchdog-network:
+    driver: bridge
