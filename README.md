@@ -9,6 +9,12 @@ Watchdog periodically captures a screenshot of any given web page, and looks for
 
 https://user-images.githubusercontent.com/36775736/233996134-2be1931c-9656-4de2-b5e2-3e13906cbeb0.mp4
 
+<details>
+  <summary>Sample notification</summary>
+  <img width="602" alt="sample email" src="https://user-images.githubusercontent.com/36775736/234368891-a3ff676f-e48a-4768-b453-23ebacccf5fb.png">
+
+</details>
+
 
 #### Text comparisons
 
