@@ -1,4 +1,6 @@
-## Watchdog
+# Watchdog
+
+![logo](https://user-images.githubusercontent.com/36775736/236534653-5f6529b8-bd95-468c-a543-6ee958719530.png)
 
 Watchdog is a visual website monitoring app. It was created as a self-hosted alternative to commercial solutions such as [visualping](https://visualping.io ) and [sken.io](sken.io). With Watchdog, you can monitor changes on websites. Two comparison methods are supported.
 
